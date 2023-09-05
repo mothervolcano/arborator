@@ -1,13 +1,5 @@
 import { Point, Path } from 'paper';
 
-// declare const paper: any;
-// declare const Point: any;
-// declare const Path: any;
-
-// import Point from '../drawing/point'
-// import Path from '../drawing/path'
-
-// const { Point, Path } = paper;
 
 class Turtle {
 

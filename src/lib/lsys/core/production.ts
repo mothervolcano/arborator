@@ -1,177 +1,71 @@
-const S = require('string')
+import { IProduction, GlyphType, Glyph, Rule, Instruction, Marker, IModel } from '../lsys';
 
-class Production {
 
-	public label: string
-	public n: number
-	public t: number;
-	public direction: number | null;
-	public _predecessor: string
-	public _sucessor: any;
-	public iteration: number
-	public iterations: number | undefined;
-	protected _sequence: string
-	public counter: number
-	private _probability: number
+abstract class Production implements IProduction {
 
-	
-	constructor( label: string, iterations?: number | undefined ) {
+	protected _glyph: Glyph;
+	protected rule: Glyph[];
+	protected _output: string;
 
-		this.label = label || ''
-		this._predecessor = ''
-		this._sucessor = ''
-		this.iterations = iterations 
-		this.iteration = 0
-		this._sequence = ''
-		this.counter = 0
-		this._probability = 1
-		this.direction = null;
-		this.n = 0
-		this.t = 0
+
+	constructor( glyph: Glyph, rule: Glyph[] ) {
+
+		this._glyph = glyph;
+		this.rule = rule;
+
+		this._output = this.encode( rule );
+	};
+
+
+	get glyph() {
+
+		return this._glyph;
+	}
+
+	get output() {
+
+		return this._output;
 	}
 
 
-	set sucessor( value: any ) {
+	encode( sequence: Array<Glyph> ): string {
 
-		this._sucessor = value
-	}
+		const _str = sequence.map( (g) => {
 
+			return g.symbol;
 
-	get sucessor(): any {
+		}).join('');
 
-		return this._sucessor
-	}
-
-
-	set predecessor( value: any ) {
-
-		this._predecessor = value
-	}
-
-	get predecessor(): any {
-
-		return this._predecessor
-	}
+		return _str;
+	};
 
 
-	set probability( value: number ) {
-
-		this._probability = value
-	}
+	abstract process( params?: Array<number>, context?:any ): void;
 
 
-	get probability(): number {
+	read( params?: string, context?: any ) {
 
-		return this._probability
-	}
+		if ( params && context === 'parameter?' ) {
 
+			if ( params === '(') { return true }
+			else { return false }
 
-	protected nRule( value: string ): any {};
+		} else if ( params ) {
 
-	protected tRule( value: string ): any {};
+			const _params = params.split(',').map( (p) => Number.parseFloat(p) );
 
-	protected postProcess( values: string[] ): void {};
-
-	protected preProcess( values: string[] ): void {};
-
-	protected preSequence(): void {};
-
-	protected sequence(): void {};
-
-	protected postSequence(): void {};
-
-	protected generateSequence() {
-
-		this._sequence = `${this.preSequence()}${this.sequence()}${this.postSequence()}`
-
-		return this._sequence;
-	}
-
-	protected writeDirection(repeatCount?: number): string {
-
-		const validRepeatCount = Number.isInteger(repeatCount) && repeatCount !== 0 ? repeatCount : 1;
-
-		const direction = this.direction === 1 ? '+' : '-';
-		const reversedDirection = this.direction === 1 ? '-' : '+';
-
-		if (validRepeatCount !== undefined && validRepeatCount > 0) {
-
-	    	return S(direction).repeat(validRepeatCount).toString();
-
-		} else if (validRepeatCount !== undefined && validRepeatCount < 0) {
-
-	    	return S(reversedDirection).repeat(-validRepeatCount).toString();
-
-		} else {
-
-	    	return '';
+			this.process( _params );
 		}
-	}
-
-	protected encodeDirection(): string {
-
-		if ( this.direction !== null && Number.isInteger(this.direction) ) {
-
-			return `${this.direction}`
-
-		} else {
-
-			return ''
-		}
-	}
+	};
 
 
-	public process( values: string[], iteration: number ): void {};
+	write( context?: any ): string {
 
+		return this._output;
+	};
 
-	public seed( nValue: number, tValue: number ): void {
-
-		this.n = nValue || this.n;
-		this.t = tValue || this.t;
-
-	}
-
-
-	public count(): void {
-
-		this.counter++
-	}
-
-
-	public wrap( input: string ) {
-
-		this._sequence = input.charAt(0) + this._sequence + ( input.charAt(1) ? input.charAt(1) : input.charAt(0) )
-
-		return this
-	}
-
-	public prepend( input: string ) {
-
-		this._sequence = input + this._sequence
-
-		return this
-	}
-
-	public append( input: string ) {
-
-		this._sequence += input
-
-		return this
-	}
-
-	public scramble(): void {
-
-		// TODO
-
-	}
-
-	public output(): string {
-
-		return this.generateSequence()
-	}
 }
 
-
-export default Production
+export default Production;
 
 
