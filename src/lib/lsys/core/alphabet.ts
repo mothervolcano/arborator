@@ -156,7 +156,7 @@ class Alphabet implements IAlphabet {
 	 * Retrieves a sequence of Glyph objects associated with the provided string of symbols.
 	 */
 
-	public sequence( symbols: string ): Glyph[] {
+	public collect( symbols: string ): Glyph[] {
 
 		if ( symbols.length > 1 ) {
 

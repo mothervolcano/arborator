@@ -77,7 +77,7 @@ export interface IAlphabet {
   registerGlyph( type: GlyphType, entry: string ): void;
   glyph( symbol: string ): Glyph;
   rule( symbol: string ): Rule;
-  sequence( symbols: string ): Glyph[]
+  collect( symbols: string ): Glyph[]
 
 }
 
@@ -141,6 +141,7 @@ export interface IProduction {
   readonly glyph: Glyph;
   readonly output: string;
   read( params?: string | null, context?: any ): boolean | void;
+  compose( str: string ): void;
   process( params: Array<number>, context?: any ): void;
   encode( sequence: Array<Glyph> ): string;
   write( context?: any ): string;

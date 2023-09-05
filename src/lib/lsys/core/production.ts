@@ -4,18 +4,27 @@ import { IProduction, GlyphType, Glyph, Rule, Instruction, Marker, IModel } from
 abstract class Production implements IProduction {
 
 	protected _glyph: Glyph;
-	protected rule: Glyph[];
+	protected dialect: Glyph[]; 
+	protected _rule: Glyph[];
 	protected _output: string;
 
 
-	constructor( glyph: Glyph, rule: Glyph[] ) {
+	constructor( glyph: Glyph, dialect?: Glyph[] ) {
 
 		this._glyph = glyph;
-		this.rule = rule;
+		this.dialect = dialect || [];
 
-		this._output = this.encode( rule );
+		this._rule = dialect ? [] : [ glyph ];
+		this._output = dialect ? '' : this.encode( [ glyph ] );
+
+		return this;
 	};
 
+
+	get rule() {
+
+		return this._rule;
+	}
 
 	get glyph() {
 
@@ -26,6 +35,26 @@ abstract class Production implements IProduction {
 
 		return this._output;
 	}
+
+
+	decode( str: string ): Glyph[] {
+
+		const sequence = str.split('').map( (char) => { 
+
+			const glyph = this.dialect.find( (g) => g.symbol === char );
+
+			if ( glyph ) {
+
+				return glyph
+
+			} else {
+
+				throw new Error(`${char} it's not part of this production dialect`);
+			}
+		});
+
+		return sequence;
+	};
 
 
 	encode( sequence: Array<Glyph> ): string {
@@ -39,7 +68,7 @@ abstract class Production implements IProduction {
 		return _str;
 	};
 
-
+	abstract compose( str: string ): void;
 	abstract process( params?: Array<number>, context?:any ): void;
 
 
