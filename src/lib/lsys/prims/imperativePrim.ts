@@ -1,9 +1,9 @@
 import BasePrim from "./basePrim";
 
-import { Glyph, ImperativeType, PrimType } from "../lsys";
+import { Glyph, Imperative, PrimType } from "../lsys";
 
 
-class Imperative extends BasePrim<Glyph> implements ImperativeType {
+class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 
 	public type: 'Imperative' = 'Imperative';
 
@@ -86,14 +86,14 @@ class Imperative extends BasePrim<Glyph> implements ImperativeType {
 
 	}
 
-	public clone(): Imperative {
+	public clone(): ImperativePrim {
     	
-    	const cloned = new Imperative(this._value);
+    	const cloned = new ImperativePrim(this._value);
 
     	return cloned;
 	}
 }
 
 
-export default Imperative;
+export default ImperativePrim;
 

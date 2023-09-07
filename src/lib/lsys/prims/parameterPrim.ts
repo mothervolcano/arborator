@@ -1,9 +1,9 @@
 import BasePrim from "./basePrim";
 
-import { ParameterType, Prim, PrimType } from "../lsys";
+import { Parameter, Prim, PrimType } from "../lsys";
 
 
-class Parameter extends BasePrim<number> implements ParameterType {
+class ParameterPrim extends BasePrim<number> implements Parameter {
 
 	public type: 'Parameter' = 'Parameter';
 
@@ -64,14 +64,14 @@ class Parameter extends BasePrim<number> implements ParameterType {
 		}
 	}
 
-	public clone(): Parameter {
+	public clone(): ParameterPrim {
     	
-    	const cloned = new Parameter(this._value);
+    	const cloned = new ParameterPrim(this._value);
 
     	return cloned;
 	}
 }
 
 
-export default Parameter;
+export default ParameterPrim;
 

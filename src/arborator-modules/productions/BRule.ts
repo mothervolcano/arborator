@@ -1,7 +1,7 @@
 import Production from "../../lib/lsys/core/production";
 import { Glyph, Prim, Rule } from "../../lib/lsys/lsys";
-import Imperative from "../../lib/lsys/prims/imperative";
-import Parameter from "../../lib/lsys/prims/parameter";
+import ImperativePrim from "../../lib/lsys/prims/imperativePrim";
+import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 
 
 // K[K]B
@@ -17,9 +17,9 @@ class BRule extends Production {
 
 		super(glyph, dialect);
 
-		this.addPrim(new Parameter());
-		this.addPrim(new Parameter());
-		this.dirPrim = this.addPrim(new Imperative( dialect[2] ));
+		this.addPrim(new ParameterPrim());
+		this.addPrim(new ParameterPrim());
+		this.dirPrim = this.addPrim(new ImperativePrim( dialect[2] ));
 	}
 
 

@@ -19,7 +19,7 @@ export type PrimType = 'Parameter' | 'Flag' | 'Imperative';
 
 
 // The interface for Parameters specifically
-export interface ParameterType extends IPrim<number> {
+export interface Parameter extends IPrim<number> {
   type: 'Parameter';
   value: number;
   set(val: number): this;
@@ -30,7 +30,19 @@ export interface ParameterType extends IPrim<number> {
 }
 
 // The interface for Parameters specifically
-export interface ImperativeType extends IPrim<Glyph> {
+export interface Flag extends IPrim<number> {
+  type: 'Parameter';
+  value: number;
+  set(val: number): this;
+  recast(str: string): this;
+  read(str: string): number;
+  write(): string;
+  clone(): any;
+}
+
+
+// The interface for Parameters specifically
+export interface Imperative extends IPrim<Glyph> {
   type: 'Imperative';
   value: Glyph;
   set(val: Glyph): this;
@@ -41,7 +53,7 @@ export interface ImperativeType extends IPrim<Glyph> {
 }
 
 
-export type Prim = ParameterType | ImperativeType
+export type Prim = Parameter | Flag | Imperative
 
 /**
  * 

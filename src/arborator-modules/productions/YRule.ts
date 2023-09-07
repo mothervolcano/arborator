@@ -1,7 +1,7 @@
 import Production from "../../lib/lsys/core/production";
-import { Glyph, ImperativeType, ParameterType, Prim, Rule } from "../../lib/lsys/lsys";
-import Imperative from "../../lib/lsys/prims/imperative";
-import Parameter from "../../lib/lsys/prims/parameter";
+import { Glyph, Imperative, Parameter, Prim, Rule } from "../../lib/lsys/lsys";
+import ImperativePrim from "../../lib/lsys/prims/imperativePrim";
+import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 
 
 // [+B][-B]
@@ -9,17 +9,17 @@ import Parameter from "../../lib/lsys/prims/parameter";
 class YRule extends Production {
 
 	private prims: Prim[] = [];
-	private countPrim: ParameterType;
-	private accPrim: ParameterType;
-	private dirPrim: ImperativeType;
+	private countPrim: Parameter;
+	private accPrim: Parameter;
+	private dirPrim: Imperative;
 
 	constructor( glyph: Rule, dialect: Glyph[] ) {
 
 		super( glyph, dialect );
 
-		this.countPrim = this.addPrim<ParameterType>(new Parameter(1));
-		this.accPrim = this.addPrim<ParameterType>(new Parameter(3));
-		this.dirPrim = this.addPrim<ImperativeType>( new Imperative() );
+		this.countPrim = this.addPrim<Parameter>(new ParameterPrim(1));
+		this.accPrim = this.addPrim<Parameter>(new ParameterPrim(3));
+		this.dirPrim = this.addPrim<Imperative>( new ImperativePrim() );
 	}
 
 
