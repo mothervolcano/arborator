@@ -1,24 +1,18 @@
-import { Glyph, Prim, PrimType } from "../lsys";
+import { Glyph, IPrim, Prim, PrimType } from "../lsys";
 
 
 
-abstract class basePrim implements Prim {
+abstract class BasePrim<T> implements IPrim<T> {
 
-	private _type: PrimType;
 	private _prefix: string;
-	abstract value: number | string | Glyph | undefined;
+	// abstract type: PrimType;
+	abstract value: T;
 
-	constructor ( type: PrimType, prefix: string ) {
+	constructor ( prefix: string ) {
 
-		this._type = type;
 		this._prefix = prefix;
 
 		return this;
-	}
-
-	get type() {
-
-		return this._type;
 	}
 
 	get prefix() {
@@ -26,12 +20,14 @@ abstract class basePrim implements Prim {
 		return this._prefix;
 	}
 
-	abstract set(val: number | string | Glyph | undefined ): this;
+	abstract set(val: T ): this;
 	abstract recast(str: string): this;
-	abstract read( str: string ): number | string | Glyph;
+	abstract read( str: string ): T;
 	abstract write(): string;
-	abstract clone(): any;
+	
+	// Generic clone method. The actual return type will be hardcoded in each subclass.
+  	public abstract clone(): any;
 
 }
 
-export default basePrim;
+export default BasePrim;

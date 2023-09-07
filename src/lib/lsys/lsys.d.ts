@@ -1,21 +1,47 @@
 
-export type PrimType = 'Parameter' | 'Flag' | 'Imperative';
 export type GlyphType = 'Rule' | 'Instruction' | 'Marker';
 
 
 
-export interface Prim {
-
+// The base interface for all Prims
+export interface IPrim<T> {
   readonly prefix: string;
-  value: number | string | Glyph | undefined;
-  set( val: number | string | Glyph | undefined ): void;
-  recast( str: string ): void;
-  read( str: string ): number | string | Glyph;
+  value: T;
+  set(val: T): this;
+  recast(str: string): this;
+  read(str: string): T;
   write(): string;
-  clone(): this;
-
+  clone(): T;
 }
 
+
+export type PrimType = 'Parameter' | 'Flag' | 'Imperative';
+
+
+// The interface for Parameters specifically
+export interface ParameterType extends IPrim<number> {
+  type: 'Parameter';
+  value: number;
+  set(val: number): this;
+  recast(str: string): this;
+  read(str: string): number;
+  write(): string;
+  clone(): any;
+}
+
+// The interface for Parameters specifically
+export interface ImperativeType extends IPrim<Glyph> {
+  type: 'Imperative';
+  value: Glyph;
+  set(val: Glyph): this;
+  recast(str: string): this;
+  read(str: string): Glyph;
+  write(): string;
+  clone(): any;
+}
+
+
+export type Prim = ParameterType | ImperativeType
 
 /**
  * 

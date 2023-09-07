@@ -1,16 +1,17 @@
-import basePrim from "./basePrim";
+import BasePrim from "./basePrim";
 
-import { Glyph, PrimType } from "../lsys";
+import { Glyph, ImperativeType, PrimType } from "../lsys";
 
 
-class Imperative extends basePrim {
+class Imperative extends BasePrim<Glyph> implements ImperativeType {
 
+	public type: 'Imperative' = 'Imperative';
 
 	private _value: Glyph | undefined;
 
 	constructor( value?: Glyph ) {
 
-		super( 'Imperative', '!' );
+		super( '!' );
 
 		this._value = value;
 	}

@@ -1,16 +1,17 @@
-import basePrim from "./basePrim";
+import BasePrim from "./basePrim";
 
-import { Prim, PrimType } from "../lsys";
-
-
-class Parameter extends basePrim {
+import { ParameterType, Prim, PrimType } from "../lsys";
 
 
-	private _value: number | undefined;
+class Parameter extends BasePrim<number> implements ParameterType {
 
-	constructor( value?: number ) {
+	public type: 'Parameter' = 'Parameter';
 
-		super( 'Parameter', '=' );
+	private _value;
+
+	constructor( value: number = 0) {
+
+		super( '=' );
 
 		this._value = value;
 	}

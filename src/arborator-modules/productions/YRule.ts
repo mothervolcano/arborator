@@ -1,5 +1,5 @@
 import Production from "../../lib/lsys/core/production";
-import { Glyph, Prim, Rule } from "../../lib/lsys/lsys";
+import { Glyph, ImperativeType, ParameterType, Prim, Rule } from "../../lib/lsys/lsys";
 import Imperative from "../../lib/lsys/prims/imperative";
 import Parameter from "../../lib/lsys/prims/parameter";
 
@@ -9,25 +9,25 @@ import Parameter from "../../lib/lsys/prims/parameter";
 class YRule extends Production {
 
 	private prims: Prim[] = [];
-	private countPrim: Prim;
-	private accPrim: Prim;
-	private dirPrim: Prim;
+	private countPrim: ParameterType;
+	private accPrim: ParameterType;
+	private dirPrim: ImperativeType;
 
 	constructor( glyph: Rule, dialect: Glyph[] ) {
 
 		super( glyph, dialect );
 
-		this.countPrim = this.addPrim(new Parameter(1));
-		this.accPrim = this.addPrim(new Parameter(3));
-		this.dirPrim = this.addPrim( new Imperative() );
+		this.countPrim = this.addPrim<ParameterType>(new Parameter(1));
+		this.accPrim = this.addPrim<ParameterType>(new Parameter(3));
+		this.dirPrim = this.addPrim<ImperativeType>( new Imperative() );
 	}
 
 
-	private addPrim(prim: any & Prim) {
+	private addPrim<T>(prim: Prim ) {
 
 		this.prims.push(prim);
 
-		return prim;
+		return prim as T;
 	}
 
 
@@ -74,7 +74,7 @@ class YRule extends Production {
 			} else if ( g.type === 'Rule' ) {
 
 				const substitute = this.dialect.find( (g) => g.symbol === symbolToggle );
-				if ( substitute ) this.dirPrim.set( this.dialect.find( (g) => g.symbol === symbolToggle ) );
+				if ( substitute ) this.dirPrim.set( substitute );
 				// else this.dirPrim.set();
 
 				g.params = [ this.countPrim, this.accPrim, this.dirPrim.clone() ];
