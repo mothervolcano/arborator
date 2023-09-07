@@ -19,7 +19,7 @@ class Composer implements IComposer {
 
 		this.thread = [];
 		this.strip = [];
-		this.window = 10;
+		this.window = 15;
 		this.currentIndex = 0;
 
 	};
@@ -70,24 +70,24 @@ class Composer implements IComposer {
 
 		      // Handle incomplete string, maybe allow for retries or log for debugging
 
-				return '';
+				throw new Error(`Incomplete parameter string: ${str}`);
 
 		    } else if (error instanceof EmptyStringException) {
 
 		      // Handle empty string, maybe fail gracefully or log the error
 
-		    	return '';
+		    	throw new Error(`Empty string: ${str}`);
 
 		    } else if (error instanceof NoParametersFoundException) {
 
 		      // Handle when no parameters are found
 
-		    	return '';
+		    	throw new Error(`No parameters found: ${str}`);
 
 		    } else {
 
 		      // Unhandled error
-		      throw new Error(`Failed to parse parameters in string: ${str}`);
+		      throw new Error(`! Failed to parse parameters in string: ${str}`);
     		}
 
 		}
@@ -125,17 +125,26 @@ class Composer implements IComposer {
 
 					if ( product.read( nextChar, 'parameter?' ) ) {
 						
-						const paramString = this.extractParameters( '' );
-						// const paramString = this.extractParameters( this.strip.join('') );
+						const paramString = this.extractParameters( this.strip.join('') );
+
+						// console.log(`COMPOSER: extracted parameters: ${paramString}`);
 
 						if ( paramString ) {
 							
 							product.read( paramString );
-							this.next( paramString.length );
+							this.next( paramString.length+2 );
+
+						} else {
+
+							// TODO: think what to do here
 						}
+
+					} else {
+
+						product.read();
 					}
 
-					nextThread.push(...product.write().split(''));
+					nextThread.push( ...product.write().split('') );
 				}
 
 				this.next();
@@ -151,8 +160,8 @@ class Composer implements IComposer {
 			this.thread = nextThread;
 
 
-			// console.log(`---> ${ _thread }`)
-			// console.log(`.............................`)
+			console.log(`${i} -> ${ nextThread.join('') }`)
+			console.log(`.............................`)
 
 		}
 

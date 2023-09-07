@@ -18,7 +18,7 @@ import { reset, initModel, generate, regenerate, draw } from './arborator';
 
 const defaultParamSchema = [
 
-	{ id: 'mkp1', name: 'iterationsNum', value: 5, range: [2, 10], step: 1, label: "P1", },
+	{ id: 'mkp1', name: 'iterationsNum', value: 7, range: [2, 10], step: 1, label: "P1", },
 	{ id: 'mkp2', name: 'empty', value: 3, range: [1, 10], step: 1, label: "P2", },
 	{ id: 'mkp5', name: 'scaleCtrl', value: 1, range: [1, 3], step: 0.01, label: "P3", },
 	{ id: 'mkp3', name: 'lenghtReductionFactorCtrl', value: 1, range: [0, 2], step: 0.01, label: "P4", },
@@ -100,27 +100,21 @@ const UI = () => {
 
 	useEffect(() => { 
 
-		if (isPaperLoaded) {
+		if ( isPaperLoaded && currentModel !== null ) {
 
 			const _modelParams: any = {};
 
-			if (currentModel === null) {
+			Array.from(currentModel.params.values()).forEach((p: any) => {
 
-				// TODO: error message
+				_modelParams[p.name] = p.value;
+			});
 
-			} else {
+			console.log(`USE EFFECT: draw()`);
 
-				Array.from(currentModel.params.values()).forEach((p: any) => {
-
-					_modelParams[p.name] = p.value;
-				});
-
-				reset();
-				draw(scaleCtrl, _modelParams);
-			}
+			draw(scaleCtrl, _modelParams);
 		}
 
-	}, [currentModel, paramsForModel]);
+	}, [ paramsForModel ]);
 
 
 
@@ -139,12 +133,11 @@ const UI = () => {
 				_modelParams[p.name] = p.value; 
 
 			});
-			
 
-			reset();
+			console.log(`GENERATE HANDLER: initModel() + generate()`);
+			
 			initModel(selectedModel.option)
 			generate(_modelParams);
-			draw(scaleCtrl, _modelParams);
 
 			setCurrentModel(selectedModel);
 			setParamsForModel(selectedModel.params);

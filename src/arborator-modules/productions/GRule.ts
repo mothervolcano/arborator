@@ -9,12 +9,21 @@ class GRule extends Production {
 
 	constructor( glyph: Rule ) {
 
-		super( glyph, [ glyph ] );
+		super( glyph );
+	}
+
+	public compose( rule: string ) {
+
+		this._rule = this.decode( rule );
+
+		return this;
+
 	}
 
 	public process() {
 
 
+		this._output = this.encode( this._rule );
 	}
 
 }

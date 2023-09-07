@@ -6,6 +6,7 @@ abstract class Production implements IProduction {
 	protected _glyph: Glyph;
 	protected dialect: Glyph[]; 
 	protected _rule: Glyph[];
+	protected _sequence: Glyph[];
 	protected _output: string;
 
 
@@ -13,6 +14,7 @@ abstract class Production implements IProduction {
 
 		this._glyph = glyph;
 		this.dialect = dialect || [];
+		this._sequence = [];
 
 		this._rule = dialect ? [] : [ glyph ];
 		this._output = dialect ? '' : this.encode( [ glyph ] );
@@ -59,17 +61,32 @@ abstract class Production implements IProduction {
 
 	encode( sequence: Array<Glyph> ): string {
 
-		const _str = sequence.map( (g) => {
+		const series = sequence.map( (g) => {
 
-			return g.symbol;
+			if ( g.type==='Rule' && g.params?.length ) {
+
+				const paramSeries = g.params.map( (p) => {
+
+					return p.write();
+
+				});
+
+				return `${g.symbol}(${paramSeries.join(',')})`;
+
+			} else {
+				
+				return g.symbol;
+			}	
 
 		}).join('');
 
-		return _str;
+		// console.log(`ENCODED ${this._glyph.symbol} with: ${_str}`);
+
+		return series;
 	};
 
 	abstract compose( str: string ): void;
-	abstract process( params?: Array<number>, context?:any ): void;
+	abstract process( params?: string, context?:any ): void;
 
 
 	read( params?: string, context?: any ) {
@@ -79,16 +96,17 @@ abstract class Production implements IProduction {
 			if ( params === '(') { return true }
 			else { return false }
 
-		} else if ( params ) {
+		} else {
 
-			const _params = params.split(',').map( (p) => Number.parseFloat(p) );
-
-			this.process( _params );
+			this.process( params );
 		}
+		
 	};
 
 
 	write( context?: any ): string {
+
+		// console.log(`WRITING ${this._glyph.symbol} with: ${this._output}`);
 
 		return this._output;
 	};

@@ -1,50 +1,97 @@
 import Production from "../../lib/lsys/core/production";
-import { Glyph, Rule } from "../../lib/lsys/lsys";
-
-
-
+import { Glyph, Prim, Rule } from "../../lib/lsys/lsys";
+import Imperative from "../../lib/lsys/prims/imperative";
+import Parameter from "../../lib/lsys/prims/parameter";
 
 
 // [+B][-B]
-// [+B]-
-
 
 class YRule extends Production {
 
-	private l: Glyph;
-	private r: Glyph;
-	private g: Glyph;
-	private open: Glyph;
-	private close: Glyph;
+	private prims: Prim[] = [];
+	private countPrim: Prim;
+	private accPrim: Prim;
+	private dirPrim: Prim;
 
-	private chart: any = {
+	constructor( glyph: Rule, dialect: Glyph[] ) {
 
-		'+': null,
-		'-': null,
-		'[': null,
-		']': null
+		super( glyph, dialect );
+
+		this.countPrim = this.addPrim(new Parameter(1));
+		this.accPrim = this.addPrim(new Parameter(3));
+		this.dirPrim = this.addPrim( new Imperative() );
 	}
 
-	constructor( glyph: Rule, base: Glyph[] ) {
 
-		super( glyph, base );
+	private addPrim(prim: any & Prim) {
 
-		this.chart['+'] = base[1]
+		this.prims.push(prim);
 
-		this.l = base[1];
-		this.r = base[4];
-		this.g = base[2];
-		this.open = base[0];
-		this.close = base[3];
-
+		return prim;
 	}
 
-	public process( params: Array<number> ) {
 
+	public compose( rule: string ) {
 
+		this._rule = this.decode( rule );
 
+		return this;
 	}
 
+	public process( params?: string ) {
+
+		console.log(`PROCESSING Y RULE... ${params}`)
+
+
+		// --------------------------------------------------------
+		// 1 Parse the parameters
+
+
+		let parsedParams: Prim[] = []
+
+		if ( params ) {
+
+			// const _params = params.split(',').map( (p) => Number.parseFloat(p) );
+
+		}
+
+		// --------------------------------------------------------
+		// 2  Create the rule sequence
+
+		
+		let sequence: Glyph[] = [];
+
+		let symbolToggle: string = '+';
+
+		for ( const g of this._rule ) {
+
+			if ( g.type === 'Marker' && g.symbol === '*' ) {
+
+				const substitute = this.dialect.find( (g) => g.symbol === symbolToggle );
+
+				if ( substitute ) sequence.push( substitute );
+
+			} else if ( g.type === 'Rule' ) {
+
+				const substitute = this.dialect.find( (g) => g.symbol === symbolToggle );
+				if ( substitute ) this.dirPrim.set( this.dialect.find( (g) => g.symbol === symbolToggle ) );
+				// else this.dirPrim.set();
+
+				g.params = [ this.countPrim, this.accPrim, this.dirPrim.clone() ];
+				
+				symbolToggle = symbolToggle === '+' ? '-' : '+'; 
+				
+				sequence.push( {...g} );
+
+			} else {
+
+				sequence.push( g );
+			}
+		}
+		
+		this._output = this.encode( sequence );
+	}
 }
 
 export default YRule;
+

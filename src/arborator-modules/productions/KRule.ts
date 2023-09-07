@@ -4,8 +4,7 @@ import { Glyph, Rule } from "../../lib/lsys/lsys";
 
 
 
-
-class IRule extends Production {
+class KRule extends Production {
 
 
 	constructor( glyph: Rule, dialect: Glyph[] ) {
@@ -23,7 +22,7 @@ class IRule extends Production {
 
 	public process( params?: string ) {
 
-		// console.log(`PROCESSING I RULE... ${params}`)
+		// console.log(`PROCESSING K RULE... ${params}`)
 
 		if ( params ) {
 
@@ -36,4 +35,4 @@ class IRule extends Production {
 	}
 }
 
-export default IRule;
+export default KRule;

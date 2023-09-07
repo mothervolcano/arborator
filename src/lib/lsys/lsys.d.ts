@@ -1,6 +1,20 @@
 
-
+export type PrimType = 'Parameter' | 'Flag' | 'Imperative';
 export type GlyphType = 'Rule' | 'Instruction' | 'Marker';
+
+
+
+export interface Prim {
+
+  readonly prefix: string;
+  value: number | string | Glyph | undefined;
+  set( val: number | string | Glyph | undefined ): void;
+  recast( str: string ): void;
+  read( str: string ): number | string | Glyph;
+  write(): string;
+  clone(): this;
+
+}
 
 
 /**
@@ -17,7 +31,7 @@ export interface Rule {
 
   type: 'Rule';
   symbol: string;
-  params: number[];
+  params: Prim[];
 
 }
 
@@ -142,7 +156,7 @@ export interface IProduction {
   readonly output: string;
   read( params?: string | null, context?: any ): boolean | void;
   compose( str: string ): void;
-  process( params: Array<number>, context?: any ): void;
+  process( params?: string, context?: any ): void;
   encode( sequence: Array<Glyph> ): string;
   write( context?: any ): string;
 

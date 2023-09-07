@@ -1,14 +1,25 @@
 import Command from "../../lib/lsys/core/command";
 import Model from "../../lib/lsys/core/model";
-import { IAlphabet } from "../../lib/lsys/lsys";
+import { IAlphabet, IProduction } from "../../lib/lsys/lsys";
 import GRule from "../productions/GRule"
 import IRule from "../productions/IRule"
 import YRule from "../productions/YRule"
+import BRule from "../productions/BRule"
+import KRule from "../productions/KRule"
 
 
 
 class Tree extends Model {
 
+
+	private states: any[];
+
+	private scale: number;
+	private lengthReductionFactor: number;
+	private length: number;
+	private angle: number;
+	private angleRotationStep: number;
+	private radius: number;
 	
 
 	constructor( alphabet: IAlphabet, axiom: string ) {
@@ -16,12 +27,22 @@ class Tree extends Model {
 		super( alphabet, axiom );
 
 
+		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('TYI') ).compose('TYI'); 
+		const Y: IProduction = new YRule( alphabet.rule('Y'), alphabet.collect('*[]+-B') ).compose('[*B][*B]');
+		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BK') ).compose('K[K]B');
+		const K: IProduction = new KRule( alphabet.rule('K'), alphabet.collect('+-Kf') ).compose('Kf');
 		const G: IProduction = new GRule( alphabet.rule('G') );
-		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.sequence('TYI') ); 
-		const Y: IProduction = new YRule( alphabet.rule('Y'), alphabet.sequence('[+B][-B]') );
+
+		this.addProduction(I);
+		this.addProduction(Y);
+		this.addProduction(B);
+		this.addProduction(K);
+		this.addProduction(G);
 
 
 		// ---------------------------------------------------------------------
+
+		this.states = [];
 
 		this.scale = 1;
 		this.lengthReductionFactor = 1;
@@ -39,7 +60,9 @@ class Tree extends Model {
 
 		const moveForward = (tool: any, context?: any) => {
 
-			tool.forward(this.distance * this.lengthCtrl1);
+			// console.log(`COMMAND: f --> ${this.length} / ${tool.position()}`);
+
+			tool.forward( this.length );
 		};
 
 
@@ -92,3 +115,4 @@ class Tree extends Model {
 
 
 export default Tree
+
