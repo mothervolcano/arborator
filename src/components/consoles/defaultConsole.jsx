@@ -9,17 +9,20 @@ const DefaultConsole = ({
 	inputHandler
 
 }) => {
+
 		
 	function handleInput( value, id ) {
 
-		const updatedParams = params.slice();
-
-		updatedParams.map( (item) => {
+		const updatedParams = params.map( (item) => {
 
 			if ( item.id === id ) {
+			
+				console.log(`!!!!!! INPUT VALUE ID: ${id} / ${value}`)
 
-				item.value = value;
+				return { ...item, value: value };
 			}
+
+			return { ...item };
 		});	
 
 		inputHandler( updatedParams );
