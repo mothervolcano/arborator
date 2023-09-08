@@ -1,4 +1,6 @@
-import { IProduction, GlyphType, Glyph, Rule, Instruction, Marker, IModel } from '../lsys';
+import { IProduction, GlyphType, Glyph, Rule, Instruction, Marker, IModel, Prim, Imperative } from '../lsys';
+import ImperativePrim from '../prims/imperativePrim';
+import ParameterPrim from '../prims/parameterPrim';
 
 
 abstract class Production implements IProduction {
@@ -8,6 +10,7 @@ abstract class Production implements IProduction {
 	protected _rule: Glyph[];
 	protected _sequence: Glyph[];
 	protected _output: string;
+	protected prims: Array<Prim> = [];
 
 
 	constructor( glyph: Glyph, dialect?: Glyph[] ) {
@@ -51,7 +54,7 @@ abstract class Production implements IProduction {
 
 			} else {
 
-				throw new Error(`${char} it's not part of this production dialect`);
+				throw new Error(`${char} it's not part of this ${this._glyph.symbol} production dialect`);
 			}
 		});
 
@@ -85,8 +88,39 @@ abstract class Production implements IProduction {
 		return series;
 	};
 
-	abstract compose( str: string ): void;
+	abstract compose( ...str: string[] ): void;
 	abstract process( params?: string, context?:any ): void;
+
+
+	addPrim( input: Prim | string, save: boolean = true ): Prim {
+
+		let prim: Prim;
+
+		if ( typeof input === 'string' ) {
+
+			switch(input) {
+
+			case '!': 
+				prim = new ImperativePrim();
+				break;
+
+			case '=':
+				prim = new ParameterPrim();
+				break;
+
+				default: throw new Error(`Failed to add Prim to Production. ${input} doesn't match the prefix of any valid Prim`);
+			}
+
+		} else {
+
+			prim = input;
+
+		}
+
+		if ( save ) { this.prims.push(prim); }
+
+		return prim;	
+	}
 
 
 	read( params?: string, context?: any ) {

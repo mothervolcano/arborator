@@ -9,6 +9,7 @@ import Composer from './lib/lsys/core/composer';
 
 
 import Tree from './arborator-modules/models/tree';
+import Test from './arborator-modules/models/test';
 import Turtle from './lib/lsys/tools/turtle';
 
 let view: any
@@ -19,7 +20,8 @@ let tree: any
 let model: IModel;
 let alphabet: IAlphabet;
 let composer: IComposer;
-let sequence: Generator<ICommand, void, unknown>;
+// let sequence: Generator<ICommand, void, unknown>;
+let sequence: ICommand[];
 let pen: any;
 
 
@@ -45,11 +47,15 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Rule', 'B' );
   alphabet.registerGlyph( 'Rule', 'K' );
   alphabet.registerGlyph( 'Rule', 'G' );
+  alphabet.registerGlyph( 'Rule', 'X' );
+  alphabet.registerGlyph( 'Rule', 'R' );
   alphabet.registerGlyph( 'Instruction', 'f' );
   alphabet.registerGlyph( 'Instruction', '+' );
   alphabet.registerGlyph( 'Instruction', '-' );
   alphabet.registerGlyph( 'Instruction', '[' );
   alphabet.registerGlyph( 'Instruction', ']' );
+  alphabet.registerGlyph( 'Instruction', 'i' );
+  alphabet.registerGlyph( 'Instruction', 'x' );
   alphabet.registerGlyph( 'Marker', '(' );
   alphabet.registerGlyph( 'Marker', ')' );
   alphabet.registerGlyph( 'Marker', ',' );
@@ -67,15 +73,18 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Marker', '*' );
   alphabet.registerGlyph( 'Marker', '!' );
   alphabet.registerGlyph( 'Marker', '=' );
+  alphabet.registerGlyph( 'Marker', '?' );
+  alphabet.registerGlyph( 'Marker', '_' );
 
 
   switch ( selectedModel ) {
 
     case 'DEFAULT':
-      model = new Tree( alphabet, 'I' );
+      model = new Test( alphabet, 'I' );
       break;
 
     case 'PINE':
+      model = new Tree( alphabet, 'I' );
       break;
   }
 
@@ -124,16 +133,19 @@ export function draw(
 
   const { lenghtReductionFactorCtrl, angleRotationStepCtrl } = params;
 
+  console.log(`DRAW! angleCtrl: ${angleRotationStepCtrl}`);
+
+  layer.removeChildren();
+
+  pen.init( origin.x, origin.y, -90 );
 
   for ( const command of sequence ) {
 
-      command.run( pen );
+      command.run( pen, angleRotationStepCtrl );
   }
-
 
   layer.position = origin;
 
-  pen.path().fullySelected = true;
 
   console.log(`Turtle path: ${pen.path().position}`)
 

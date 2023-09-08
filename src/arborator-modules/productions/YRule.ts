@@ -8,28 +8,19 @@ import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 
 class YRule extends Production {
 
-	private prims: Prim[] = [];
-	private countPrim: Parameter;
-	private accPrim: Parameter;
-	private dirPrim: Imperative;
+	private countPrim: Prim;
+	private accPrim: Prim;
+	private dirPrim: Prim;
 
 	constructor( glyph: Rule, dialect: Glyph[] ) {
 
 		super( glyph, dialect );
 
-		this.countPrim = this.addPrim<Parameter>(new ParameterPrim(1));
-		this.accPrim = this.addPrim<Parameter>(new ParameterPrim(3));
-		this.dirPrim = this.addPrim<Imperative>( new ImperativePrim() );
+		this.countPrim = this.addPrim(new ParameterPrim(1));
+		this.accPrim = this.addPrim(new ParameterPrim(3));
+		this.dirPrim = this.addPrim( new ImperativePrim() );
 	}
-
-
-	private addPrim<T>(prim: Prim ) {
-
-		this.prims.push(prim);
-
-		return prim as T;
-	}
-
+	
 
 	public compose( rule: string ) {
 
@@ -74,7 +65,7 @@ class YRule extends Production {
 			} else if ( g.type === 'Rule' ) {
 
 				const substitute = this.dialect.find( (g) => g.symbol === symbolToggle );
-				if ( substitute ) this.dirPrim.set( substitute );
+				if ( substitute && this.dirPrim.type === 'Imperative') this.dirPrim.set( substitute );
 				// else this.dirPrim.set();
 
 				g.params = [ this.countPrim, this.accPrim, this.dirPrim.clone() ];

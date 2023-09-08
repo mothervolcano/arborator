@@ -53,7 +53,7 @@ class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 			this._value = {
 
 				type: 'Marker',
-				symbol: str
+				symbol: str.substring(1)
 			}
 		}
 

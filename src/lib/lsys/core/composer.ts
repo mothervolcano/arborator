@@ -37,15 +37,15 @@ class Composer implements IComposer {
 	};
 
 
-	private next( skip?: number ) {
+	private next(skip?: number) {
 
-		if ( !skip ) {
+		if (!skip) {
 
 			this.currentIndex++;
 
 		} else {
 
-			this.currentIndex = Math.min( this.currentIndex + skip, this.thread.length );
+			this.currentIndex = Math.min(this.currentIndex + skip, this.thread.length);
 		}
 	}
 
@@ -57,47 +57,47 @@ class Composer implements IComposer {
 	};
 
 	
-	private extractParameters( str: string ) {
+	private extractParameters(str: string) {
 
 		try {
 
-			const paramString = getParameterString( str );
+			const paramString = getParameterString(str);
 			return paramString;
 
-		} catch ( error ) {
+		} catch (error) {
 
 			if (error instanceof IncompleteParameterStringException) {
 
-		      // Handle incomplete string, maybe allow for retries or log for debugging
+				// Handle incomplete string, maybe allow for retries or log for debugging
 
 				throw new Error(`Incomplete parameter string: ${str}`);
 
-		    } else if (error instanceof EmptyStringException) {
+			} else if (error instanceof EmptyStringException) {
 
-		      // Handle empty string, maybe fail gracefully or log the error
+				// Handle empty string, maybe fail gracefully or log the error
 
-		    	throw new Error(`Empty string: ${str}`);
+				throw new Error(`Empty string: ${str}`);
 
-		    } else if (error instanceof NoParametersFoundException) {
+			} else if (error instanceof NoParametersFoundException) {
 
-		      // Handle when no parameters are found
+				// Handle when no parameters are found
 
-		    	throw new Error(`No parameters found: ${str}`);
+				throw new Error(`No parameters found: ${str}`);
 
-		    } else {
+			} else {
 
-		      // Unhandled error
-		      throw new Error(`! Failed to parse parameters in string: ${str}`);
-    		}
+				// Unhandled error
+				throw new Error(`! Failed to parse parameters in string: ${str}`);
+			}
 
 		}
 	};
 
 
-	public compose( iterations: number, context?: any ): string {
+	public compose(iterations: number, context?: any): string {
 
 		
-		this.append( this.model.axiom );
+		this.append(this.model.axiom);
 
 
 		for (let i = 0; i < iterations; i++) {
@@ -112,27 +112,27 @@ class Composer implements IComposer {
 
 				// const currChar = this.thread.charAt( this.currentIndex );
 				// const nextChar = this.thread.charAt( this.currentIndex + 1 )				
-				const currChar = this.thread[ this.currentIndex ];
-				const nextChar = this.thread[ this.currentIndex + 1];
+				const currChar = this.thread[this.currentIndex];
+				const nextChar = this.thread[this.currentIndex + 1];
 
-				const product = this.model.read( currChar );
+				const product = this.model.read(currChar);
 
-				if ( typeof product === 'string' ) {
+				if (typeof product === 'string') {
 
 					nextThread.push(product);
 
 				} else { 
 
-					if ( product.read( nextChar, 'parameter?' ) ) {
+					if (product.read(nextChar, 'parameter?')) {
 						
-						const paramString = this.extractParameters( this.strip.join('') );
+						const paramString = this.extractParameters(this.strip.join(''));
 
 						// console.log(`COMPOSER: extracted parameters: ${paramString}`);
 
-						if ( paramString ) {
+						if (paramString) {
 							
-							product.read( paramString );
-							this.next( paramString.length+2 );
+							product.read(paramString);
+							this.next(paramString.length + 2);
 
 						} else {
 
@@ -144,7 +144,7 @@ class Composer implements IComposer {
 						product.read();
 					}
 
-					nextThread.push( ...product.write().split('') );
+					nextThread.push(...product.write().split(''));
 				}
 
 				this.next();
@@ -159,18 +159,81 @@ class Composer implements IComposer {
 
 			this.thread = nextThread;
 
-
 			console.log(`${i} -> ${ nextThread.join('') }`)
 			console.log(`.............................`)
-
 		}
 
+		let openMarkerIdx: number = -1;
+		let closeMarkerIdx: number = -1;
+
+		do {
+			openMarkerIdx = this.thread.findIndex((c) => c === '(');
+			closeMarkerIdx = this.thread.findIndex((c) => c === ')');
+
+			if (openMarkerIdx !== -1 && closeMarkerIdx !== -1) {
+
+				this.thread.splice(openMarkerIdx, closeMarkerIdx - openMarkerIdx + 1);
+
+			} else {
+				// If we either don't find an opening or a closing parenthesis, break out of the loop.
+				break;
+			}
+
+		} while (true);
+
+		// console.log('----> ' + this.thread.join(''));
+		
 		return this.thread.join('');
 	}
 
 
-	public *plot() {
+	// public *plot() {
 
+
+	// 	for (let i = 0; i < this.thread.length; i++) {
+
+	// 		// const currChar = this.thread.charAt(i);
+	// 		const currChar = this.thread[i];
+	// 		const glyph = this.model.alphabet.glyph(currChar);
+
+	// 		let command: ICommand | undefined;
+
+	// 		switch (glyph.type) {
+
+	// 			case 'Rule':
+
+	// 				command = this.model.hasCommand(glyph.symbol) ? this.model.getCommand(glyph.symbol) : undefined;
+        			
+	// 				if (command) {
+	// 					yield command;
+	// 				}
+
+	// 				break;
+
+	// 			case 'Instruction':
+
+	// 				command = this.model.hasCommand(glyph.symbol) ? this.model.getCommand(glyph.symbol) : undefined;
+       				
+	// 				if (command) {
+	// 					yield command;
+	// 				}
+        			
+	// 				break;
+
+	// 			case 'Marker':
+
+	// 				// ignore
+
+	// 				break;
+
+	// 			default: throw new Error(`Failed to execute. Probably invalid Glyph ${currChar}`)
+	// 		}
+	// 	}
+	// }
+
+	public plot() {
+
+		const sequence: ICommand[] = []
 
 		for (let i = 0; i < this.thread.length; i++) {
 
@@ -180,15 +243,15 @@ class Composer implements IComposer {
 
 			let command: ICommand | undefined;
 
-			switch( glyph.type ) {
+			switch (glyph.type) {
 
 				case 'Rule':
 
 					command = this.model.hasCommand(glyph.symbol) ? this.model.getCommand(glyph.symbol) : undefined;
         			
-        			if (command) {
-          				yield command;
-       				 }
+					if (command) {
+						sequence.push(command);
+					}
 
 					break;
 
@@ -196,9 +259,9 @@ class Composer implements IComposer {
 
 					command = this.model.hasCommand(glyph.symbol) ? this.model.getCommand(glyph.symbol) : undefined;
        				
-       				if (command) {
-          				yield command;
-       				}
+					if (command) {
+						sequence.push(command);
+					}
         			
 					break;
 
@@ -208,9 +271,11 @@ class Composer implements IComposer {
 
 					break;
 
-				default : throw new Error(`Failed to execute. Probably invalid Glyph ${ currChar }`)
+				default: throw new Error(`Failed to execute. Probably invalid Glyph ${currChar}`)
 			}
 		}
+
+		return sequence;
 	}
 
 	public reset() {

@@ -1,5 +1,5 @@
 import Production from "../../lib/lsys/core/production";
-import { Glyph, Rule } from "../../lib/lsys/lsys";
+import { Glyph, Prim, Rule } from "../../lib/lsys/lsys";
 
 
 
@@ -7,7 +7,7 @@ import { Glyph, Rule } from "../../lib/lsys/lsys";
 
 class IRule extends Production {
 
-
+	
 	constructor( glyph: Rule, dialect: Glyph[] ) {
 
 		super( glyph, dialect );

@@ -174,7 +174,8 @@ export interface IModel {
 export interface IComposer {
 
   compose( iterations: number, context?: any ): string;
-  plot(): Generator<ICommand, void, unknown>;
+  plot(): ICommand[];
+  // plot(): Generator<ICommand, void, unknown>;
   reset(): void;
 
 }
@@ -193,7 +194,8 @@ export interface IProduction {
   readonly glyph: Glyph;
   readonly output: string;
   read( params?: string | null, context?: any ): boolean | void;
-  compose( str: string ): void;
+  compose( ...str: string[] ): void;
+  addPrim( prim: Prim | string, save?: boolean ): Prim;
   process( params?: string, context?: any ): void;
   encode( sequence: Array<Glyph> ): string;
   write( context?: any ): string;

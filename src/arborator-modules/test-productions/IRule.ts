@@ -6,18 +6,13 @@ import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 
 // K[K]B
 
-class BRule extends Production {
+class IRule extends Production {
 
-
-	private dirPrim: Prim;
 
 	constructor(glyph: Rule, dialect: Glyph[]) {
 
 		super(glyph, dialect);
 
-		this.addPrim(new ParameterPrim());
-		this.addPrim(new ParameterPrim());
-		this.dirPrim = this.addPrim(new ImperativePrim( dialect[2] ));
 	}
 
 
@@ -40,22 +35,22 @@ class BRule extends Production {
 		
 		if (params) {
 			
-			console.log(`PROCESSING B RULE... ${params}`)
+			console.log(`PROCESSING I RULE... ${params}`)
 
-			parsedParams = params.split(',').map((s, i) => { 
+			// parsedParams = params.split(',').map((s, i) => { 
 
-				if (this.prims[i].read(s)) {
+			// 	if (this.prims[i].read(s)) {
 
-					this.prims[i].recast(s);
+			// 		this.prims[i].recast(s);
 
-					return this.prims[i];
+			// 		return this.prims[i];
 
-				} else {
+			// 	} else {
 
-					throw new Error(`Production is unable to process ${s} parameter`)
-				}
+			// 		throw new Error(`Production is unable to process ${s} parameter`)
+			// 	}
 
-			})	
+			// })	
 		}
 
 		// --------------------------------------------------------
@@ -79,12 +74,13 @@ class BRule extends Production {
 			}
 		}
 
-		const direction = this.dirPrim.value as Glyph;
+		// const direction = this.dirPrim.value as Glyph;
 
-		if (direction) sequence.unshift(direction);
+		// if (direction) sequence.unshift(direction);
 		
 		this._output = this.encode(sequence);
 	}
 }
 
-export default BRule;
+export default IRule;
+

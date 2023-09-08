@@ -27,8 +27,8 @@ class Tree extends Model {
 		super( alphabet, axiom );
 
 
-		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('TYI') ).compose('TYI'); 
-		const Y: IProduction = new YRule( alphabet.rule('Y'), alphabet.collect('*[]+-B') ).compose('[*B][*B]');
+		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('fYI') ).compose('fYI'); 
+		const Y: IProduction = new YRule( alphabet.rule('Y'), alphabet.collect('*[]+-Bf') ).compose('f[*B][*B]');
 		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BK') ).compose('K[K]B');
 		const K: IProduction = new KRule( alphabet.rule('K'), alphabet.collect('+-Kf') ).compose('Kf');
 		const G: IProduction = new GRule( alphabet.rule('G') );
@@ -68,6 +68,8 @@ class Tree extends Model {
 
 		const turnLeft = (tool: any, context?: any) => {
 
+			
+
 			tool.left(this.angleRotationStep)
 		};
 
@@ -78,6 +80,8 @@ class Tree extends Model {
 		};
 
 		const saveState = (tool: any, context?: any ) => {
+
+			console.log(`SAVE: [ --> ${this.states}`)
 
 			this.states.push( { 
 
@@ -90,6 +94,8 @@ class Tree extends Model {
 		};
 
 		const restoreState = ( tool: any, context?: any ) => {
+
+			console.log(`RESTORE: ] --> ${this.states}`)
 
 			let state = this.states.pop()
 			this.length = state.length
@@ -106,7 +112,7 @@ class Tree extends Model {
 		this.addCommand( new Command('+', turnLeft) );
 		this.addCommand( new Command('-', turnRight) );
 		this.addCommand( new Command('[', saveState) );
-		this.addCommand( new Command('[', restoreState) );
+		this.addCommand( new Command(']', restoreState) );
 
 
 	}

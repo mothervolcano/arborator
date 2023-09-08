@@ -48,7 +48,7 @@ class ParameterPrim extends BasePrim<number> implements Parameter {
 
 		} else {
 
-			throw new Error(`! ${str} can't be read by ${this.type} type of Prims`);
+			throw new Error(`${str} can't be read by ${this.type} type of Prims`);
 		}
 	}
 
