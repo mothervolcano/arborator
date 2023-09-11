@@ -21,7 +21,7 @@ let model: IModel;
 let alphabet: IAlphabet;
 let composer: IComposer;
 // let sequence: Generator<ICommand, void, unknown>;
-let sequence: ICommand[];
+let sequence: Array<[ICommand, string[]|null]>
 let pen: any;
 
 
@@ -95,7 +95,7 @@ export function initModel( selectedModel: string ) {
   pen.style = {
 
     strokeColor: 'black',
-    strokeWidth: 2
+    strokeWidth: 1
   }
 
   pen.init( origin.x, origin.y, -90 );
@@ -131,9 +131,9 @@ export function draw(
 
 ) {
 
-  const { lenghtReductionFactorCtrl, angleRotationStepCtrl } = params;
+  const { lengthCtrl, angleRotationStepCtrl } = params;
 
-  console.log(`DRAW! angleCtrl: ${angleRotationStepCtrl}`);
+  console.log(`DRAW! angleCtrl: ${lengthCtrl}`);
 
   layer.removeChildren();
 
@@ -141,7 +141,7 @@ export function draw(
 
   for ( const command of sequence ) {
 
-      command.run( pen, angleRotationStepCtrl );
+      command[0].run( pen, { length: lengthCtrl, angle: angleRotationStepCtrl, params: command[1] } );
   }
 
   layer.position = origin;

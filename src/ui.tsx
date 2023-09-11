@@ -18,10 +18,10 @@ import { reset, initModel, generate, regenerate, draw } from './arborator';
 
 const defaultParamSchema: Param[] = [
 
-	{ id: 'mkp1', name: 'iterationsNum', value: 8, range: [1, 10], step: 1, label: "P1", },
+	{ id: 'mkp1', name: 'iterationsNum', value: 3, range: [1, 10], step: 1, label: "P1", },
 	{ id: 'mkp5', name: 'scaleCtrl', value: 1, range: [1, 3], step: 0.01, label: "P3", },
-	{ id: 'mkp2', name: 'angleRotationStepCtrl', value: 15, range: [0, 60], step: 0.1, label: "P2", },
-	{ id: 'mkp3', name: 'lenghtReductionFactorCtrl', value: 1, range: [0, 2], step: 0.01, label: "P4", },
+	{ id: 'mkp2', name: 'angleRotationStepCtrl', value: 30, range: [0, 60], step: 0.1, label: "P2", },
+	{ id: 'mkp3', name: 'lengthCtrl', value: 1, range: [0.25, 5], step: 0.01, label: "P4", },
 	{ id: 'mkp4', name: 'empty', value: 15, range: [0, 30], step: 0.1, label: "P5", },
 	{ id: 'mkp6', name: 'empty', value: 1, range: [0, 2], step: 0.01, label: "P6", },
 	{ id: 'mkp7', name: 'empty', value: 1, range: [0, 2], step: 0.01, label: "P7", },
@@ -111,7 +111,7 @@ const UI = () => {
 
 
 			// console.log( `!!!! ${currentModel.option}` )
-			console.log(`!!!!!! UPDATED VALUE: ${_modelParams.angleRotationStepCtrl }`)
+			console.log(`!!!!!! UPDATED VALUE: ${_modelParams.lengthCtrl }`)
 
 
 			console.log(`USE EFFECT: draw()`);
@@ -188,7 +188,7 @@ const UI = () => {
 
 		console.log(`UPDATE PARAMS! ${updatedParams}`);
 
-		console.log(`!!!!!! RECEIVED VALUE: ${updatedParams[2].name}  / ${updatedParams[2].value}`)
+		console.log(`!!!!!! RECEIVED VALUE: ${updatedParams[3].name}  / ${updatedParams[3].value}`)
 
 		setParamsForModel(updatedParams);
 	}
