@@ -20,8 +20,8 @@ class YRule extends Production {
 
 	public compose( brackets: string, antipodes: string, rule: string, ) {
 
-		this._rule = this.decode(`${brackets[0]}${rule}${brackets[1]}${brackets[0]}${rule}${brackets[1]}`);
-		
+		this.cast( this.decode(`${brackets[0]}${rule}${brackets[1]}${brackets[0]}${rule}${brackets[1]}`) );
+
 		this.antipodes = this.decode(antipodes);
 		
 		return this;
@@ -39,11 +39,11 @@ class YRule extends Production {
 		
 		if (params) {
 			
-			console.log(`PROCESSING Y RULE... ${params}`)
+			console.log(`PROCESSING ${this.glyph.symbol} RULE... ${params}`)
 
 			parsedParams = params.split(',').map((s, i) => { 
 
-				return this.addPrim(s.charAt(0), false);
+				return this.addPrim(s.charAt(0), 'Y', false);
 
 			});
 		}
@@ -51,66 +51,65 @@ class YRule extends Production {
 		// --------------------------------------------------------
 		// 2  Create the rule sequence
 
-		let prim: Imperative;
-		let acc: Parameter;
 		const antipodes = this.antipodes.slice();
 
-		let sequence: Glyph[] = []
+		let sequence: Glyph[] = this._rule.slice();
 
-		// 1st Pass
 
-		sequence = this._rule.map( (glyph) =>  {
+		// ---------------------------------------------------------------------------
+		// 3  Run the sprites (if any)
 
-			if (glyph.type === 'Marker' && glyph.symbol === '*' ) {
+		if ( this.sprites.length ) {
 
-				const g = antipodes.shift();
+			for ( const sprite of this.sprites ) {
 
-				if ( g ) {
+				sequence = sprite.run( sequence );
+			}
+		}
 
-					return g;
 
-				} else {
+		// -------------------------------------------------------------
+		// 4 Apply the prims
 
-					throw new Error("Y RULE requires a pair of glyphs and a pair of '*' symbols. There must be a matching Glyph for each '*' symbol pair. Make sure both elements of each pair are present.");
+		sequence = sequence.map( (glyph, i) =>{
+
+			console.log(`YRule processing ${glyph.symbol}`);
+
+			let updatedParams: Prim[] = [];
+			
+			for ( const prim of this.prims ) {
+
+				if ( prim.places.includes(i) ) {
+
+					console.log(`${glyph.symbol} says: this ${prim.type} prim is for me!`);
+
+					updatedParams.push( prim ); 
+
 				}
 			}
 
-			return glyph;
-		});
+			if ( updatedParams.length ) { 
 
-		// 2nd pass
+				return  { ...glyph, params: [ ...updatedParams ] } 
 
-		sequence = sequence.map( (glyph, i) => {
-
-			if ( glyph.type === 'Marker' && glyph.symbol === '!' ) { // if this marker is found it means the rule requires an imperative which will operate on the previous Glyph;
-
-				prim = new ImperativePrim(sequence[i-1]);
 			}
 
-			if ( glyph.type === 'Marker' && glyph.symbol === '_' ) { // if this marker is found it means the rule requires an imperative which will operate on the previous Glyph;
-
-				acc = new ParameterPrim(9);
-			}
-
-			if ( glyph.type === 'Rule' ) {
-
-				if ( parsedParams.length ) {
-
-					return { ...glyph, params: [ ...(acc != null ? [acc] : []), ...parsedParams, ...(prim != null ? [prim] : []) ] };
-
-				} else {
-
-					return { ...glyph, params: [ ...(acc != null ? [acc] : []), ...this.prims, ...(prim != null ? [prim] : []) ] };
-				}
-			}
 
 			return glyph;
 
 		});
 
-		// const direction = this.dirPrim.value as Glyph;
- 
-		// if (direction) sequence.unshift(direction);
+		// const debugMark: Rule = { type: 'Rule', symbol: 'x', params: [] }
+		// const debugInfo: Rule = { type: 'Rule', symbol: 'i', params: [] }
+
+		// const debugGlyph = sequence.find( (g) => g.symbol === 'T');
+
+		// if ( debugGlyph && debugGlyph.type === 'Rule' ) {
+
+		// 	debugInfo.params = [ ...debugGlyph.params ];
+
+		// 	sequence.push(...[ debugMark, debugInfo ]);
+		// }
 		
 		this._output = this.encode(sequence);
 	}

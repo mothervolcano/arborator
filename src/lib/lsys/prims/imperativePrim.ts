@@ -5,38 +5,31 @@ import { Glyph, Imperative, PrimType } from "../lsys";
 
 class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 
-	public type: 'Imperative' = 'Imperative';
+	protected _type: 'Imperative' = 'Imperative';
+	protected value: Glyph;
+	public stub: any;
+	public places: number[];
 
-	private _value: Glyph | undefined;
+	// private _value: Glyph | undefined;
 
-	constructor( value?: Glyph ) {
+	constructor( value: Glyph = { type:'Marker', id: 0, symbol:'?' } ) {
 
 		super( '!' );
 
-		this._value = value;
+		this.value = value; 
+		this.places = [];
+
 	}
 
-	set value( glyph ) {
+	get type() {
 
-		this._value = glyph;
-	}
-
-	get value() {
-
-		if ( this._value ) {
-
-			return this._value;
-
-		} else {
-
-			throw new Error(`Imperative has no glyph`)
-		}
+		return this._type;
 	}
 
 
 	public set( glyph: Glyph ) {
 
-		this._value = glyph;
+		this.value = glyph;
 
 		return this;
 	}
@@ -44,15 +37,16 @@ class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 
 	public recast( str: string ) {
 
-		if ( this._value ) {
+		if ( this.value ) {
 
-			this._value.symbol = str.substring(1);
+			this.value.symbol = str.substring(1);
 
 		} else {
 
-			this._value = {
+			this.value = {
 
 				type: 'Marker',
+				id: 0,
 				symbol: str.substring(1)
 			}
 		}
@@ -63,7 +57,7 @@ class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 
 	public read( str: string ) {
 
-		if ( this.prefix === str.charAt(0) ) {
+		if ( this.prefix === str.charAt(0) && this.value ) {
 
 			return this.value;
 
@@ -75,9 +69,9 @@ class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 
 	public write() {
 
-		if ( this._value ) {
+		if ( this.value ) {
 
-			return `${this.prefix}${this._value.symbol}`;
+			return `${this.prefix}${this.value.symbol}`;
 
 		} else {
 
@@ -88,7 +82,7 @@ class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 
 	public clone(): ImperativePrim {
     	
-    	const cloned = new ImperativePrim(this._value);
+    	const cloned = new ImperativePrim(this.value);
 
     	return cloned;
 	}

@@ -79,7 +79,7 @@ class BRule extends Production {
 			}
 		}
 
-		const direction = this.dirPrim.value as Glyph;
+		const direction = this.dirPrim.getValue() as Glyph;
 
 		if (direction) sequence.unshift(direction);
 		

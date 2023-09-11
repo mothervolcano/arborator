@@ -7,8 +7,11 @@ import IRule from "../test-productions/IRule";
 import YRule from "../test-productions/YRule";
 import BRule from "../test-productions/BRule";
 import RRule from "../test-productions/RRule";
+import TRule from "../test-productions/TRule";
 import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 import ImperativePrim from "../../lib/lsys/prims/imperativePrim";
+import GlyphSwapper from '../../lib/lsys/sprites/glyphSwapper';
+import IncognitoPerpetuator from '../../lib/lsys/sprites/incognitoPerpetuator';
 
 
 class Test extends Model {
@@ -29,20 +32,28 @@ class Test extends Model {
 		super( alphabet, axiom );
 
 
-		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-IYf') ).compose('ffffffffYI'); 
-		const Y: IProduction = new YRule( alphabet.rule('Y'), alphabet.collect('[]+-B*!_') ).compose('[]','-+','*!_B');
-		const K: IProduction = new YRule( alphabet.rule('K'), alphabet.collect('[]+-f*!') ).compose('[]','-+','*!fff');
-		// const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BRYf*') ).compose('RB[*ff]ffff[*fff]');
-		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BRKf*') ).compose('RKB');
-		const R: IProduction = new RRule( alphabet.rule('R'), alphabet.collect('[]+-RYf!*') ).compose('fff');
+		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-IYf') ).compose('fYI'); 
+		const Y: IProduction = new YRule( alphabet.rule('Y'), alphabet.collect('[]+-BR*!_') ).compose('[]','-+','*R');
+		// const K: IProduction = new YRule( alphabet.rule('K'), alphabet.collect('[]+-T*!_') ).compose('[]','-+','*!T');
+		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-f*') ).compose('*fff');
+		// const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BRKf*') ).compose('RKB');
+		const R: IProduction = new RRule( alphabet.rule('R'), alphabet.collect('[]+-f*') ).compose('*ff**ff');
+		// const T: IProduction = new TRule( alphabet.rule('T'), alphabet.collect('[]+-RKYf!*') ).compose('RKY');
 
-		Y.addPrim( new ParameterPrim(1) );
+		Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.glyph('+') ) );
+		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('R') ) );
+
+		// Y.addPrim( new ImperativePrim(), 'R' );
+		// Y.addPrim( new ParameterPrim(1) );
+		// Y.addPrim( new ImperativePrim() );
+		// K.addPrim( new ParameterPrim(2) );
 
 		this.addProduction(I);
 		this.addProduction(Y);
 		this.addProduction(B);
 		this.addProduction(R);
-		this.addProduction(K);
+		// this.addProduction(K);
+		// this.addProduction(T);
 
 
 		// ---------------------------------------------------------------------
@@ -65,7 +76,7 @@ class Test extends Model {
 		const positions = new Map();
 
 
-		const showInfo = ( tool: any, value: any ) => {
+		const showInfo = ( tool: any, context?: any ) => {
 
 
 			if ( !positions.has( tool.position() )) {
@@ -76,8 +87,8 @@ class Test extends Model {
 			const pos = positions.get( tool.position() )
 
 			const text = new PointText( [ pos.x, pos.y ] );
-        	text.style = { fillColor: new Color('green'), fontFamily: 'Helvetica', fontWeight: 'normal', fontSize: 10 } as any
-        	text.content = `[${value}]`;
+        	text.style = { fillColor: new Color('red'), fontFamily: 'Helvetica', fontWeight: 'normal', fontSize: 12 } as any
+        	text.content = `[ ${context.params[0]} ]`;
         	// text.content = `[${'!!!'}]`;
 
         	// pos.x += 15
@@ -87,6 +98,8 @@ class Test extends Model {
 
 
 		const addMark = ( tool: any, context?: any  ) => { 
+
+			console.log(`ADD MARK: ${context.params}`)
 
 			this.addMark( tool.position() );
 
@@ -103,17 +116,17 @@ class Test extends Model {
 
 		const moveForward = (tool: any, context?: any) => {
 
-			console.log(`MOVE FORWARD: f --> ${this.length} / ${tool.position()}`);
+			// console.log(`MOVE FORWARD: f --> ${this.length} / ${tool.position()}`);
 
-			tool.forward( this.length );
+			tool.forward( this.length * context.length );
 		};
 
 
 		const turnLeft = (tool: any, context?: any) => {
 
-			this.angleRotationStep = context ? context : this.angleRotationStep
+			this.angleRotationStep = context ? context.angle : this.angleRotationStep
 
-			console.log(`TURN LEFT: + --> ${this.angleRotationStep}`)
+			// console.log(`TURN LEFT: + --> ${this.angleRotationStep}`)
 
 			tool.left(this.angleRotationStep)
 		};
@@ -121,16 +134,16 @@ class Test extends Model {
 
 		const turnRight = (tool: any, context?: any) => {
 
-			this.angleRotationStep = context ? context : this.angleRotationStep
+			this.angleRotationStep = context ? context.angle : this.angleRotationStep
 
-			console.log(`TURN RIGHT: - --> ${this.angleRotationStep}`)
+			// console.log(`TURN RIGHT: - --> ${this.angleRotationStep}`)
 
 			tool.right(this.angleRotationStep)
 		};
 
 		const saveState = (tool: any, context?: any ) => {
 
-			console.log(`SAVE: [ --> ${this.states}`)
+			// console.log(`SAVE: [ --> ${this.states}`)
 
 			this.states.push( { 
 
@@ -144,7 +157,7 @@ class Test extends Model {
 
 		const restoreState = ( tool: any, context?: any ) => {
 
-			console.log(`RESTORE: ] --> ${this.states}`)
+			// console.log(`RESTORE: ] --> ${this.states}`)
 
 			let state = this.states.pop()
 			this.length = state.length

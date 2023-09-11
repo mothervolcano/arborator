@@ -37,11 +37,11 @@ class RRule extends Production {
 		
 		if (params) {
 			
-			console.log(`PROCESSING R RULE... ${params}`)
+			console.log(`PROCESSING ${this.glyph.symbol} RULE... ${params}`)
 
 			parsedParams = params.split(',').map((s) => { 
 
-				return this.addPrim(s.charAt(0), false).recast(s);
+				return this.addPrim(s.charAt(0), 'R', false).recast(s);
 
 			});	
 		}
@@ -60,7 +60,7 @@ class RRule extends Production {
 
 				if ( prim && prim.type === 'Imperative' ) {
 
-					return prim.value;
+					return prim.getValue();
 
 				} else {
 
@@ -78,6 +78,11 @@ class RRule extends Production {
 
 				if ( parsedParams.length ) {
 
+					if (parsedParams[0].type === 'Parameter') {
+
+						parsedParams[0].setValue(1);		
+					} 
+
 					return { ...glyph, params: [...parsedParams] };
 
 				} else {
@@ -89,10 +94,21 @@ class RRule extends Production {
 			return glyph;
 		});
 
+		// ---------------------------------------
+		// DEBUG
 
-		// const direction = this.dirPrim.value as Glyph;
+		// const debugMark: Rule = { type: 'Rule', symbol: 'x', params: [] }
+		// const debugInfo: Rule = { type: 'Rule', symbol: 'i', params: [] }
 
-		// if (direction) sequence.unshift(direction);
+		// const debugGlyph = sequence.find( (g) => g.symbol === 'R');
+
+		// if ( debugGlyph && debugGlyph.type === 'Rule') {
+
+		// 	debugInfo.params = [ ...parsedParams ];
+
+		// 	sequence.push(...[ debugMark, debugInfo ]);
+		// }
+		
 		
 		this._output = this.encode(sequence);
 	}

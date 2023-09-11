@@ -1,4 +1,4 @@
-import { IProduction, GlyphType, Glyph, Rule, Instruction, Marker, IModel, Prim, Imperative } from '../lsys';
+import { IProduction, GlyphType, Glyph, Rule, Instruction, Marker, IModel, Prim, Imperative, Parameter, ISprite } from '../lsys';
 import ImperativePrim from '../prims/imperativePrim';
 import ParameterPrim from '../prims/parameterPrim';
 
@@ -8,19 +8,20 @@ abstract class Production implements IProduction {
 	protected _glyph: Glyph;
 	protected dialect: Glyph[]; 
 	protected _rule: Glyph[];
-	protected _sequence: Glyph[];
+	protected _sequence: Map<Glyph, number>;
 	protected _output: string;
 	protected prims: Array<Prim> = [];
+	protected sprites: Array<ISprite> = [];
 
 
-	constructor( glyph: Glyph, dialect?: Glyph[] ) {
+	constructor(glyph: Glyph, dialect?: Glyph[]) {
 
 		this._glyph = glyph;
 		this.dialect = dialect || [];
-		this._sequence = [];
+		this._sequence = new Map();
 
-		this._rule = dialect ? [] : [ glyph ];
-		this._output = dialect ? '' : this.encode( [ glyph ] );
+		this._rule = dialect ? [] : [glyph];
+		this._output = dialect ? '' : this.encode([glyph]);
 
 		return this;
 	};
@@ -42,13 +43,13 @@ abstract class Production implements IProduction {
 	}
 
 
-	decode( str: string ): Glyph[] {
+	decode(str: string): Glyph[] {
 
-		const sequence = str.split('').map( (char) => { 
+		const sequence = str.split('').map((char) => { 
 
-			const glyph = this.dialect.find( (g) => g.symbol === char );
+			const glyph = this.dialect.find((g) => g.symbol === char);
 
-			if ( glyph ) {
+			if (glyph) {
 
 				return glyph
 
@@ -62,13 +63,13 @@ abstract class Production implements IProduction {
 	};
 
 
-	encode( sequence: Array<Glyph> ): string {
+	encode(sequence: Array<Glyph>): string {
 
-		const series = sequence.map( (g) => {
+		const series = sequence.map((g) => {
 
-			if ( g.type==='Rule' && g.params?.length ) {
+			if (g.type === 'Rule' && g.params?.length) {
 
-				const paramSeries = g.params.map( (p) => {
+				const paramSeries = g.params.map((p) => {
 
 					return p.write();
 
@@ -88,25 +89,37 @@ abstract class Production implements IProduction {
 		return series;
 	};
 
-	abstract compose( ...str: string[] ): void;
-	abstract process( params?: string, context?:any ): void;
+	abstract compose(...str: string[]): void;
+	abstract process(params?: string, context?: any): void;
+
+	
+	protected cast(sequence: Array<Glyph>) {
+
+		this._rule = sequence.map((glyph, i) => {
+
+			return { ...glyph, id: i };
+		});
+
+	}
 
 
-	addPrim( input: Prim | string, save: boolean = true ): Prim {
+	public addPrim(input: Prim | string, symbols?: string | string[], save: boolean = true): Prim {
 
 		let prim: Prim;
 
-		if ( typeof input === 'string' ) {
+		// TODO: we could have a Sprite for this
 
-			switch(input) {
+		if (typeof input === 'string') {
 
-			case '!': 
-				prim = new ImperativePrim();
-				break;
+			switch (input) {
 
-			case '=':
-				prim = new ParameterPrim();
-				break;
+				case '!': 
+					prim = new ImperativePrim() as Imperative;
+					break;
+
+				case '=':
+					prim = new ParameterPrim() as Parameter;
+					break;
 
 				default: throw new Error(`Failed to add Prim to Production. ${input} doesn't match the prefix of any valid Prim`);
 			}
@@ -117,28 +130,107 @@ abstract class Production implements IProduction {
 
 		}
 
-		if ( save ) { this.prims.push(prim); }
+		if (symbols) {
+
+			prim.places = this._rule.map((g, i) => {
+
+				if (Array.isArray(symbols)) {
+
+					for (const s of symbols) {
+
+						if (g.symbol === s) {
+
+							return i;
+						}
+					}
+
+				} else {
+
+					if (g.symbol === symbols) {
+
+						return i;
+					}
+				}
+
+			}).filter(n => n !== undefined) as number[];
+		}
+
+
+		if (save) { 
+
+			this.prims.push(prim); 
+		}
 
 		return prim;	
-	}
+	};
 
 
-	read( params?: string, context?: any ) {
+	public addSprite( sprite: ISprite ) {
 
-		if ( params && context === 'parameter?' ) {
+		sprite.employ( this._rule, this.prims );
+		this.sprites.push( sprite );
+	};
 
-			if ( params === '(') { return true }
+
+	// TODO remove this methods. The Sprites took over!
+
+	protected processPrims(sequence: Array<Glyph>) {
+
+		// if (sequence.length && this.prims.length) {
+
+		// 	const updatedPrims = this.prims.map((prim) => {
+
+		// 		let updatedPrim = prim;
+
+		// 		// ------------------------------------------------------------
+
+		// 		// try to see if at least there's some data to complete the configuration of the prim.
+		// 		// the data it needs can be extracted from a Glyph and it's very likely that the right Glyph
+		// 		// is part of the sequence array
+
+		// 		if (updatedPrim.type === 'Imperative' && updatedPrim.getValue().symbol === '?') {
+
+		// 			for (let i = 0; i < sequence.length; i++) {
+
+		// 				if (updatedPrim.places.includes(i)) {
+
+		// 					updatedPrim.set(sequence[i]);
+		// 				}
+		// 			}
+		// 		} 
+		
+
+		// 		// -----------------------------------------------------------------
+
+		// 		sequence.forEach((glyph, i) => {
+
+		// 			// THERE MIGHT NOT BE NECESSARY TO DO ANTHING HERE. Mark for deletion;
+		// 		});
+
+		// 		return updatedPrim;
+		// 	})
+
+		// 	this.prims = updatedPrims;
+		// }
+	};
+
+
+	public read(params?: string, context?: any) {
+
+		if (params && context === 'parameter?') {
+
+			if (params === '(') { return true }
 			else { return false }
 
 		} else {
 
-			this.process( params );
+			this.process(params);
 		}
 		
 	};
 
 
-	write( context?: any ): string {
+	public write(context?: any): string {
 
 		// console.log(`WRITING ${this._glyph.symbol} with: ${this._output}`);
 

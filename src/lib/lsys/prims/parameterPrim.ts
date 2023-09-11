@@ -5,37 +5,37 @@ import { Parameter, Prim, PrimType } from "../lsys";
 
 class ParameterPrim extends BasePrim<number> implements Parameter {
 
-	public type: 'Parameter' = 'Parameter';
-
-	private _value;
+	protected _type: 'Parameter' = 'Parameter';
+	protected value: number;
+	public stub: any;
+	public places: number[];
 
 	constructor( value: number = 0) {
 
 		super( '=' );
 
-		this._value = value;
+		this.value = value;
+
+		this.places = [];
 	}
 
-	set value( val ) {
 
-		this._value = val;
+	get type() {
+
+		return this._type;
 	}
 
-	get value() {
-
-		return this._value;
-	}
 
 	public set( val: number ) {
 
-		this._value = val;
+		this.value = val;
 
 		return this;
 	}
 
 	public recast( str: string ) {
 
-		this._value = Number.parseInt(str.substring(1));
+		this.value = Number.parseInt(str.substring(1));
 
 		return this;
 	}
@@ -54,9 +54,9 @@ class ParameterPrim extends BasePrim<number> implements Parameter {
 
 	public write() {
 
-		if ( this._value ) {
+		if ( this.value ) {
 
-			return `${this.prefix}${this._value.toString()}`;
+			return `${this.prefix}${this.value.toString()}`;
 
 		} else {
 
@@ -66,7 +66,7 @@ class ParameterPrim extends BasePrim<number> implements Parameter {
 
 	public clone(): ParameterPrim {
     	
-    	const cloned = new ParameterPrim(this._value);
+    	const cloned = new ParameterPrim(this.value);
 
     	return cloned;
 	}

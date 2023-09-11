@@ -1,5 +1,5 @@
 
-import { IModel, ICommand, IComposer } from '../lsys';
+import { IModel, ICommand, IComposer, Glyph } from '../lsys';
 
 import { getParameterString, parseParameters } from '../tools/parserAssistant';
 
@@ -10,6 +10,7 @@ import { EmptyStringException, IncompleteParameterStringException, NoParametersF
 
 class Composer implements IComposer {
 
+	private commands: Array<string | string[]>;
 	private thread: Array<string>;
 	private strip: Array<string>;
 	private window: number;
@@ -17,6 +18,7 @@ class Composer implements IComposer {
 
 	constructor(private model: IModel) {
 
+		this.commands = [];
 		this.thread = [];
 		this.strip = [];
 		this.window = 15;
@@ -33,7 +35,7 @@ class Composer implements IComposer {
 		const end = Math.min(_start + _length, this.thread.length);
 
 		// this.strip = this.thread.substring(_start, end);
-		this.strip = this.thread.slice(_start, end);
+		this.strip = this.thread.slice(_start, end).flat();
 	};
 
 
@@ -159,20 +161,25 @@ class Composer implements IComposer {
 
 			this.thread = nextThread;
 
-			console.log(`${i} -> ${ nextThread.join('') }`)
+			console.log(`${i} -> ${nextThread.join('')}`)
 			console.log(`.............................`)
 		}
 
 		let openMarkerIdx: number = -1;
 		let closeMarkerIdx: number = -1;
 
+		this.commands = this.thread.slice();
+
 		do {
-			openMarkerIdx = this.thread.findIndex((c) => c === '(');
-			closeMarkerIdx = this.thread.findIndex((c) => c === ')');
+			openMarkerIdx = this.commands.findIndex((c) => c === '(');
+			closeMarkerIdx = this.commands.findIndex((c) => c === ')');
 
 			if (openMarkerIdx !== -1 && closeMarkerIdx !== -1) {
 
-				this.thread.splice(openMarkerIdx, closeMarkerIdx - openMarkerIdx + 1);
+				const params = this.commands.splice(openMarkerIdx, closeMarkerIdx - openMarkerIdx + 1).join('');
+				this.commands.splice(openMarkerIdx, 0, params.substring(1).substring(0, params.length-2).split(','));
+
+				console.log(`---> extracted params: ${params.substring(1).substring(0, params.length-2)}`);
 
 			} else {
 				// If we either don't find an opening or a closing parenthesis, break out of the loop.
@@ -233,45 +240,67 @@ class Composer implements IComposer {
 
 	public plot() {
 
-		const sequence: ICommand[] = []
+		const sequence: Array<[ICommand,string[]|null]> = []
 
-		for (let i = 0; i < this.thread.length; i++) {
+		for (let i = 0; i < this.commands.length; i++) {
 
-			// const currChar = this.thread.charAt(i);
-			const currChar = this.thread[i];
-			const glyph = this.model.alphabet.glyph(currChar);
-
+			let glyph: Glyph;
 			let command: ICommand | undefined;
 
-			switch (glyph.type) {
+			const currSymbol = this.commands[i];
+			const nextSymbol = this.commands[ Math.min(i+1, this.commands.length) ];
 
-				case 'Rule':
+			if (typeof currSymbol === 'string') {
 
-					command = this.model.hasCommand(glyph.symbol) ? this.model.getCommand(glyph.symbol) : undefined;
+				glyph = this.model.alphabet.glyph(currSymbol);
+
+				switch (glyph.type) {
+
+					case 'Rule':
+
+						command = this.model.hasCommand(glyph.symbol) ? this.model.getCommand(glyph.symbol) : undefined;
         			
-					if (command) {
-						sequence.push(command);
-					}
+						if (command) {
 
-					break;
+							if ( Array.isArray(nextSymbol) ) {
 
-				case 'Instruction':
+								sequence.push( [ command, nextSymbol ] );
 
-					command = this.model.hasCommand(glyph.symbol) ? this.model.getCommand(glyph.symbol) : undefined;
+							} else {
+
+								sequence.push( [ command, null ] );
+							}
+						}
+
+						break;
+
+					case 'Instruction':
+
+						command = this.model.hasCommand(glyph.symbol) ? this.model.getCommand(glyph.symbol) : undefined;
        				
-					if (command) {
-						sequence.push(command);
-					}
+						if (command) {
+
+							if ( Array.isArray(nextSymbol) ) {
+
+								sequence.push( [ command, nextSymbol ] );
+
+							} else {
+
+								sequence.push( [ command, null ] );
+							}
+						}
         			
-					break;
+						break;
 
-				case 'Marker':
+					case 'Marker':
 
-					// ignore
+						// ignore
 
-					break;
+						break;
 
-				default: throw new Error(`Failed to execute. Probably invalid Glyph ${currChar}`)
+					default: throw new Error(`Failed to execute. Probably invalid Glyph ${currSymbol}`)
+				}
+
 			}
 		}
 

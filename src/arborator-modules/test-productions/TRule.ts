@@ -6,7 +6,7 @@ import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 
 // K[K]B
 
-class BRule extends Production {
+class TRule extends Production {
 
 
 	constructor(glyph: Rule, dialect: Glyph[]) {
@@ -37,11 +37,11 @@ class BRule extends Production {
 		
 		if (params) {
 			
-			console.log(`PROCESSING ${this.glyph.symbol}RULE... ${params}`)
+			console.log(`PROCESSING ${this.glyph.symbol} RULE... ${params}`)
 
 			parsedParams = params.split(',').map((s) => { 
 
-				return this.addPrim(s.charAt(0), 'B', false).recast(s);
+				return this.addPrim(s.charAt(0), 'T', false).recast(s);
 
 			});	
 		}
@@ -64,7 +64,7 @@ class BRule extends Production {
 
 				} else {
 
-					throw new Error("B Rule requires an imperative as parameter");
+					throw new Error("R Rule requires an imperative as parameter");
 				}
 			}
 
@@ -74,67 +74,45 @@ class BRule extends Production {
 		
 		sequence = sequence.map( (glyph) => { 
 
-			if ( glyph.type === 'Rule' ) {
+			if (glyph.type === 'Rule' && glyph.symbol === 'R') {
 
-				if ( glyph.symbol === this.glyph.symbol ) {
+				if ( parsedParams.length ) {
 
-					if ( parsedParams.length ) {
+					if (parsedParams[0].type === 'Parameter') {
 
-						if (parsedParams[0].type === 'Parameter') {
+						parsedParams[0].setValue(1);		
+					} 
 
-							// parsedParams[0].value += 1;		
-						}  
+					return { ...glyph, params: [...parsedParams] };
 
-						return { ...glyph, params: [...parsedParams] };
+				} else {
 
-					} else {
-
-						return { ...glyph, params: [] };
-					}
-				}
-
-
-				if ( glyph.symbol === 'R' ) {
-
-					if ( parsedParams.length ) {
-
-						if (parsedParams[0].type === 'Parameter') {
-
-						 	parsedParams[0].setValue(1);		
-						}  
-
-						return { ...glyph, params: [...parsedParams] };
-
-					} else {
-
-						return { ...glyph, params: [] };
-					}
+					return { ...glyph, params: [] };
 				}
 			}
 
 			return glyph;
 		});
 
+		// ---------------------------------------
+		// DEBUG
 
-		// --------------------------------------------------------------
-		// DEBUG 
+		const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', params: [] }
+		const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', params: [] }
 
-		// const debugMark: Rule = { type: 'Rule', symbol: 'x', params: [] }
-		// const debugInfo: Rule = { type: 'Rule', symbol: 'i', params: [] }
+		const debugGlyph = sequence.find( (g) => g.symbol === 'R');
 
-		// const debugGlyph = sequence.find( (g) => g.symbol === 'R');
+		if ( debugGlyph && debugGlyph.type === 'Rule') {
 
-		// if ( debugGlyph && debugGlyph.type === 'Rule' ) {
+			debugInfo.params = [ ...parsedParams ];
 
-		// 	debugInfo.params = [ ...debugGlyph.params ];
-
-		// 	sequence.unshift(...[ debugMark, debugInfo ]);
-		// }
-
+			sequence.push(...[ debugMark, debugInfo ]);
+		}
+		
 		
 		this._output = this.encode(sequence);
 	}
 }
 
-export default BRule;
+export default TRule;
 

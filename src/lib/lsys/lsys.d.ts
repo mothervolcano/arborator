@@ -5,8 +5,12 @@ export type GlyphType = 'Rule' | 'Instruction' | 'Marker';
 
 // The base interface for all Prims
 export interface IPrim<T> {
-  readonly prefix: string;
-  value: T;
+  readonly prefix: string;  
+  places: number[];
+  stub: any;
+  hasValue(): boolean;
+  setValue( value: T ): T;
+  getValue(): T;
   set(val: T): this;
   recast(str: string): this;
   read(str: string): T;
@@ -21,7 +25,6 @@ export type PrimType = 'Parameter' | 'Flag' | 'Imperative';
 // The interface for Parameters specifically
 export interface Parameter extends IPrim<number> {
   type: 'Parameter';
-  value: number;
   set(val: number): this;
   recast(str: string): this;
   read(str: string): number;
@@ -31,8 +34,7 @@ export interface Parameter extends IPrim<number> {
 
 // The interface for Parameters specifically
 export interface Flag extends IPrim<number> {
-  type: 'Parameter';
-  value: number;
+  type: 'Flag';
   set(val: number): this;
   recast(str: string): this;
   read(str: string): number;
@@ -44,7 +46,6 @@ export interface Flag extends IPrim<number> {
 // The interface for Parameters specifically
 export interface Imperative extends IPrim<Glyph> {
   type: 'Imperative';
-  value: Glyph;
   set(val: Glyph): this;
   recast(str: string): this;
   read(str: string): Glyph;
@@ -54,6 +55,15 @@ export interface Imperative extends IPrim<Glyph> {
 
 
 export type Prim = Parameter | Flag | Imperative
+
+
+interface ISprite {
+
+  employ( rule: Glyph[], prims: Prim[] ): void;
+  run( sequence: Glyph[], context?: any ): Glyph[];
+}
+
+
 
 /**
  * 
@@ -68,6 +78,7 @@ export type Prim = Parameter | Flag | Imperative
 export interface Rule {
 
   type: 'Rule';
+  id: number;
   symbol: string;
   params: Prim[];
 
@@ -85,6 +96,7 @@ export interface Rule {
 export interface Instruction {
   
   type: 'Instruction';
+  id: number;
   symbol: string;
 
 }
@@ -101,6 +113,7 @@ export interface Instruction {
 export interface Marker {
   
   type: 'Marker';
+  id: number;
   symbol: string;
 }
 
@@ -174,7 +187,7 @@ export interface IModel {
 export interface IComposer {
 
   compose( iterations: number, context?: any ): string;
-  plot(): ICommand[];
+  plot(): Array<[ICommand, string[]|null]>;
   // plot(): Generator<ICommand, void, unknown>;
   reset(): void;
 
@@ -195,7 +208,8 @@ export interface IProduction {
   readonly output: string;
   read( params?: string | null, context?: any ): boolean | void;
   compose( ...str: string[] ): void;
-  addPrim( prim: Prim | string, save?: boolean ): Prim;
+  addSprite( sprite: ISprite ): void;
+  addPrim( prim: Prim | string, symbols?: string | string[], save?: boolean ): Prim;
   process( params?: string, context?: any ): void;
   encode( sequence: Array<Glyph> ): string;
   write( context?: any ): string;
