@@ -11,32 +11,47 @@ export interface IPrim<T> {
   hasValue(): boolean;
   setValue( value: T ): T;
   getValue(): T;
-  set(val: T): this;
+  cast(value: T): this;
   recast(str: string): this;
+  process(value:string): void;
   read(str: string): T;
   write(): string;
   clone(): T;
 }
 
 
-export type PrimType = 'Parameter' | 'Flag' | 'Imperative';
+export type PrimType = 'Parameter' | 'Flag' | 'Imperative' | 'Accumulator';
 
 
 // The interface for Parameters specifically
 export interface Parameter extends IPrim<number> {
   type: 'Parameter';
-  set(val: number): this;
+  cast(value: number): this;
   recast(str: string): this;
+  process(value?: string): void;
   read(str: string): number;
   write(): string;
   clone(): any;
 }
 
+// The interface for Accumulators specifically
+export interface Accumulator extends IPrim<number> {
+  type: 'Accumulator';
+  cast(value: number): this;
+  recast(str: string): this;
+  process(value?: string): number;
+  read(str: string): number;
+  write(): string;
+  clone(): any;
+}
+
+
 // The interface for Parameters specifically
 export interface Flag extends IPrim<number> {
   type: 'Flag';
-  set(val: number): this;
+  cast(value: number): this;
   recast(str: string): this;
+  process(value?: string): void;
   read(str: string): number;
   write(): string;
   clone(): any;
@@ -46,21 +61,22 @@ export interface Flag extends IPrim<number> {
 // The interface for Parameters specifically
 export interface Imperative extends IPrim<Glyph> {
   type: 'Imperative';
-  set(val: Glyph): this;
+  cast(value: Glyph): this;
   recast(str: string): this;
+  process(value?: string): void;
   read(str: string): Glyph;
   write(): string;
   clone(): any;
 }
 
 
-export type Prim = Parameter | Flag | Imperative
+export type Prim = Parameter | Flag | Imperative | Accumulator
 
 
 interface ISprite {
 
-  employ( rule: Glyph[], prims: Prim[] ): void;
-  run( sequence: Glyph[], context?: any ): Glyph[];
+  implant( rule: Glyph[], prims: Prim[] ): void;
+  run( sequence: Glyph[], params?: any, context?: any ): Glyph[];
 }
 
 

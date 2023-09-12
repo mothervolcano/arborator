@@ -18,7 +18,7 @@ class IRule extends Production {
 
 	public compose(rule: string) {
 
-		this._rule = this.decode(rule);
+		this.cast( this.decode(rule) );
 
 		return this;
 	}
@@ -30,53 +30,103 @@ class IRule extends Production {
 		// --------------------------------------------------------
 		// 1 Parse the parameters
 
+		// console.log(`PROCESSING ${this.glyph.symbol} RULE... ${params}`)
 
-		let parsedParams: Prim[] = []
+		// let parsedParams: Prim[] = []
 		
-		if (params) {
+		// if (params) {
 			
-			console.log(`PROCESSING I RULE... ${params}`)
 
-			// parsedParams = params.split(',').map((s, i) => { 
+		// 	// parsedParams = params.split(',').map((s, i) => { 
 
-			// 	if (this.prims[i].read(s)) {
+		// 	// 	if (this.prims[i].read(s)) {
 
-			// 		this.prims[i].recast(s);
+		// 	// 		this.prims[i].recast(s);
 
-			// 		return this.prims[i];
+		// 	// 		return this.prims[i];
 
-			// 	} else {
+		// 	// 	} else {
 
-			// 		throw new Error(`Production is unable to process ${s} parameter`)
-			// 	}
+		// 	// 		throw new Error(`Production is unable to process ${s} parameter`)
+		// 	// 	}
 
-			// })	
-		}
+		// 	// })	
+		// }
 
 		// --------------------------------------------------------
 		// 2  Create the rule sequence
 
-		
-		const sequence = this._rule.slice();
+		let sequence: Glyph[] = this._rule.slice();
 
-		for (const glyph of this._rule) {
 
-			if (glyph.type === 'Rule' && glyph.symbol === this.glyph.symbol) {
+		// ---------------------------------------------------------------------------
+		// 3  Run the sprites (if any)
 
-				if ( parsedParams.length ) {
+		if ( this.sprites.length ) {
 
-					glyph.params = [...parsedParams];
+			for ( const sprite of this.sprites ) {
 
-				} else {
-
-					glyph.params = [...this.prims];
-				}
+				sequence = sprite.run( sequence, params, this.glyph.symbol );
 			}
+
+		} else {
+
+			// ? If there are no sprites, is it to be assumed/allowed that the production has set its own Prims
+			// and if so this is where we process them? 
+
+			// what if we have a mix of both?? 
 		}
 
-		// const direction = this.dirPrim.value as Glyph;
 
-		// if (direction) sequence.unshift(direction);
+		// -------------------------------------------------------------
+		// 4 Apply the prims
+
+		sequence = sequence.map( (glyph) =>{
+
+			// console.log(`YRule processing ${glyph.symbol}`);
+
+			let updatedParams: Prim[] = [];
+			
+			for ( const prim of this.prims ) {
+
+				// console.log(`Reading ${this.glyph.symbol}' Prims: ${prim.getValue()}`)
+
+				if ( prim.places.includes(glyph.id) ) {
+
+					// console.log(`${glyph.symbol} says: this ${prim.type} prim is for me!`);
+
+					updatedParams.push( prim ); 
+				}
+			}
+
+			if ( updatedParams.length ) { 
+
+				return  { ...glyph, params: [ ...updatedParams ] } 
+
+			}
+
+			return glyph;
+		});
+
+
+
+		// const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', params: [] }
+		// const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', params: [] }
+
+		// const debugGlyph = sequence.find( (g) => g.symbol === 'B');
+
+		// sequence.slice().forEach((glyph,i)=>{    
+
+		// 	if ( debugGlyph!.symbol === glyph.symbol ) {
+
+		// 		debugInfo.params = [ this.prims[1]];
+
+		// 		sequence.splice( i, 0, ...[ debugMark, debugInfo ]);
+		// 	}
+		// });
+
+
+
 		
 		this._output = this.encode(sequence);
 	}

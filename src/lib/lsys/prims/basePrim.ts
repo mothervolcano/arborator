@@ -37,7 +37,7 @@ abstract class BasePrim<T> implements IPrim<T> {
 
 	public getValue() {
 
-		if ( this.value ) {
+		if ( this.value !== undefined && this.value !== null ) {
 
 			return this.value;
 
@@ -47,8 +47,9 @@ abstract class BasePrim<T> implements IPrim<T> {
 		}
 	}
 
-	abstract set(val: T ): this;
+	abstract cast(val: T ): this;
 	abstract recast(str: string): this;
+	abstract process(value:string): void;
 	abstract read( str: string ): T;
 	abstract write(): string;
 

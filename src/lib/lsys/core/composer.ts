@@ -161,8 +161,10 @@ class Composer implements IComposer {
 
 			this.thread = nextThread;
 
+			console.log(``)
+			console.log(`......................................................`)
 			console.log(`${i} -> ${nextThread.join('')}`)
-			console.log(`.............................`)
+			console.log(`......................................................`)
 		}
 
 		let openMarkerIdx: number = -1;

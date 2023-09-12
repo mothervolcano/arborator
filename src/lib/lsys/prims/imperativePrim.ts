@@ -27,7 +27,7 @@ class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 	}
 
 
-	public set( glyph: Glyph ) {
+	public cast( glyph: Glyph ) {
 
 		this.value = glyph;
 
@@ -53,6 +53,11 @@ class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 
 		return this;
 	};
+
+	public process( value: string ) {
+
+		this.recast( value );
+	}
 
 
 	public read( str: string ) {

@@ -205,20 +205,20 @@ class KRule extends Production {
 		// --------------------------------------------------------------
 		// DEBUG 
 
-		const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', params: [] }
-		const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', params: [] }
+		// const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', params: [] }
+		// const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', params: [] }
 
-		const debugGlyph = sequence.find( (g) => g.symbol === 'K');
+		// const debugGlyph = sequence.find( (g) => g.symbol === 'f');
 
-		sequence.slice().forEach((glyph,i)=>{    
+		// sequence.slice().forEach((glyph,i)=>{    
 
-			if ( debugGlyph!.symbol === glyph.symbol ) {
+		// 	if ( debugGlyph!.symbol === glyph.symbol ) {
 
-				debugInfo.params = [ this.prims[0]];
+		// 		debugInfo.params = [ this.prims[0] ];
 
-				sequence.splice( i, 0, ...[ debugMark, debugInfo ]);
-			}
-		});
+		// 		sequence.splice( i, 0, ...[ debugMark, debugInfo ]);
+		// 	}
+		// });
 
 
 

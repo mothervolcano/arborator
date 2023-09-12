@@ -7,11 +7,15 @@ import IRule from "../test-productions/IRule";
 import YRule from "../test-productions/YRule";
 import BRule from "../test-productions/BRule";
 import RRule from "../test-productions/RRule";
-import TRule from "../test-productions/TRule";
+import KRule from "../test-productions/KRule";
 import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 import ImperativePrim from "../../lib/lsys/prims/imperativePrim";
 import GlyphSwapper from '../../lib/lsys/sprites/glyphSwapper';
 import IncognitoPerpetuator from '../../lib/lsys/sprites/incognitoPerpetuator';
+import AccumulatorPrim from '../../lib/lsys/prims/accumulatorPrim';
+import PrimMapper from '../../lib/lsys/sprites/primMapper';
+import GlyphAccumulator from '../../lib/lsys/sprites/glyphAccumulator';
+import IncognitoDiscloser from '../../lib/lsys/sprites/incognitoDiscloser';
 
 
 class Test extends Model {
@@ -32,27 +36,58 @@ class Test extends Model {
 		super( alphabet, axiom );
 
 
-		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-IYf') ).compose('fYI'); 
-		const Y: IProduction = new YRule( alphabet.rule('Y'), alphabet.collect('[]+-BR*!_') ).compose('[]','-+','*R');
-		// const K: IProduction = new YRule( alphabet.rule('K'), alphabet.collect('[]+-T*!_') ).compose('[]','-+','*!T');
-		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-f*') ).compose('*fff');
-		// const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BRKf*') ).compose('RKB');
-		const R: IProduction = new RRule( alphabet.rule('R'), alphabet.collect('[]+-f*') ).compose('*ff**ff');
-		// const T: IProduction = new TRule( alphabet.rule('T'), alphabet.collect('[]+-RKYf!*') ).compose('RKY');
+		const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('O*') ).compose('O'); 
 
-		Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.glyph('+') ) );
-		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('R') ) );
+		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-IYf*') ).compose('IYf'); 
+		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-YIBf*') ).compose('[*B][*B]f'); 
+		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BKf*') ).compose('*ff');
+		const K: IProduction = new KRule( alphabet.rule('K'), alphabet.collect('[]+-BKf*') ).compose('*f[*f]ff')
+
+		I.addSprite( new PrimMapper( new AccumulatorPrim(1), alphabet.rule('Y'), 1 ));
+		I.addSprite( new PrimMapper( new AccumulatorPrim(1), alphabet.rule('I'), 1 ));
+		// I.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));
+		
+		// Y.addSprite( new GlyphAccumulator( alphabet.glyph('B') ));
+		Y.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));
+		Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.collect('-+') ) );
+		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('B').symbol )); 
+		
+		Y.addSprite( new PrimMapper( new AccumulatorPrim(1), alphabet.rule('B'), 1 ));
+		Y.addSprite( new PrimMapper( new AccumulatorPrim(1), alphabet.rule('B'), 2 ));
+
+		B.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ));
+		// B.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('K').symbol )); 
+		B.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));
+
+		
+		// K.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ));
+		// K.addSprite( new PrimMapper( new ImperativePrim(), alphabet.glyph('*') ));
+
+		// K.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('K').symbol )); 
+
+
+		// const Y: IProduction = new YRule( alphabet.rule('Y'), alphabet.collect('[]+-BR*!_') ).compose('[]','-+','*R');
+		// // const K: IProduction = new YRule( alphabet.rule('K'), alphabet.collect('[]+-T*!_') ).compose('[]','-+','*!T');
+		// // const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BRKf*') ).compose('RKB');
+		// const R: IProduction = new RRule( alphabet.rule('R'), alphabet.collect('[]+-f*') ).compose('*ff**ff');
+		// // const T: IProduction = new TRule( alphabet.rule('T'), alphabet.collect('[]+-RKYf!*') ).compose('RKY');
+
+		// // I.addPrim(  new AccumulatorPrim(1) );
+
+		// Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.glyph('+') ) );
+		// Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('R') ) );
 
 		// Y.addPrim( new ImperativePrim(), 'R' );
 		// Y.addPrim( new ParameterPrim(1) );
 		// Y.addPrim( new ImperativePrim() );
 		// K.addPrim( new ParameterPrim(2) );
 
+		this.addProduction(O);
 		this.addProduction(I);
 		this.addProduction(Y);
 		this.addProduction(B);
-		this.addProduction(R);
-		// this.addProduction(K);
+		// this.addProduction(R);
+		this.addProduction(K);
 		// this.addProduction(T);
 
 
@@ -81,7 +116,7 @@ class Test extends Model {
 
 			if ( !positions.has( tool.position() )) {
 
-				positions.set( tool.position(), { x: tool.position().x, y: tool.position().y - 5  })
+				positions.set( tool.position(), { x: tool.position().x + 5, y: tool.position().y - 5  })
 			}
 
 			const pos = positions.get( tool.position() )
@@ -175,6 +210,7 @@ class Test extends Model {
 		this.addCommand( new Command('-', turnLeft) );
 		this.addCommand( new Command('[', saveState) );
 		this.addCommand( new Command(']', restoreState) );
+		// this.addCommand( new Command('B', addMark ));
 
 
 	}

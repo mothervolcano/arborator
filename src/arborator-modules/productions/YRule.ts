@@ -65,7 +65,7 @@ class YRule extends Production {
 			} else if ( g.type === 'Rule' ) {
 
 				const substitute = this.dialect.find( (g) => g.symbol === symbolToggle );
-				if ( substitute && this.dirPrim.type === 'Imperative') this.dirPrim.set( substitute );
+				if ( substitute && this.dirPrim.type === 'Imperative') this.dirPrim.cast( substitute );
 				// else this.dirPrim.set();
 
 				g.params = [ this.countPrim, this.accPrim, this.dirPrim.clone() ];

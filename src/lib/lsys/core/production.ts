@@ -100,7 +100,7 @@ abstract class Production implements IProduction {
 			return { ...glyph, id: i };
 		});
 
-	}
+	};
 
 
 	public addPrim(input: Prim | string, symbols?: string | string[], save: boolean = true): Prim {
@@ -120,6 +120,9 @@ abstract class Production implements IProduction {
 				case '=':
 					prim = new ParameterPrim() as Parameter;
 					break;
+				// case '+':
+				// 	// do nothing. We need to forego this logic here.
+				// 	break
 
 				default: throw new Error(`Failed to add Prim to Production. ${input} doesn't match the prefix of any valid Prim`);
 			}
@@ -167,7 +170,7 @@ abstract class Production implements IProduction {
 
 	public addSprite( sprite: ISprite ) {
 
-		sprite.employ( this._rule, this.prims );
+		sprite.implant( this._rule, this.prims );
 		this.sprites.push( sprite );
 	};
 

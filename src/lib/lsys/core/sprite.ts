@@ -12,10 +12,10 @@ abstract class Sprite implements ISprite {
 
 	}
 
-	abstract employ( rule: Glyph[], prims: Prim[] ): void
-	abstract run( sequence: Glyph[], context?: any ): Glyph[];
+	abstract implant( rule: Glyph[], prims: Prim[] ): void
+	abstract run( sequence: Glyph[], params?: any ): Glyph[];
 
-	protected abstract process( sequence: Glyph[] ): Glyph[] | null;
+	protected abstract process( stream: Glyph[] ): Glyph[] | null;
 
 }
 

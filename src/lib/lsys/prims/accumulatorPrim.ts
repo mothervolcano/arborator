@@ -1,18 +1,20 @@
 import BasePrim from "./basePrim";
 
-import { Parameter, Prim, PrimType } from "../lsys";
+import { Accumulator } from "../lsys";
 
 
-class ParameterPrim extends BasePrim<number> implements Parameter {
+class AccumulatorPrim extends BasePrim<number> implements Accumulator {
 
-	protected _type: 'Parameter' = 'Parameter';
+	private accValue: number = 0;
+ 
+	protected _type: 'Accumulator' = 'Accumulator';
 	protected value: number;
 	public stub: any;
 	public places: number[];
 
 	constructor( value: number = 0) {
 
-		super( '=' );
+		super( '+' );
 
 		this.value = value;
 
@@ -29,6 +31,7 @@ class ParameterPrim extends BasePrim<number> implements Parameter {
 	public cast( val: number ) {
 
 		this.value = val;
+		this.accValue = val;
 
 		return this;
 	}
@@ -36,13 +39,17 @@ class ParameterPrim extends BasePrim<number> implements Parameter {
 	public recast( str: string ) {
 
 		this.value = Number.parseInt(str.substring(1));
+		this.accValue = this.value;
 
 		return this;
 	}
 
-	public process( value: string ) {
+	public process( value: string = '1' ): number {
 
-		// ? Some validation maybe?
+		this.accValue += Number.parseInt(value);
+		this.value = this.accValue;
+
+		return this.value;
 	}
 
 	public read( str: string ) {
@@ -59,7 +66,7 @@ class ParameterPrim extends BasePrim<number> implements Parameter {
 
 	public write() {
 
-		if ( this.value ) {
+		if ( this.value !== undefined && this.value !== null ) {
 
 			return `${this.prefix}${this.value.toString()}`;
 
@@ -69,14 +76,14 @@ class ParameterPrim extends BasePrim<number> implements Parameter {
 		}
 	}
 
-	public clone(): ParameterPrim {
+	public clone(): AccumulatorPrim {
     	
-    	const cloned = new ParameterPrim(this.value);
+    	const cloned = new AccumulatorPrim(this.value);
 
     	return cloned;
 	}
 }
 
 
-export default ParameterPrim;
+export default AccumulatorPrim;
 

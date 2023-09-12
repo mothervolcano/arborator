@@ -6,10 +6,13 @@ import { Glyph, Prim } from "../lsys";
 
 class GlyphSwapper extends Sprite {
 
-	private target:Glyph;
-	private sub:Glyph;
+	private spots: number[] = [];
+	private subIndex: number = 0;
 
-	constructor( target: Glyph, sub: Glyph ) {
+	private target:Glyph;
+	private sub:Glyph | Glyph[];
+
+	constructor( target: Glyph, sub: Glyph | Glyph[] ) {
 
 		super();
 
@@ -17,25 +20,64 @@ class GlyphSwapper extends Sprite {
 		this.sub = sub;
 	}
 
-	public employ(rule: Glyph[], prims: Prim[]): void {
-	 	
+	public implant(rule: Glyph[], prims: Prim[]): void {
+	 			
 		rule.forEach((glyph, i)=>{
 
 			if ( glyph.symbol === this.target.symbol ) {
 
-				this.target.id = i;
-				this.sub.id = i;
+				this.spots.push(i);
+				// this.target.id = i;
+
+				if ( Array.isArray(this.sub) ) {
+
+					this.sub[this.subIndex].id = i;
+					
+					if ( this.subIndex + 1 >= this.sub.length ) {
+
+						this.subIndex = 0;
+
+					} else {
+
+						this.subIndex++;
+					}
+
+				} else {
+
+					this.sub.id = i;
+				}
 			}
 		});
 	}
 
-	protected process(sequence: Glyph[]): Glyph[] | null {
+	protected process(stream: Glyph[]): Glyph[] | null {
 
-		const workingSequence = sequence.map((glyph)=>{
 
-			if ( glyph.id === this.target.id ) {
+		const workingSequence = stream.map((glyph)=>{
 
-				return this.sub;
+			if ( this.spots.includes(glyph.id) ) {
+
+				if ( Array.isArray(this.sub) ) {
+
+					// console.log(`!!!! SWAP: ${this.sub[this.subIndex].symbol}`)
+
+					const sub = this.sub[this.subIndex];
+
+					if ( this.subIndex + 1 >= this.sub.length ) {
+
+						this.subIndex = 0;
+						
+					} else {
+
+						this.subIndex++;
+					}
+
+					return sub;
+
+				} else {
+
+					return this.sub;
+				}
 
 			} else {
 
@@ -43,12 +85,14 @@ class GlyphSwapper extends Sprite {
 			}
 		});
 
+		// console.log(`!!!! FINISHED SWAPPING`)
+
 		return workingSequence;
 	}
 
-	public run(sequence: Glyph[], context?: any): Glyph[] {
+	public run(stream: Glyph[], context?: any): Glyph[] {
 	  	
-		const processedSequence = this.process(sequence)
+		const processedSequence = this.process(stream)
 
 		if ( processedSequence ) {
 
@@ -56,7 +100,7 @@ class GlyphSwapper extends Sprite {
 
 		} else {
 
-			return sequence;
+			return stream;
 		}
 	}
 }

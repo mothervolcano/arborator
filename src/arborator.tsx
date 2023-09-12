@@ -49,6 +49,7 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Rule', 'G' );
   alphabet.registerGlyph( 'Rule', 'X' );
   alphabet.registerGlyph( 'Rule', 'R' );
+  alphabet.registerGlyph( 'Rule', 'O' );
   alphabet.registerGlyph( 'Instruction', 'f' );
   alphabet.registerGlyph( 'Instruction', '+' );
   alphabet.registerGlyph( 'Instruction', '-' );
@@ -100,6 +101,7 @@ export function initModel( selectedModel: string ) {
 
   pen.init( origin.x, origin.y, -90 );
 
+
 }
 
 
@@ -111,7 +113,12 @@ export function generate(
 
   const { iterationsNum } = params;
 
+  console.log(`*************************************************`)
+  console.log(``)
   console.log(`GENERATING TREE with ${iterationsNum} iterations`);
+  console.log(``)
+  console.log(`*************************************************`)
+  console.log(``)
 
   composer.reset()
 
@@ -139,13 +146,13 @@ export function draw(
 
   pen.init( origin.x, origin.y, -90 );
 
+
   for ( const command of sequence ) {
 
       command[0].run( pen, { length: lengthCtrl, angle: angleRotationStepCtrl, params: command[1] } );
   }
 
   layer.position = origin;
-
 
   console.log(`Turtle path: ${pen.path().position}`)
 
