@@ -1,41 +1,106 @@
 import { Layer } from 'paper';
 import { paperScope } from './components/paperStage';
 
-import Sequencer from './lib/lsys/core/sequencer'
+
+import { IAlphabet, ICommand, IComposer, IModel } from './lib/lsys/lsys';
+
+import Alphabet from './lib/lsys/core/alphabet';
+import Composer from './lib/lsys/core/composer';
+
 
 import Tree from './arborator-modules/models/tree';
-// import PineTree from './models/pineTree';
-
+import Test from './arborator-modules/models/test';
+import Turtle from './lib/lsys/tools/turtle';
 
 let view: any
 let layer: any
 let origin: any
 
 let tree: any
-let model: any;
-let sequencer: any
+let model: IModel;
+let alphabet: IAlphabet;
+let composer: IComposer;
+// let sequence: Generator<ICommand, void, unknown>;
+let sequence: Array<[ICommand, string[]|null]>
+let pen: any;
 
 
 export function reset() {
+
+  
+}
+
+export function initModel( selectedModel: string ) {
 
   paperScope.project.clear();
 
   view = paperScope.project.view;
   layer = new Layer();
 
-}
+  origin = view.center;
 
-export function initModel( selectedModel: string ) {
+  alphabet = new Alphabet();
+
+  alphabet.registerGlyph( 'Rule', 'I' );
+  alphabet.registerGlyph( 'Rule', 'T' );
+  alphabet.registerGlyph( 'Rule', 'Y' );
+  alphabet.registerGlyph( 'Rule', 'B' );
+  alphabet.registerGlyph( 'Rule', 'K' );
+  alphabet.registerGlyph( 'Rule', 'G' );
+  alphabet.registerGlyph( 'Rule', 'X' );
+  alphabet.registerGlyph( 'Rule', 'R' );
+  alphabet.registerGlyph( 'Rule', 'O' );
+  alphabet.registerGlyph( 'Instruction', 'f' );
+  alphabet.registerGlyph( 'Instruction', '+' );
+  alphabet.registerGlyph( 'Instruction', '-' );
+  alphabet.registerGlyph( 'Instruction', '[' );
+  alphabet.registerGlyph( 'Instruction', ']' );
+  alphabet.registerGlyph( 'Instruction', 'i' );
+  alphabet.registerGlyph( 'Instruction', 'x' );
+  alphabet.registerGlyph( 'Marker', '(' );
+  alphabet.registerGlyph( 'Marker', ')' );
+  alphabet.registerGlyph( 'Marker', ',' );
+  alphabet.registerGlyph( 'Marker', '1' );
+  alphabet.registerGlyph( 'Marker', '2' );
+  alphabet.registerGlyph( 'Marker', '3' );
+  alphabet.registerGlyph( 'Marker', '4' );
+  alphabet.registerGlyph( 'Marker', '5' );
+  alphabet.registerGlyph( 'Marker', '6' );
+  alphabet.registerGlyph( 'Marker', '7' );
+  alphabet.registerGlyph( 'Marker', '8' );
+  alphabet.registerGlyph( 'Marker', '9' );
+  alphabet.registerGlyph( 'Marker', '0' );
+  alphabet.registerGlyph( 'Marker', '.' );
+  alphabet.registerGlyph( 'Marker', '*' );
+  alphabet.registerGlyph( 'Marker', '!' );
+  alphabet.registerGlyph( 'Marker', '=' );
+  alphabet.registerGlyph( 'Marker', '?' );
+  alphabet.registerGlyph( 'Marker', '_' );
+
 
   switch ( selectedModel ) {
 
     case 'DEFAULT':
-      model = Tree;
+      model = new Test( alphabet, 'I' );
       break;
 
     case 'PINE':
+      model = new Tree( alphabet, 'I' );
       break;
   }
+
+  composer = new Composer( model );
+
+  pen = new Turtle();
+
+  pen.style = {
+
+    strokeColor: 'black',
+    strokeWidth: 1
+  }
+
+  pen.init( origin.x, origin.y, -90 );
+
 
 }
 
@@ -48,12 +113,20 @@ export function generate(
 
   const { iterationsNum } = params;
 
-  origin = view.center;
+  console.log(`*************************************************`)
+  console.log(``)
+  console.log(`GENERATING TREE with ${iterationsNum} iterations`);
+  console.log(``)
+  console.log(`*************************************************`)
+  console.log(``)
 
-  tree = new model( origin, iterationsNum );
+  composer.reset()
 
-  sequencer = new Sequencer( tree.rules, tree.actions, tree.axiom );
-  sequencer.write( iterationsNum );
+  const thread = composer.compose( iterationsNum );
+  
+  // console.log(`----> Sequence: ${ thread }`);
+
+  sequence = composer.plot();
 
 }
 
@@ -65,20 +138,25 @@ export function draw(
 
 ) {
 
-  const { lenghtReductionFactorCtrl, angleRotationStepCtrl } = params;
+  const { lengthCtrl, angleRotationStepCtrl } = params;
 
-  console.log(`GENERATING TREE... ${scaleCtrl} / ${lenghtReductionFactorCtrl} / ${angleRotationStepCtrl}`);
+  console.log(`DRAW! angleCtrl: ${lengthCtrl}`);
 
-  origin = view.center;
+  layer.removeChildren();
 
-  tree.reconfigure( origin, scaleCtrl, lenghtReductionFactorCtrl, angleRotationStepCtrl );
-  sequencer.run();
+  pen.init( origin.x, origin.y, -90 );
 
-  layer.scale(scaleCtrl);
 
-  layer.position = view.center;
+  for ( const command of sequence ) {
 
-}
+      command[0].run( pen, { length: lengthCtrl, angle: angleRotationStepCtrl, params: command[1] } );
+  }
+
+  layer.position = origin;
+
+  console.log(`Turtle path: ${pen.path().position}`)
+
+};
 
 
 export function regenerate(
@@ -90,11 +168,6 @@ export function regenerate(
   const { iterationsNum, lenghtReductionFactorCtrl, angleRotationStepCtrl } = params;
 
   console.log(`REGENERATING TREE... (to be implemented) }`);
-
-  tree = new model( origin, iterationsNum );
-
-  sequencer = new Sequencer( tree.rules, tree.actions, tree.axiom );
-  sequencer.write( iterationsNum );
 
 }
 

@@ -16,21 +16,21 @@ import { reset, initModel, generate, regenerate, draw } from './arborator';
 
 
 
-const defaultParamSchema = [
+const defaultParamSchema: Param[] = [
 
-	{ id: 'mkp1', name: 'iterationsNum', value: 5, range: [2, 10], step: 1, label: "P1", },
-	{ id: 'mkp2', name: 'empty', value: 3, range: [1, 10], step: 1, label: "P2", },
+	{ id: 'mkp1', name: 'iterationsNum', value: 6, range: [1, 10], step: 1, label: "P1", },
 	{ id: 'mkp5', name: 'scaleCtrl', value: 1, range: [1, 3], step: 0.01, label: "P3", },
-	{ id: 'mkp3', name: 'lenghtReductionFactorCtrl', value: 1, range: [0, 2], step: 0.01, label: "P4", },
-	{ id: 'mkp4', name: 'angleRotationStepCtrl', value: 15, range: [0, 30], step: 0.1, label: "P5", },
+	{ id: 'mkp2', name: 'angleRotationStepCtrl', value: 30, range: [0, 60], step: 0.1, label: "P2", },
+	{ id: 'mkp3', name: 'lengthCtrl', value: 1, range: [0.25, 5], step: 0.01, label: "P4", },
+	{ id: 'mkp4', name: 'empty', value: 15, range: [0, 30], step: 0.1, label: "P5", },
 	{ id: 'mkp6', name: 'empty', value: 1, range: [0, 2], step: 0.01, label: "P6", },
 	{ id: 'mkp7', name: 'empty', value: 1, range: [0, 2], step: 0.01, label: "P7", },
 ];
 
 
-const pineParamSchema = [
+const pineParamSchema: Param[] = [
 
-	{ id: 'ogp1', name: 'empty', value: 1, range: [0, 2], step: 0.01, label: "Split Drop", },
+	{ id: 'ogp1', name: 'iterationsNum', value: 7, range: [1, 10], step: 0.01, label: "Iterations", },
 	{ id: 'ogp2', name: 'empty', value: 0.5, range: [0, 2], step: 0.01, label: "Split Aperture", },
 	{ id: 'ogp3', name: 'empty', value: 1, range: [0, 2], step: 1, label: "Olga P3", },
 	{ id: 'ogp4', name: 'empty', value: 0.5, range: [0, 2], step: 1, label: "Olga P4", },
@@ -42,7 +42,7 @@ const pineParamSchema = [
 
 // ----------------------------------------------------------------------------
 
-const models = [
+const models: Model[] = [
 
 	{ option: "DEFAULT", label: "Default", icon: "TEST", console: DefaultConsole, params: defaultParamSchema, default: false, checked: false },
 	{ option: "PINE", label: "Pine", icon: "TEST", console: PineConsole, params: pineParamSchema, default: false, checked: false },
@@ -54,7 +54,6 @@ const models = [
 const UI = () => {
 
 	
-	
 	// ----------------------------------------------------------------------------
 
 
@@ -65,7 +64,7 @@ const UI = () => {
 	const [inModelSelectionScreen, setInModelSelectionScreen] = useState<boolean>(true);
 
 	const [currentModel, setCurrentModel] = useState<Model | null>(null);
-	const [paramsForModel, setParamsForModel] = useState<ParamSet | null>(null);
+	const [paramsForModel, setParamsForModel] = useState<Param[] | null>(null);
 
 	const [scaleCtrl, setScaleCtrl] = useState(3);
 
@@ -100,27 +99,26 @@ const UI = () => {
 
 	useEffect(() => { 
 
-		if (isPaperLoaded) {
+		if ( isPaperLoaded && paramsForModel !== null ) {
 
 			const _modelParams: any = {};
 
-			if (currentModel === null) {
+			Array.from(paramsForModel.values()).forEach((p: any) => {
 
-				// TODO: error message
+				_modelParams[p.name] = p.value;
+			});
 
-			} else {
 
-				Array.from(currentModel.params.values()).forEach((p: any) => {
+			// console.log( `!!!! ${currentModel.option}` )
+			console.log(`!!!!!! UPDATED VALUE: ${_modelParams.lengthCtrl }`)
 
-					_modelParams[p.name] = p.value;
-				});
 
-				reset();
-				draw(scaleCtrl, _modelParams);
-			}
+			console.log(`USE EFFECT: draw()`);
+
+			draw(scaleCtrl, _modelParams);
 		}
 
-	}, [currentModel, paramsForModel]);
+	}, [ paramsForModel ]);
 
 
 
@@ -139,12 +137,11 @@ const UI = () => {
 				_modelParams[p.name] = p.value; 
 
 			});
-			
 
-			reset();
+			// console.log(`GENERATE HANDLER: initModel() + generate()`);
+			
 			initModel(selectedModel.option)
 			generate(_modelParams);
-			draw(scaleCtrl, _modelParams);
 
 			setCurrentModel(selectedModel);
 			setParamsForModel(selectedModel.params);
@@ -187,6 +184,10 @@ const UI = () => {
 
 
 	function handleParamCtrlInputForModel(updatedParams: any) {
+
+		console.log(`UPDATE PARAMS! ${updatedParams}`);
+
+		console.log(`!!!!!! RECEIVED VALUE: ${updatedParams[3].name}  / ${updatedParams[3].value}`)
 
 		setParamsForModel(updatedParams);
 	}

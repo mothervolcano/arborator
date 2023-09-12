@@ -22,13 +22,14 @@ const Icon = ({
 		'TEST': [ "M54.141 24L14 64.141L54.141 104", "M34.07 64H114.141" ]
 	}
 
+
 	function svgPaths( _name ) {
 
 		if ( iconSet[_name] ) {
 
-			const paths = iconSet[_name].map( (n) => {
+			const paths = iconSet[_name].map( (n,i) => {
 
-				return <path d={n} vectorEffect="non-scaling-stroke" strokeMiterlimit="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+				return <path key={`${_name}${i}`} d={n} vectorEffect="non-scaling-stroke" strokeMiterlimit="1.5" strokeLinecap="round" strokeLinejoin="round"/>
 
 			});
 

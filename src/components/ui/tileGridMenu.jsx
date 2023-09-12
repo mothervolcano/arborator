@@ -11,19 +11,16 @@ const TileGridMenu = ({
 
 	function handleValueChange( e ) {
 
-		const _options = options.slice();
-		_options.map( (item) => { 
+		const _options = options.map( (item) => { 
 			
 			if ( item.option === e.target.value ) { 
 
-				item.checked = true;
+				return { ...item, checked: true };
 
 			} else {
 
-				item.checked = false;
+				return { ...item, checked: false };
 			} 
-
-			return item;
 		});
 		
 		onSelect( _options );
@@ -50,7 +47,7 @@ const TileGridMenu = ({
 
 
 			return (
-			        	<div>
+			        	<div key={item.option}>
 
 				        	<ModeSelector 
 
