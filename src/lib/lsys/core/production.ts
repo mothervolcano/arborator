@@ -10,7 +10,7 @@ abstract class Production implements IProduction {
 	protected _rule: Glyph[];
 	protected _sequence: Map<Glyph, number>;
 	protected _output: string;
-	protected prims: Array<Prim> = [];
+	protected prims: Map<Prim, any> = new Map();
 	protected sprites: Array<ISprite> = [];
 
 
@@ -161,7 +161,14 @@ abstract class Production implements IProduction {
 
 		if (save) { 
 
-			this.head.prims.push(prim); 
+			if ( !this.prims.has(prim) ) {
+
+				this.head.prims.push(prim); 
+
+			} else {
+
+				throw new Error(`ERROR: Trying to re-add ${prim.type} Prim to ${this.head.symbol}`);
+			}
 		}
 
 		return prim;	

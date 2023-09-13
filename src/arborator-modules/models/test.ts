@@ -39,7 +39,7 @@ class Test extends Model {
 		super( alphabet, axiom );
 
 
-		const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('O*') ).compose('O'); 
+		// const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('O*') ).compose('O'); 
 
 		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-IYf*') ).compose('IYf'); 
 		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-YIBf*') ).compose('[*B][*B]f'); 
@@ -54,8 +54,8 @@ class Test extends Model {
 		Y.addSprite( new Indexer('B',1) );
 
 		// Y.addSprite( new Accumulator( alphabet.glyph('f') ));
-		// Y.addSprite( new Accumulator(1,2) )
-		// Y.addSprite( new Replicator('f') );
+		Y.addSprite( new Accumulator(1,2) )
+		Y.addSprite( new Replicator('f') );
 		Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.collect('-+') ) );
 		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), 'B' )); 
 		
@@ -93,7 +93,7 @@ class Test extends Model {
 		// Y.addPrim( new ImperativePrim() );
 		// K.addPrim( new ParameterPrim(2) );
 
-		this.addProduction(O);
+		// this.addProduction(O);
 		this.addProduction(I);
 		this.addProduction(Y);
 		this.addProduction(B);
