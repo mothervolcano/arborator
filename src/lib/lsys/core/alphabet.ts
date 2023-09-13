@@ -74,7 +74,7 @@ class Alphabet implements IAlphabet {
 
 				case 'Rule' :
 
-					glyph = { id: 0, type: type, symbol: symbol, params: [] };
+					glyph = { id: 0, type: type, symbol: symbol, prims: [] };
 
 					break;
 

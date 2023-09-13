@@ -12,10 +12,13 @@ import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 import ImperativePrim from "../../lib/lsys/prims/imperativePrim";
 import GlyphSwapper from '../../lib/lsys/sprites/glyphSwapper';
 import IncognitoPerpetuator from '../../lib/lsys/sprites/incognitoPerpetuator';
-import AccumulatorPrim from '../../lib/lsys/prims/accumulatorPrim';
+import CounterPrim from '../../lib/lsys/prims/counterPrim';
 import PrimMapper from '../../lib/lsys/sprites/primMapper';
-import GlyphAccumulator from '../../lib/lsys/sprites/glyphAccumulator';
+import Accumulator from '../../lib/lsys/sprites/accumulator';
 import IncognitoDiscloser from '../../lib/lsys/sprites/incognitoDiscloser';
+import Indexer from '../../lib/lsys/sprites/indexer';
+import Doppelganger from '../../lib/lsys/sprites/doppelganger';
+import Replicator from '../../lib/lsys/sprites/replicator';
 
 
 class Test extends Model {
@@ -40,24 +43,32 @@ class Test extends Model {
 
 		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-IYf*') ).compose('IYf'); 
 		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-YIBf*') ).compose('[*B][*B]f'); 
-		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BKf*') ).compose('*ff');
+		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BKf*') ).compose('f*f');
 		const K: IProduction = new KRule( alphabet.rule('K'), alphabet.collect('[]+-BKf*') ).compose('*f[*f]ff')
 
-		I.addSprite( new PrimMapper( new AccumulatorPrim(1), alphabet.rule('Y'), 1 ));
-		I.addSprite( new PrimMapper( new AccumulatorPrim(1), alphabet.rule('I'), 1 ));
-		// I.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));
+		// I.addSprite( new PrimMapper( new CounterPrim(1), alphabet.rule('Y'), 1 ));
+		// I.addSprite( new PrimMapper( new CounterPrim(1), alphabet.rule('I'), 1 ));
+		// I.addSprite( new Accumulator( alphabet.glyph('f') ));
 		
-		// Y.addSprite( new GlyphAccumulator( alphabet.glyph('B') ));
-		Y.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));
-		Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.collect('-+') ) );
-		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('B').symbol )); 
-		
-		Y.addSprite( new PrimMapper( new AccumulatorPrim(1), alphabet.rule('B'), 1 ));
-		Y.addSprite( new PrimMapper( new AccumulatorPrim(1), alphabet.rule('B'), 2 ));
+		// Y.addSprite( new Accumulator( alphabet.glyph('B') ));
+		Y.addSprite( new Indexer('B',1) );
 
+		// Y.addSprite( new Accumulator( alphabet.glyph('f') ));
+		// Y.addSprite( new Accumulator(1,2) )
+		// Y.addSprite( new Replicator('f') );
+		Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.collect('-+') ) );
+		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), 'B' )); 
+		
+		// Y.addSprite( new PrimMapper( new CounterPrim(1), alphabet.rule('B'), 1 ));
+		// Y.addSprite( new PrimMapper( new CounterPrim(1), alphabet.rule('B'), 2 ));
+
+		// B.addSprite( new Doppelganger() );
+		B.addSprite( new Accumulator(1));
+		B.addSprite( new Replicator('f'));
 		B.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ));
 		// B.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('K').symbol )); 
-		B.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));
+		// B.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));
+		// B.addSprite( new Replicator('f') );
 
 		
 		// K.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ));

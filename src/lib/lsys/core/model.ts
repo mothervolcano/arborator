@@ -96,9 +96,9 @@ abstract class Model implements IModel {
 
 	protected addProduction(production: IProduction) {
 
-		if (production.glyph.type === 'Rule' && !this.productions.has(production.glyph.symbol)) {
+		if (production.head.type === 'Rule' && !this.productions.has(production.head.symbol)) {
 
-			this.productions.set(production.glyph.symbol, production);
+			this.productions.set(production.head.symbol, production);
 		}
 
 	}

@@ -55,7 +55,7 @@ class KRule extends Production {
 		console.log(``)
 		console.log(`...........................................`)
 			
-		console.log(`${this.glyph.symbol} RULE PARAMS: ${params}`)
+		console.log(`${this.head.symbol} RULE PARAMS: ${params}`)
 
 		// 	parsedParams = params.split(',').map((s) => { 
 
@@ -111,7 +111,7 @@ class KRule extends Production {
 
 			for ( const sprite of this.sprites ) {
 
-				sequence = sprite.run( sequence, params, this.glyph.symbol );
+				sequence = sprite.run( sequence, params, this.head.symbol );
 			}
 
 		} else {
@@ -149,7 +149,7 @@ class KRule extends Production {
 
 			if ( updatedParams.length ) { 
 
-				return  { ...glyph, params: [ ...updatedParams ] } 
+				return  { ...glyph, prims: [ ...updatedParams ] } 
 
 			}
 
@@ -205,8 +205,8 @@ class KRule extends Production {
 		// --------------------------------------------------------------
 		// DEBUG 
 
-		const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', params: [] }
-		const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', params: [] }
+		const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', prims: [] }
+		const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', prims: [] }
 
 		const debugGlyph = sequence.find( (g) => g.symbol === 'K');
 
@@ -214,7 +214,7 @@ class KRule extends Production {
 
 			if ( debugGlyph!.symbol === glyph.symbol ) {
 
-				debugInfo.params = [ this.prims[0]];
+				debugInfo.prims = [ this.prims[0]];
 
 				sequence.splice( i, 0, ...[ debugMark, debugInfo ]);
 			}

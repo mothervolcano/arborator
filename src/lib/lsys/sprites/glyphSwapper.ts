@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Glyph, Prim } from "../lsys";
+import { Glyph, Prim, Rule } from "../lsys";
 
 
 
@@ -20,7 +20,7 @@ class GlyphSwapper extends Sprite {
 		this.sub = sub;
 	}
 
-	public implant(rule: Glyph[], prims: Prim[]): void {
+	public implant(rule: Glyph[], head: Rule): void {
 	 			
 		rule.forEach((glyph, i)=>{
 

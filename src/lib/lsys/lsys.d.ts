@@ -20,7 +20,7 @@ export interface IPrim<T> {
 }
 
 
-export type PrimType = 'Parameter' | 'Flag' | 'Imperative' | 'Accumulator';
+export type PrimType = 'Parameter' | 'Flag' | 'Imperative' | 'Counter' | 'Id';
 
 
 // The interface for Parameters specifically
@@ -34,12 +34,24 @@ export interface Parameter extends IPrim<number> {
   clone(): any;
 }
 
-// The interface for Accumulators specifically
-export interface Accumulator extends IPrim<number> {
-  type: 'Accumulator';
+// The interface for Parameters specifically
+export interface Id extends IPrim<number> {
+  type: 'Id';
   cast(value: number): this;
   recast(str: string): this;
-  process(value?: string): number;
+  process(value?: number | string): void;
+  read(str: string): number;
+  write(): string;
+  clone(): any;
+}
+
+
+// The interface for Accumulators specifically
+export interface Counter extends IPrim<number> {
+  type: 'Counter';
+  cast(value: number): this;
+  recast(str: string): this;
+  process(value?: number | string ): number;
   read(str: string): number;
   write(): string;
   clone(): any;
@@ -70,12 +82,12 @@ export interface Imperative extends IPrim<Glyph> {
 }
 
 
-export type Prim = Parameter | Flag | Imperative | Accumulator
+export type Prim = Parameter | Flag | Imperative | Counter | Id
 
 
 interface ISprite {
 
-  implant( rule: Glyph[], prims: Prim[] ): void;
+  implant( rule: Glyph[], head: Rule ): void;
   run( sequence: Glyph[], params?: any, context?: any ): Glyph[];
 }
 
@@ -96,7 +108,7 @@ export interface Rule {
   type: 'Rule';
   id: number;
   symbol: string;
-  params: Prim[];
+  prims: Prim[];
 
 }
 
@@ -220,7 +232,7 @@ export interface IComposer {
 
 export interface IProduction {
 
-  readonly glyph: Glyph;
+  readonly head: Glyph;
   readonly output: string;
   read( params?: string | null, context?: any ): boolean | void;
   compose( ...str: string[] ): void;

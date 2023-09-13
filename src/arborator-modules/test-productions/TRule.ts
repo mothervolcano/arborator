@@ -37,7 +37,7 @@ class TRule extends Production {
 		
 		if (params) {
 			
-			console.log(`PROCESSING ${this.glyph.symbol} RULE... ${params}`)
+			console.log(`PROCESSING ${this.head.symbol} RULE... ${params}`)
 
 			parsedParams = params.split(',').map((s) => { 
 
@@ -83,11 +83,11 @@ class TRule extends Production {
 						parsedParams[0].setValue(1);		
 					} 
 
-					return { ...glyph, params: [...parsedParams] };
+					return { ...glyph, prims: [...parsedParams] };
 
 				} else {
 
-					return { ...glyph, params: [] };
+					return { ...glyph, prims: [] };
 				}
 			}
 
@@ -97,14 +97,14 @@ class TRule extends Production {
 		// ---------------------------------------
 		// DEBUG
 
-		const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', params: [] }
-		const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', params: [] }
+		const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', prims: [] }
+		const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', prims: [] }
 
 		const debugGlyph = sequence.find( (g) => g.symbol === 'R');
 
 		if ( debugGlyph && debugGlyph.type === 'Rule') {
 
-			debugInfo.params = [ ...parsedParams ];
+			debugInfo.prims = [ ...parsedParams ];
 
 			sequence.push(...[ debugMark, debugInfo ]);
 		}

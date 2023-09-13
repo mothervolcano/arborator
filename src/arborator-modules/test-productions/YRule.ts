@@ -9,8 +9,6 @@ import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 class YRule extends Production {
 
 
-	private antipodes: Array<Glyph> = [];
-
 	constructor(glyph: Rule, dialect: Glyph[]) {
 
 		super(glyph, dialect);
@@ -21,8 +19,6 @@ class YRule extends Production {
 	public compose( brackets: string, antipodes: string, rule: string, ) {
 
 		this.cast( this.decode(`${brackets[0]}${rule}${brackets[1]}${brackets[0]}${rule}${brackets[1]}`) );
-
-		this.antipodes = this.decode(antipodes);
 		
 		return this;
 	};
@@ -35,23 +31,22 @@ class YRule extends Production {
 		// 1 Parse the parameters
 
 
-		let parsedParams: Prim[] = []
+		// let parsedParams: Prim[] = []
 		
-		if (params) {
+		// if (params) {
 			
-			console.log(`PROCESSING ${this.glyph.symbol} RULE... ${params}`)
+		// 	console.log(`PROCESSING ${this.head.symbol} RULE... ${params}`)
 
-			parsedParams = params.split(',').map((s, i) => { 
+		// 	parsedParams = params.split(',').map((s, i) => { 
 
-				return this.addPrim(s.charAt(0), 'Y', false);
+		// 		return this.addPrim(s.charAt(0), 'Y', false);
 
-			});
-		}
+		// 	});
+		// }
 
 		// --------------------------------------------------------
 		// 2  Create the rule sequence
 
-		const antipodes = this.antipodes.slice();
 
 		let sequence: Glyph[] = this._rule.slice();
 
@@ -63,7 +58,7 @@ class YRule extends Production {
 
 			for ( const sprite of this.sprites ) {
 
-				sequence = sprite.run( sequence );
+				sequence = sprite.run( sequence, params );
 			}
 		}
 
@@ -77,7 +72,7 @@ class YRule extends Production {
 
 			let updatedParams: Prim[] = [];
 			
-			for ( const prim of this.prims ) {
+			for ( const prim of this.head.prims ) {
 
 				if ( prim.places.includes(i) ) {
 
@@ -88,10 +83,10 @@ class YRule extends Production {
 				}
 			}
 
-			if ( updatedParams.length ) { 
+			if ( updatedParams.length && glyph.type==='Rule' ) { 
 
-				return  { ...glyph, params: [ ...updatedParams ] } 
-
+				glyph.prims = updatedParams;
+				return  glyph;
 			}
 
 

@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Glyph, Imperative, Prim } from "../lsys";
+import { Glyph, Imperative, Prim, Rule } from "../lsys";
 import ImperativePrim from "../prims/imperativePrim";
 
 
@@ -13,15 +13,17 @@ class IncognitoPerpetuator extends Sprite {
 	private targetGlyph: Glyph | null = null;
 	private spots: number[] = [];
 
+	
 	constructor( incognito: Glyph, targetSymbol: string ) {
 
 		super();
 
 		this.incognito = incognito;
 		this.targetSymbol = targetSymbol;
-	}
+	};
 
-	public implant(rule: Glyph[], prims: Prim[]): void {
+	
+	public implant(rule: Glyph[], head: Rule): void {
 
 
 		rule.forEach((glyph,i)=>{
@@ -44,7 +46,7 @@ class IncognitoPerpetuator extends Sprite {
 				prim.places = [glyph.id];
 
 				this.prims.push(prim);
-				prims.push(prim);
+				head.prims.push(prim);
 			}
 
 			// Track all the Incognito Glyph places
@@ -71,7 +73,7 @@ class IncognitoPerpetuator extends Sprite {
 		// }).filter(n => n !== undefined) as number[];
 
 		// prims.push(this.prim);
-	}
+	};
 
 
 	protected process(stream: Glyph[]): Glyph[] | null {
@@ -90,10 +92,10 @@ class IncognitoPerpetuator extends Sprite {
 
 				console.log(`Prim value: ${prim.getValue().symbol}`)
 
-				if ( prim.getValue().symbol === '?' ) { prim.cast(glyph); } // If the prim has a glyph then the incognito has been disclosed
+				// if ( prim.getValue().symbol === '?' ) { prim.cast(glyph); } // If the prim has a glyph then the incognito has been disclosed
 				// else { return prim.getValue() }
 
-				// prim.cast(glyph);
+				prim.cast(glyph);
 
 				console.log(`cast prim with: ${glyph.symbol}`)
 				console.log(`places to add prim: ${prim.places}`)
@@ -158,25 +160,25 @@ class IncognitoPerpetuator extends Sprite {
 		console.log(``)
 		console.log(`RUNNING INCOGNITO PERPETUATOR FOR: ${context}`)
 
-		if ( params ) {
+		// if ( params ) {
 
-			params.split(',').forEach((p: string) => {
+		// 	params.split(',').forEach((p: string) => {
 
-				for ( const prim of this.prims ) {
+		// 		for ( const prim of this.prims ) {
 
-					if (prim.prefix === p.charAt(0)) {
+		// 			if (prim.prefix === p.charAt(0)) {
 						
-						prim.process(p);
-					}
-				}
-			})
-		};
+		// 				prim.process(p);
+		// 			}
+		// 		}
+		// 	})
+		// };
 
-		const processedSequence = this.process(stream)
+		const sequence = this.process(stream)
 
-		if ( processedSequence ) {
+		if ( sequence ) {
 
-			return processedSequence;
+			return sequence;
 
 		} else {
 

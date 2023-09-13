@@ -30,7 +30,7 @@ class IRule extends Production {
 		// --------------------------------------------------------
 		// 1 Parse the parameters
 
-		// console.log(`PROCESSING ${this.glyph.symbol} RULE... ${params}`)
+		console.log(`PROCESSING ${this.head.symbol} RULE... ${params}`)
 
 		// let parsedParams: Prim[] = []
 		
@@ -66,7 +66,7 @@ class IRule extends Production {
 
 			for ( const sprite of this.sprites ) {
 
-				sequence = sprite.run( sequence, params, this.glyph.symbol );
+				sequence = sprite.run( sequence, params, this.head.symbol );
 			}
 
 		} else {
@@ -87,7 +87,7 @@ class IRule extends Production {
 
 			let updatedParams: Prim[] = [];
 			
-			for ( const prim of this.prims ) {
+			for ( const prim of this.head.prims ) {
 
 				// console.log(`Reading ${this.glyph.symbol}' Prims: ${prim.getValue()}`)
 
@@ -99,10 +99,10 @@ class IRule extends Production {
 				}
 			}
 
-			if ( updatedParams.length ) { 
+			if ( updatedParams.length && glyph.type==='Rule' ) { 
 
-				return  { ...glyph, params: [ ...updatedParams ] } 
-
+				glyph.prims = updatedParams;
+				return  glyph;
 			}
 
 			return glyph;

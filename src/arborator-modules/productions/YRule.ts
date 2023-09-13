@@ -68,7 +68,7 @@ class YRule extends Production {
 				if ( substitute && this.dirPrim.type === 'Imperative') this.dirPrim.cast( substitute );
 				// else this.dirPrim.set();
 
-				g.params = [ this.countPrim, this.accPrim, this.dirPrim.clone() ];
+				g.prims = [ this.countPrim, this.accPrim, this.dirPrim.clone() ];
 				
 				symbolToggle = symbolToggle === '+' ? '-' : '+'; 
 				

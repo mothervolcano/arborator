@@ -66,15 +66,15 @@ class BRule extends Production {
 
 		for (const glyph of this._rule) {
 
-			if (glyph.type === 'Rule' && glyph.symbol === this.glyph.symbol) {
+			if (glyph.type === 'Rule' && glyph.symbol === this.head.symbol) {
 
 				if ( parsedParams.length ) {
 
-					glyph.params = [...parsedParams];
+					glyph.prims = [...parsedParams];
 
 				} else {
 
-					glyph.params = [...this.prims];
+					glyph.prims = [...this.prims];
 				}
 			}
 		}

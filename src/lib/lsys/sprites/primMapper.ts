@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Glyph, Prim } from "../lsys";
+import { Glyph, Prim, Rule } from "../lsys";
 
 
 
@@ -22,7 +22,7 @@ class PrimMapper extends Sprite {
 	}
 
 
-	public implant(rule: Glyph[], prims: Prim[]): void {
+	public implant(rule: Glyph[], head: Rule): void {
 	 	
 		
 		this.targetGlyphs = rule.filter((g) => g.symbol === this.target.symbol );	
@@ -38,7 +38,7 @@ class PrimMapper extends Sprite {
 
 		// }).filter(n => n !== undefined) as number[];
 
-		prims.push(this.prim);
+		head.prims.push(this.prim);
 	}
 
 

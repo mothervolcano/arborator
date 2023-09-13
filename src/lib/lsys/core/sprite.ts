@@ -1,4 +1,4 @@
-import { Glyph, ISprite, Prim } from "../lsys";
+import { Glyph, ISprite, Prim, Rule } from "../lsys";
 
 
 
@@ -12,10 +12,10 @@ abstract class Sprite implements ISprite {
 
 	}
 
-	abstract implant( rule: Glyph[], prims: Prim[] ): void
-	abstract run( sequence: Glyph[], params?: any ): Glyph[];
+	abstract implant( rule: Glyph[], head: Rule ): void
+	abstract run( stream: Glyph[], params?: any ): Glyph[];
 
-	protected abstract process( stream: Glyph[] ): Glyph[] | null;
+	protected abstract process( stream: Glyph[], context?: any ): Glyph[] | null;
 
 }
 

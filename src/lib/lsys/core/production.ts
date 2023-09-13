@@ -5,7 +5,7 @@ import ParameterPrim from '../prims/parameterPrim';
 
 abstract class Production implements IProduction {
 
-	protected _glyph: Glyph;
+	protected _head: Rule;
 	protected dialect: Glyph[]; 
 	protected _rule: Glyph[];
 	protected _sequence: Map<Glyph, number>;
@@ -14,9 +14,9 @@ abstract class Production implements IProduction {
 	protected sprites: Array<ISprite> = [];
 
 
-	constructor(glyph: Glyph, dialect?: Glyph[]) {
+	constructor(glyph: Rule, dialect?: Glyph[]) {
 
-		this._glyph = glyph;
+		this._head = glyph;
 		this.dialect = dialect || [];
 		this._sequence = new Map();
 
@@ -32,9 +32,9 @@ abstract class Production implements IProduction {
 		return this._rule;
 	}
 
-	get glyph() {
+	get head() {
 
-		return this._glyph;
+		return this._head;
 	}
 
 	get output() {
@@ -55,7 +55,7 @@ abstract class Production implements IProduction {
 
 			} else {
 
-				throw new Error(`${char} it's not part of this ${this._glyph.symbol} production dialect`);
+				throw new Error(`${char} it's not part of this ${this._head.symbol} production dialect`);
 			}
 		});
 
@@ -67,9 +67,9 @@ abstract class Production implements IProduction {
 
 		const series = sequence.map((g) => {
 
-			if (g.type === 'Rule' && g.params?.length) {
+			if (g.type === 'Rule' && g.prims?.length) {
 
-				const paramSeries = g.params.map((p) => {
+				const paramSeries = g.prims.map((p) => {
 
 					return p.write();
 
@@ -161,7 +161,7 @@ abstract class Production implements IProduction {
 
 		if (save) { 
 
-			this.prims.push(prim); 
+			this.head.prims.push(prim); 
 		}
 
 		return prim;	
@@ -170,7 +170,7 @@ abstract class Production implements IProduction {
 
 	public addSprite( sprite: ISprite ) {
 
-		sprite.implant( this._rule, this.prims );
+		sprite.implant( this._rule, this.head );
 		this.sprites.push( sprite );
 	};
 

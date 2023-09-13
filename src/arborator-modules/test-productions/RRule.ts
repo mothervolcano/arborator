@@ -37,7 +37,7 @@ class RRule extends Production {
 		
 		if (params) {
 			
-			console.log(`PROCESSING ${this.glyph.symbol} RULE... ${params}`)
+			console.log(`PROCESSING ${this.head.symbol} RULE... ${params}`)
 
 			parsedParams = params.split(',').map((s) => { 
 
@@ -74,7 +74,7 @@ class RRule extends Production {
 		
 		sequence = sequence.map( (glyph) => { 
 
-			if (glyph.type === 'Rule' && glyph.symbol === this.glyph.symbol) {
+			if (glyph.type === 'Rule' && glyph.symbol === this.head.symbol) {
 
 				if ( parsedParams.length ) {
 
@@ -83,11 +83,11 @@ class RRule extends Production {
 						parsedParams[0].setValue(1);		
 					} 
 
-					return { ...glyph, params: [...parsedParams] };
+					return { ...glyph, prims: [...parsedParams] };
 
 				} else {
 
-					return { ...glyph, params: [] };
+					return { ...glyph, prims: [] };
 				}
 			}
 

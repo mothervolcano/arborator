@@ -21,7 +21,7 @@ class Composer implements IComposer {
 		this.commands = [];
 		this.thread = [];
 		this.strip = [];
-		this.window = 15;
+		this.window = 20;
 		this.currentIndex = 0;
 
 	};

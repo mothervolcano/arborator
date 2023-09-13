@@ -55,7 +55,7 @@ class KRule extends Production {
 		console.log(``)
 		console.log(`...........................................`)
 			
-		console.log(`${this.glyph.symbol} RULE PARAMS: ${params}`)
+		console.log(`${this.head.symbol} RULE PARAMS: ${params}`)
 
 		// 	parsedParams = params.split(',').map((s) => { 
 
@@ -111,7 +111,7 @@ class KRule extends Production {
 
 			for ( const sprite of this.sprites ) {
 
-				sequence = sprite.run( sequence, params, this.glyph.symbol );
+				sequence = sprite.run( sequence, params, this.head.symbol );
 			}
 
 		} else {
@@ -132,7 +132,7 @@ class KRule extends Production {
 
 			let updatedParams: Prim[] = [];
 			
-			for ( const prim of this.prims ) {
+			for ( const prim of this.head.prims ) {
 
 				// console.log(`Reading ${this.glyph.symbol}' Prims: ${prim.getValue()} [ ${prim.places} ]`)
 
@@ -147,10 +147,10 @@ class KRule extends Production {
 				}
 			}
 
-			if ( updatedParams.length ) { 
+			if ( updatedParams.length && glyph.type==='Rule' ) { 
 
-				return  { ...glyph, params: [ ...updatedParams ] } 
-
+				glyph.prims = updatedParams;
+				return  glyph;
 			}
 
 			return glyph;

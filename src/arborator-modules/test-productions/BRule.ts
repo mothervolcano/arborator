@@ -12,10 +12,7 @@ class BRule extends Production {
 	constructor(glyph: Rule, dialect: Glyph[]) {
 
 		super(glyph, dialect);
-
-		// this.addPrim(new ParameterPrim(1));
-		// this.addPrim(new ParameterPrim(1));
-		// this.addPrim(new ImperativePrim( dialect[2] ));
+		
 	}
 	
 
@@ -55,7 +52,7 @@ class BRule extends Production {
 		console.log(``)
 		console.log(`...........................................`)
 			
-		console.log(`${this.glyph.symbol} RULE PARAMS: ${params}`)
+		console.log(`${this.head.symbol} RULE PARAMS: ${params}`)
 
 		// 	parsedParams = params.split(',').map((s) => { 
 
@@ -111,7 +108,7 @@ class BRule extends Production {
 
 			for ( const sprite of this.sprites ) {
 
-				sequence = sprite.run( sequence, params, this.glyph.symbol );
+				sequence = sprite.run( sequence, params, this.head.symbol );
 			}
 
 		} else {
@@ -132,7 +129,7 @@ class BRule extends Production {
 
 			let updatedParams: Prim[] = [];
 			
-			for ( const prim of this.prims ) {
+			for ( const prim of this.head.prims ) {
 
 				// console.log(`Reading ${this.glyph.symbol}' Prims: ${prim.getValue()} [ ${prim.places} ]`)
 
@@ -147,10 +144,10 @@ class BRule extends Production {
 				}
 			}
 
-			if ( updatedParams.length ) { 
+			if ( updatedParams.length && glyph.type==='Rule' ) { 
 
-				return  { ...glyph, params: [ ...updatedParams ] } 
-
+				glyph.prims = updatedParams;
+				return  glyph;
 			}
 
 			return glyph;
