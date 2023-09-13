@@ -22,7 +22,7 @@ class PrimMapper extends Sprite {
 	}
 
 
-	public implant(rule: Glyph[], head: Rule): void {
+	public implant(rule: Glyph[], head: Rule): Prim[] {
 	 	
 		
 		this.targetGlyphs = rule.filter((g) => g.symbol === this.target.symbol );	
@@ -38,7 +38,7 @@ class PrimMapper extends Sprite {
 
 		// }).filter(n => n !== undefined) as number[];
 
-		head.prims.push(this.prim);
+		return [this.prim];
 	}
 
 

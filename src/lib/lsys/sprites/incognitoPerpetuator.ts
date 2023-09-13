@@ -23,7 +23,7 @@ class IncognitoPerpetuator extends Sprite {
 	};
 
 	
-	public implant(rule: Glyph[], head: Rule): void {
+	public implant(rule: Glyph[], head: Rule): Prim[] {
 
 
 		rule.forEach((glyph,i)=>{
@@ -46,7 +46,6 @@ class IncognitoPerpetuator extends Sprite {
 				prim.places = [glyph.id];
 
 				this.prims.push(prim);
-				head.prims.push(prim);
 			}
 
 			// Track all the Incognito Glyph places
@@ -58,21 +57,7 @@ class IncognitoPerpetuator extends Sprite {
 
 		})
 	 	
-		// this.prim.places = rule.map((g, i) => {
-
-		// 	if (g.symbol === this.target.symbol) {
-
-		// 		return i;
-		// 	}
-
-		// 	if (g.symbol === this.incognito.symbol ) {
-
-		// 		this.spots.push(i);
-		// 	}
-
-		// }).filter(n => n !== undefined) as number[];
-
-		// prims.push(this.prim);
+		return this.prims;
 	};
 
 

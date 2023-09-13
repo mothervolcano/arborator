@@ -21,9 +21,9 @@ class Accumulator extends Sprite {
 	};
 
 
-	public implant(rule: Glyph[], head: Rule): void {
-	 	
-		head.prims.push( this.prim );
+	public implant(rule: Glyph[], head: Rule): Prim[] {
+	 
+		return [ this.prim ];
 	};
 
 

@@ -87,7 +87,7 @@ export type Prim = Parameter | Flag | Imperative | Counter | Id
 
 interface ISprite {
 
-  implant( rule: Glyph[], head: Rule ): void;
+  implant( rule: Glyph[], head: Rule ): Prim[] | void;
   run( sequence: Glyph[], params?: any, context?: any ): Glyph[];
 }
 

@@ -170,8 +170,18 @@ abstract class Production implements IProduction {
 
 	public addSprite( sprite: ISprite ) {
 
-		sprite.implant( this._rule, this.head );
+		const prims = sprite.implant( this._rule, this.head );
+
+		if ( prims ) {
+
+			for ( const prim of prims ) {
+
+				this.addPrim( prim );
+			}
+		};
+		
 		this.sprites.push( sprite );
+
 	};
 
 

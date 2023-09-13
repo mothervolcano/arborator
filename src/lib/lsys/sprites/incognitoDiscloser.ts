@@ -22,7 +22,7 @@ class IncognitoDiscloser extends Sprite {
 	}
 
 
-	public implant(rule: Glyph[], head: Rule): void {
+	public implant(rule: Glyph[], head: Rule): Prim[] {
 
 		rule.forEach((glyph, i) => {
 
@@ -33,7 +33,7 @@ class IncognitoDiscloser extends Sprite {
 
 		})
 
-		head.prims.push(this.prim);   
+		return [ this.prim ];   
 	}
 
 

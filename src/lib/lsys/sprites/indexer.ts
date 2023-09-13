@@ -23,7 +23,7 @@ class Indexer extends Sprite {
 	};
 
 
-	implant(rule: Glyph[], head: Rule): void {
+	implant(rule: Glyph[], head: Rule): Prim[] {
 
 	    rule.forEach((glyph)=>{
 
@@ -36,14 +36,14 @@ class Indexer extends Sprite {
 	    			const prim = new IdPrim( this.id )
 	    			prim.places = [ glyph.id ];
 
-	    			head.prims.push( prim );
-
 	    			this.prims.push(prim);
 
 	    			this.id++
 	    		}
 	    	}
 	    });
+
+	    return this.prims;
 	};
 
 
