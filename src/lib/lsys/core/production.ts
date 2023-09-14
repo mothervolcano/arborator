@@ -22,7 +22,7 @@ abstract class Production implements IProduction {
 		this._sequence = new Map();
 
 		this._rule = dialect ? [] : [glyph];
-		this._output = dialect ? '' : this.encode([glyph]);
+		this._output = dialect ? '' : this.encodeSequence([glyph]);
 
 		return this;
 	};
@@ -42,6 +42,25 @@ abstract class Production implements IProduction {
 
 		return this._output;
 	}
+
+
+	protected cast(sequence: Array<Glyph>) {
+
+		this._rule = sequence.map((glyph, i) => {
+			
+			glyph.id = i;
+
+			if ( glyph.type==='Rule' ) {
+
+				return glyph;
+
+			} else {
+
+				return { ...glyph, id: i };
+			}
+
+		});
+	};
 
 
 	decode(str: string): Glyph[] {
@@ -64,7 +83,25 @@ abstract class Production implements IProduction {
 	};
 
 
-	encode(sequence: Array<Glyph>): string {
+	encodeGlyph( glyph: Glyph ): string {
+
+		if ( glyph.type === 'Rule' && glyph.prims.length ) {
+
+			const paramSeries = glyph.prims.map((p) => {
+
+				return p.write();
+			});
+
+			return `${glyph.symbol}(${paramSeries.join(',')})`;
+
+		} else {
+
+			return glyph.symbol;
+		}
+	};
+
+
+	encodeSequence(sequence: Array<Glyph>): string {
 
 		const series = sequence.map((g) => {
 
@@ -92,26 +129,6 @@ abstract class Production implements IProduction {
 
 	abstract compose(...str: string[]): void;
 	abstract process(params?: string, context?: any): void;
-
-	
-	protected cast(sequence: Array<Glyph>) {
-
-		this._rule = sequence.map((glyph, i) => {
-			
-			glyph.id = i;
-
-			if ( glyph.type==='Rule' ) {
-
-				return glyph;
-
-			} else {
-
-				return { ...glyph, id: i };
-			}
-
-		});
-
-	};
 
 
 	public addPrim(input: Prim | string, symbols?: string | string[], save: boolean = true): Prim {

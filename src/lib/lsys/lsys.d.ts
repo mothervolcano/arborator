@@ -240,7 +240,7 @@ export interface IProduction {
   addSprite( sprite: ISprite ): void;
   addPrim( prim: Prim | string, symbols?: string | string[], save?: boolean ): Prim;
   process( params?: string, context?: any ): void;
-  encode( sequence: Array<Glyph> ): string;
+  encodeSequence( sequence: Array<Glyph> ): string;
   write( context?: any ): string;
 
 }

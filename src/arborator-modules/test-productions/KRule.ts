@@ -221,11 +221,13 @@ class KRule extends Production {
 		// });
 
 
-
-
-
 		
-		this._output = this.encode(sequence);
+		const sequenceSeries: string[] = sequence.map( (glyph) => {
+
+			return this.encodeGlyph(glyph);
+		});
+
+		this._output = sequenceSeries.join('');
 	}
 }
 

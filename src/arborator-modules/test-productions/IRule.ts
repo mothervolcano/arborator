@@ -109,9 +109,12 @@ class IRule extends Production {
 		// });
 
 
+		const sequenceSeries: string[] = sequence.map( (glyph) => {
 
-		
-		this._output = this.encode(sequence);
+			return this.encodeGlyph(glyph);
+		});
+
+		this._output = sequenceSeries.join('');
 	}
 }
 
