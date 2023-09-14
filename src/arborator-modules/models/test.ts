@@ -49,26 +49,29 @@ class Test extends Model {
 		// I.addSprite( new PrimMapper( new CounterPrim(1), alphabet.rule('Y'), 1 ));
 		// I.addSprite( new PrimMapper( new CounterPrim(1), alphabet.rule('I'), 1 ));
 		// I.addSprite( new Accumulator( alphabet.glyph('f') ));
+
 		
 		// Y.addSprite( new Accumulator( alphabet.glyph('B') ));
-		Y.addSprite( new Indexer('B',1) );
+		Y.addSprite( new Indexer(alphabet.rule('B'),1) );
 
 		// Y.addSprite( new Accumulator( alphabet.glyph('f') ));
 		Y.addSprite( new Accumulator(1,2) )
 		Y.addSprite( new Replicator('f') );
 		Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.collect('-+') ) );
-		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), 'B' )); 
+		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('B') )); 
 		
 		// Y.addSprite( new PrimMapper( new CounterPrim(1), alphabet.rule('B'), 1 ));
 		// Y.addSprite( new PrimMapper( new CounterPrim(1), alphabet.rule('B'), 2 ));
 
+
 		// B.addSprite( new Doppelganger() );
 		B.addSprite( new Accumulator(1));
 		B.addSprite( new Replicator('f'));
-		B.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ));
+		B.addSprite( new IncognitoDiscloser( alphabet.glyph('*') ));
 		// B.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('K').symbol )); 
 		// B.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));
 		// B.addSprite( new Replicator('f') );
+
 
 		
 		// K.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ));

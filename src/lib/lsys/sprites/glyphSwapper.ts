@@ -50,6 +50,13 @@ class GlyphSwapper extends Sprite {
 		});
 	}
 
+
+	public sow(): void {
+
+		// nothing to sow here
+	}
+
+
 	protected process(stream: Glyph[]): Glyph[] | null {
 
 

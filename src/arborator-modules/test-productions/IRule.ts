@@ -30,35 +30,15 @@ class IRule extends Production {
 		// --------------------------------------------------------
 		// 1 Parse the parameters
 
-		console.log(`PROCESSING ${this.head.symbol} RULE... ${params}`)
+		// console.log(`PROCESSING ${this.head.symbol} RULE... ${params}`)
 
-		// let parsedParams: Prim[] = []
-		
-		// if (params) {
-			
-
-		// 	// parsedParams = params.split(',').map((s, i) => { 
-
-		// 	// 	if (this.prims[i].read(s)) {
-
-		// 	// 		this.prims[i].recast(s);
-
-		// 	// 		return this.prims[i];
-
-		// 	// 	} else {
-
-		// 	// 		throw new Error(`Production is unable to process ${s} parameter`)
-		// 	// 	}
-
-		// 	// })	
-		// }
-
-		// --------------------------------------------------------
-		// 2  Create the rule sequence
 
 		let sequence: Glyph[] = this._rule.slice();
 
 
+		sequence = this.processPrims( sequence, params );
+
+		
 		// ---------------------------------------------------------------------------
 		// 3  Run the sprites (if any)
 
@@ -80,33 +60,36 @@ class IRule extends Production {
 
 		// -------------------------------------------------------------
 		// 4 Apply the prims
+		
 
-		sequence = sequence.map( (glyph) =>{
 
-			// console.log(`YRule processing ${glyph.symbol}`);
+		// sequence = sequence.map( (glyph) =>{
 
-			let updatedParams: Prim[] = [];
+		// 	// console.log(`YRule processing ${glyph.symbol}`);
+
+		// 	let updatedParams: Prim[] = [];
 			
-			for ( const prim of this.head.prims ) {
+		// 	for ( const prim of this.head.prims ) {
 
-				// console.log(`Reading ${this.glyph.symbol}' Prims: ${prim.getValue()}`)
+		// 		// console.log(`Reading ${this.glyph.symbol}' Prims: ${prim.getValue()}`)
 
-				if ( prim.places.includes(glyph.id) ) {
+		// 		if ( prim.places.includes(glyph.id) ) {
 
-					// console.log(`${glyph.symbol} says: this ${prim.type} prim is for me!`);
+		// 			// console.log(`${glyph.symbol} says: this ${prim.type} prim is for me!`);
 
-					updatedParams.push( prim ); 
-				}
-			}
+		// 			updatedParams.push( prim ); 
+		// 		}
+		// 	}
 
-			if ( updatedParams.length && glyph.type==='Rule' ) { 
+		// 	if ( updatedParams.length && glyph.type==='Rule' ) { 
 
-				glyph.prims = updatedParams;
-				return  glyph;
-			}
+		// 		// glyph.prims = updatedParams;
+		// 		// glyph.prims = [ ...glyph.prims, ...updatedParams  ]
+		// 		return  glyph;
+		// 	}
 
-			return glyph;
-		});
+		// 	return glyph;
+		// });
 
 
 

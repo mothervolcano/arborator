@@ -38,6 +38,11 @@ class Replicator extends Sprite {
 
 	};
 
+	public sow(): void {
+
+		// no Prims to sow here
+	}
+
 
 	protected process(stream: Glyph[], countString: string): Glyph[] | null {
 

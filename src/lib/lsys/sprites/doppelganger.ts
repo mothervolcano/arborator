@@ -49,6 +49,11 @@ class Doppelganger extends Sprite {
 	   return null; 
 	}
 
+	public sow(): void {
+
+		// nothing to sow here
+	}
+
 
 	run(stream: Glyph[], params?: any): Glyph[] {
 

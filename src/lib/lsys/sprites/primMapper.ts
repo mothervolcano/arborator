@@ -41,6 +41,11 @@ class PrimMapper extends Sprite {
 		return [this.prim];
 	}
 
+	public sow() {
+
+		// return [ 'We need to covert Glyphs to strings of its symbols here' ];
+	}
+
 
 	protected process(stream: Glyph[]): Glyph[] | null {
 

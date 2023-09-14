@@ -12,6 +12,7 @@ abstract class Production implements IProduction {
 	protected _output: string;
 	protected prims: Map<Prim, any> = new Map();
 	protected sprites: Array<ISprite> = [];
+	protected static primQueue: Map<Prim, Glyph[]> = new Map();
 
 
 	constructor(glyph: Rule, dialect?: Glyph[]) {
@@ -96,8 +97,18 @@ abstract class Production implements IProduction {
 	protected cast(sequence: Array<Glyph>) {
 
 		this._rule = sequence.map((glyph, i) => {
+			
+			glyph.id = i;
 
-			return { ...glyph, id: i };
+			if ( glyph.type==='Rule' ) {
+
+				return glyph;
+
+			} else {
+
+				return { ...glyph, id: i };
+			}
+
 		});
 
 	};
@@ -163,6 +174,8 @@ abstract class Production implements IProduction {
 
 			if ( !this.prims.has(prim) ) {
 
+				this.prims.set(prim, prim.prefix);
+
 				this.head.prims.push(prim); 
 
 			} else {
@@ -178,6 +191,7 @@ abstract class Production implements IProduction {
 	public addSprite( sprite: ISprite ) {
 
 		const prims = sprite.implant( this._rule, this.head );
+		const primSeeds = sprite.sow();	
 
 		if ( prims ) {
 
@@ -186,52 +200,114 @@ abstract class Production implements IProduction {
 				this.addPrim( prim );
 			}
 		};
+
+		if ( primSeeds ) {
+
+			for ( const seed of primSeeds ) {
+		
+				// for ( const glyph of seed.targets ) {
+
+				// 	if ( glyph.type==='Rule') { glyph.prims.push(seed.prim) } 
+				// }
+				
+				Production.primQueue.set( seed.prim, seed.targets );
+			}
+		}
 		
 		this.sprites.push( sprite );
 
 	};
 
 
-	// TODO remove this methods. The Sprites took over!
+	protected processPrims( stream: Glyph[], params?: string ): Glyph[] {
 
-	protected processPrims(sequence: Array<Glyph>) {
+		console.log('')
+		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
+		console.log(`ON THE WAITING LIST FOR PRIMS:`)
 
-		// if (sequence.length && this.prims.length) {
+		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primQueue.size}`)
 
-		// 	const updatedPrims = this.prims.map((prim) => {
 
-		// 		let updatedPrim = prim;
+		let log = 'GUESTS: ';
 
-		// 		// ------------------------------------------------------------
+		for ( const guest of Production.primQueue ) {
 
-		// 		// try to see if at least there's some data to complete the configuration of the prim.
-		// 		// the data it needs can be extracted from a Glyph and it's very likely that the right Glyph
-		// 		// is part of the sequence array
+			if ( guest[1].includes(this.head) ) {
 
-		// 		if (updatedPrim.type === 'Imperative' && updatedPrim.getValue().symbol === '?') {
+				console.log(`${guest[0].prefix} --> this one is for me ( ${this.head.symbol} )`)
 
-		// 			for (let i = 0; i < sequence.length; i++) {
+				this.addPrim( guest[0] );
 
-		// 				if (updatedPrim.places.includes(i)) {
+				if ( guest[1].length <= 1 ) {
 
-		// 					updatedPrim.set(sequence[i]);
-		// 				}
-		// 			}
-		// 		} 
-		
+					Production.primQueue.delete(guest[0]);
 
-		// 		// -----------------------------------------------------------------
+				} else {
 
-		// 		sequence.forEach((glyph, i) => {
+					Production.primQueue.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
+				}
 
-		// 			// THERE MIGHT NOT BE NECESSARY TO DO ANTHING HERE. Mark for deletion;
-		// 		});
+			}
 
-		// 		return updatedPrim;
-		// 	})
+			// guest[1] = updatedGuests;
 
-		// 	this.prims = updatedPrims;
-		// }
+
+			log += `${guest[1].map((g)=>g.symbol)}( ${guest[0].prefix} ), `
+		}
+
+		console.log(log);
+
+		// ----------------------------------------------------------------
+
+		const workingSequence: Glyph[] = stream.map((glyph) => {
+
+
+			
+
+			return glyph;
+
+		});
+
+		// -----------------------------------------------------------------
+
+		console.log('')
+
+		if ( params ) {
+
+			const parsedParams = params.split(',').map((s, i) => { 
+
+				return s.charAt(0);
+			});
+
+
+			console.log('')
+			console.log(`....................................`)
+			console.log(`${this.head.symbol} PRIM SIGNATURE:`)
+
+			let log: string = '';
+
+			for ( const prim of this.prims ) {
+
+				log += `${prim[1]} / `
+			}
+
+			console.log(`___ADDED:  ${log}`);
+			console.log(`RECEIVED:  ${parsedParams.join(' / ')} /`)
+
+		} else {
+
+		}
+
+
+		if ( workingSequence ) {
+
+			return workingSequence;
+
+		} else {
+
+			return stream;
+		} 
+
 	};
 
 

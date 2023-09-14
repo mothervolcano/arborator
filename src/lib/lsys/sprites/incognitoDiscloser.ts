@@ -9,20 +9,21 @@ class IncognitoDiscloser extends Sprite {
 
 
 	private incognito: Glyph;
-	private prim: Prim;
+	private prim: Prim | null | undefined;
+	private prims: Prim[] = [];
 	private spots: number[] = [];
 
-	constructor(incognito: Glyph, prim: Prim) {
+	constructor(incognito: Glyph ) {
 
 		super();
 
 		this.incognito = incognito;
-		this.prim = prim;
+		this.prim = null;
 
 	}
 
 
-	public implant(rule: Glyph[], head: Rule): Prim[] {
+	public implant(rule: Glyph[], head: Rule): void {
 
 		rule.forEach((glyph, i) => {
 
@@ -30,21 +31,26 @@ class IncognitoDiscloser extends Sprite {
 
 				this.spots.push(i);
 			}
-
 		})
 
-		return [ this.prim ];   
+		this.prims = head.prims;
+	}
+	
+
+	public sow(): void {
+
+		// no targets
 	}
 
 
 	protected process(stream: Glyph[]): Glyph[] | null {
-	      
-		
+
+
 		const workingSequence = stream.map((glyph)=>{
 
 			if (this.spots.includes(glyph.id)) {
 
-				if (this.prim.type === 'Imperative') {
+				if ( this.prim != undefined && this.prim.type==='Imperative') {
 
 					// console.log(`DISCLOSED: ${this.prim.getValue().symbol}`)
 
@@ -68,14 +74,13 @@ class IncognitoDiscloser extends Sprite {
 
 	public run(stream: Glyph[], params?: any): Glyph[] {
 
+		// this.prim = this.prims.find((prim) => prim.type==='Imperative')
+		
 		if ( params ) {
 
 			params.split(',').forEach((p: string) => {
 
-
-				if (this.prim.prefix === p.charAt(0)) {
-
-					// console.log(`INCOGNITO: ${p}`)
+				if (this.prim && this.prim.prefix === p.charAt(0)) {
 					
 					this.prim.process(p);
 				}

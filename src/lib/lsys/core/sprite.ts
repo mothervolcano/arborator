@@ -12,7 +12,8 @@ abstract class Sprite implements ISprite {
 
 	}
 
-	abstract implant( rule: Glyph[], head: Rule ): void
+	abstract implant( rule: Glyph[], head: Rule ): void;
+	abstract sow( targets?: string[]): { targets: Glyph[], prim: Prim }[] | void;
 	abstract run( stream: Glyph[], params?: any ): Glyph[];
 
 	protected abstract process( stream: Glyph[], context?: any ): Glyph[] | null;

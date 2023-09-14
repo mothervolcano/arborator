@@ -40,6 +40,11 @@ class Accumulator extends Sprite {
 		return workingSequence.flat();
 	};
 
+	public sow(): void {
+
+		// nothing to sow here
+	}
+
 
 	public run(stream: Glyph[], params?: any): Glyph[] {
 

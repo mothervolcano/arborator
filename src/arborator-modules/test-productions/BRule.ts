@@ -12,7 +12,7 @@ class BRule extends Production {
 	constructor(glyph: Rule, dialect: Glyph[]) {
 
 		super(glyph, dialect);
-		
+
 	}
 	
 
@@ -31,75 +31,10 @@ class BRule extends Production {
 		// 1 Parse the parameters
 
 
-		// let parsedParams: Prim[] = []
-
-		// if ( params ) {
-
-		// 	params.split(',').forEach((p)=>{
-
-		// 		for ( const prim of this.prims ) {
-
-		// 			if (prim.prefix===p.charAt(0)){
-
-		// 				prim.process(p);
-		// 			}
-		// 		}
-		// 	})
-		// };
-		
-		// if (params) {
-
-		console.log(``)
-		console.log(`...........................................`)
-			
-		console.log(`${this.head.symbol} RULE PARAMS: ${params}`)
-
-		// 	parsedParams = params.split(',').map((s) => { 
-
-		// 		return this.addPrim(s.charAt(0), 'B', false).recast(s);
-
-		// 	});	
-		// }
-
-		// --------------------------------------------------------
-		// 2  Create the rule sequence
-
-
 		let sequence: Glyph[] = this._rule.slice();
 
-		// sequence = sequence.map((glyph,i)=>{
-
-		// 	for ( const prim of this.prims ) {
-
-		// 		if ( prim.places.includes(i) && prim.type === 'Imperative' ){
-
-		// 			// return prim.getValue();
-		// 		}
-		// 	}
-
-		// 	return glyph;
-
-		// });
-
-		// sequence = this._rule.map( (glyph) =>  {
-
-		// 	if (glyph.type === 'Marker' && glyph.symbol === '*' ) {
-
-		// 		const prim = this.prims.find( (p) => p.type === 'Imperative' )
-
-		// 		if ( prim && prim.type === 'Imperative' ) {
-
-		// 			return prim.getValue();
-
-		// 		} else {
-
-		// 			throw new Error("B Rule requires an imperative as parameter");
-		// 		}
-		// 	}
-
-		// 	return glyph;
-		// });
-
+		sequence = this.processPrims( sequence, params );
+		
 
 		// ---------------------------------------------------------------------------
 		// 3  Run the sprites (if any)
@@ -122,77 +57,35 @@ class BRule extends Production {
 
 		// -------------------------------------------------------------
 		// 4 Apply the prims
-
-		sequence = sequence.map( (glyph, i) =>{
-
-			// console.log(`YRule processing ${glyph.symbol}`);
-
-			let updatedParams: Prim[] = [];
-			
-			for ( const prim of this.head.prims ) {
-
-				// console.log(`Reading ${this.glyph.symbol}' Prims: ${prim.getValue()} [ ${prim.places} ]`)
-
-				if ( glyph.type === 'Rule' ) {
-
-					if ( prim.places.includes(glyph.id) ) {
-
-						// console.log(`${glyph.symbol} says: this ${prim.type} prim is for me!`);
-
-						updatedParams.push( prim ); 
-					}	
-				}
-			}
-
-			if ( updatedParams.length && glyph.type==='Rule' ) { 
-
-				glyph.prims = updatedParams;
-				return  glyph;
-			}
-
-			return glyph;
-		});
-
-
 		
-		// sequence = sequence.map( (glyph) => { 
 
-		// 	if ( glyph.type === 'Rule' ) {
 
-		// 		if ( glyph.symbol === this.glyph.symbol ) {
+		// sequence = sequence.map( (glyph, i) =>{
 
-		// 			if ( parsedParams.length ) {
+		// 	// console.log(`YRule processing ${glyph.symbol}`);
 
-		// 				if (parsedParams[0].type === 'Parameter') {
+		// 	let updatedParams: Prim[] = [];
+			
+		// 	for ( const prim of this.head.prims ) {
 
-		// 					// parsedParams[0].value += 1;		
-		// 				}  
+		// 		// console.log(`Reading ${this.glyph.symbol}' Prims: ${prim.getValue()} [ ${prim.places} ]`)
 
-		// 				return { ...glyph, params: [...parsedParams] };
+		// 		if ( glyph.type === 'Rule' ) {
 
-		// 			} else {
+		// 			if ( prim.places.includes(glyph.id) ) {
 
-		// 				return { ...glyph, params: [] };
-		// 			}
+		// 				// console.log(`${glyph.symbol} says: this ${prim.type} prim is for me!`);
+
+		// 				updatedParams.push( prim ); 
+		// 			}	
 		// 		}
+		// 	}
 
+		// 	if ( updatedParams.length && glyph.type==='Rule' ) { 
 
-		// 		if ( glyph.symbol === 'R' ) {
-
-		// 			if ( parsedParams.length ) {
-
-		// 				if (parsedParams[0].type === 'Parameter') {
-
-		// 				 	parsedParams[0].setValue(1);		
-		// 				}  
-
-		// 				return { ...glyph, params: [...parsedParams] };
-
-		// 			} else {
-
-		// 				return { ...glyph, params: [] };
-		// 			}
-		// 		}
+		// 		// glyph.prims = updatedParams;
+		// 		// glyph.prims = [ ...glyph.prims, ...updatedParams  ]
+		// 		return  glyph;
 		// 	}
 
 		// 	return glyph;

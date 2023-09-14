@@ -7,16 +7,16 @@ import IdPrim from "../prims/idPrim";
 
 class Indexer extends Sprite {
 
-	private targetSymbol: string;
+	private targetGlyph: Glyph;
 	private id: number;
 	private prims: Id[];
 	// private spots: number[] = [];
 
-	constructor( targetSymbol: string, id: number ) {
+	constructor( targetGlyph: Glyph, id: number ) {
 
 		super();
 
-		this.targetSymbol = targetSymbol;
+		this.targetGlyph = targetGlyph;
 		this.id = id;
 
 		this.prims = [];
@@ -27,7 +27,7 @@ class Indexer extends Sprite {
 
 	    rule.forEach((glyph)=>{
 
-	    	if ( glyph.symbol === this.targetSymbol ) {
+	    	if ( glyph.symbol === this.targetGlyph.symbol ) {
 
 	    		if (glyph.type==='Rule') {
 
@@ -43,8 +43,15 @@ class Indexer extends Sprite {
 	    	}
 	    });
 
-	    return this.prims;
+	    // return this.prims;
+	    return [new IdPrim( this.id )];
 	};
+
+
+	public sow() {
+
+		return [{ targets: [ this.targetGlyph ], prim: new IdPrim(1) }] ;
+	}
 
 
 	protected process(stream: Glyph[]): Glyph[] | null {

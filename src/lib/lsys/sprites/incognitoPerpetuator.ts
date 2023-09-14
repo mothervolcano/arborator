@@ -9,17 +9,17 @@ class IncognitoPerpetuator extends Sprite {
 
 	private prims: Imperative[] = [];
 	private incognito: Glyph;
-	private targetSymbol: string;
-	private targetGlyph: Glyph | null = null;
+	// private targetSymbol: string;
+	private targetGlyph: Glyph;
 	private spots: number[] = [];
 
 	
-	constructor( incognito: Glyph, targetSymbol: string ) {
+	constructor( incognito: Glyph, targetGlyph: Glyph ) {
 
 		super();
 
 		this.incognito = incognito;
-		this.targetSymbol = targetSymbol;
+		this.targetGlyph = targetGlyph;
 	};
 
 	
@@ -30,9 +30,9 @@ class IncognitoPerpetuator extends Sprite {
 
 			// Track all the target Glyph places inside the Prim
 
-			if (glyph.symbol === this.targetSymbol) {
+			if (glyph.symbol === this.targetGlyph.symbol ) {
 
-				this.targetGlyph = glyph;
+				// this.targetGlyph = glyph;
 
 				console.log(`-----------------------------------------`)
 				console.log(`IMPLANTING INCOGNITO PERPETUATOR IN:`)
@@ -59,6 +59,12 @@ class IncognitoPerpetuator extends Sprite {
 	 	
 		return this.prims;
 	};
+
+
+	public sow() {
+
+		return [{ targets: [ this.targetGlyph ], prim: new ImperativePrim() }] ;
+	}
 
 
 	protected process(stream: Glyph[]): Glyph[] | null {
@@ -105,59 +111,10 @@ class IncognitoPerpetuator extends Sprite {
 	}
 
 
-	// protected process(stream: Glyph[]): Glyph[] | null {
-
-	// 	console.log(`... stream: ${ stream.map((g)=>g.symbol).join('') }`)
-
-	// 	for ( const glyph of stream ) {
-			
-	// 		if ( this.spots.includes(glyph.id) ) {
-
-	// 			console.log(`incognito: ${glyph.symbol}`)
-	// 			if ( this.targetGlyph ) console.log(`target: ${glyph.symbol} @ ${glyph.id}`)
-	// 			else console.log(`Missing Target Glyph`)
-
-	// 			const prim = this.prims[this.primIndex];
-
-	// 			console.log(`Prim value: ${prim.getValue().symbol}`)
-
-	// 			if ( prim.getValue().symbol === '?' ) { prim.cast(glyph); } // If the prim has a glyph then the incognito has been disclosed
-
-	// 			console.log(`cast prim with: ${glyph.symbol}`)
-	// 			console.log(`places to add prim: ${prim.places}`)
-
-	// 			if ( this.primIndex + 1 >= this.prims.length ) {
-
-	// 				this.primIndex = 0;
-
-	// 			} else {
-
-	// 				this.primIndex++
-	// 			}
-	// 		}
-	// 	}
-
-	// 	return null;
-	// }
-
 	public run(stream: Glyph[], params?: any, context?: any): Glyph[] {
 	  		
 		console.log(``)
 		console.log(`RUNNING INCOGNITO PERPETUATOR FOR: ${context}`)
-
-		// if ( params ) {
-
-		// 	params.split(',').forEach((p: string) => {
-
-		// 		for ( const prim of this.prims ) {
-
-		// 			if (prim.prefix === p.charAt(0)) {
-						
-		// 				prim.process(p);
-		// 			}
-		// 		}
-		// 	})
-		// };
 
 		const sequence = this.process(stream)
 
