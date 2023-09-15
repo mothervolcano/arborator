@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Glyph, Rule } from "../lsys";
+import { Glyph, MetaGlyph, Rule } from "../lsys";
 
 
 
@@ -10,76 +10,86 @@ class Replicator extends Sprite {
 	private prefix: string = '+';
 
 	private i: number | null;
-	private targetSymbol: string;
-	private targetIds: number[] = [];
+	private targetGlyph: Glyph;
+	private targetGlyphIDs: number[] = [];
 
 
-	constructor( targetSymbol: string, i?: number ) {
+	constructor( targetSymbol: Glyph, i?: number ) {
 
 		super();
 
 		this.i = i || null;
-		this.targetSymbol = targetSymbol;
+		this.targetGlyph = targetSymbol;
 
 	};
 
 
-	public implant(rule: Glyph[], head: Rule): void {
-	    
-		
-		this.targetIds = rule.map((glyph) => {
+	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
+	    	
+		for ( const [ i, metaGlyph ] of directory ) {
+			
+			if ( metaGlyph.glyph.symbol === this.targetGlyph.symbol ) {
 
-			if ( glyph.symbol === this.targetSymbol ) {
-
-				return glyph.id;
+				this.targetGlyphIDs.push(metaGlyph.id);
 			}
-
-		}).filter(n => n !== undefined ) as number[];
+		}
 
 	};
+
 
 	public sow(): void {
 
 		// no Prims to sow here
+	};
+
+
+	public update( directory: Map<number, MetaGlyph> ): number[] {
+
+
+		return [];
 	}
 
 
-	protected process(stream: Glyph[], countString: string): Glyph[] | null {
+	protected process(stream: MetaGlyph[], countString: string): MetaGlyph[] | null {
 
 		const count = Number.parseInt(countString);
 
-		const workingSequence = stream.map((glyph) => {
+		const workingSequence = stream.map((metaGlyph) => {
 
-			if ( this.targetIds.includes(glyph.id) ) {
+			if ( this.targetGlyphIDs.includes( metaGlyph.id) ) {
 
-				const sequence: Glyph[] = [];
+				const sequence: MetaGlyph[] = [];
+
+				// ---------------------------------------
 				
 				for ( let i=0; i<count; i++ ) {
 
-					sequence.push( glyph );
+					sequence.push( metaGlyph );
 				}
+
+				// ---------------------------------------
 
 				if ( sequence.length ) { return sequence }
 		
 			}
 
-			return glyph;
+			return metaGlyph;
 
 		});	
 		
-		return workingSequence.flat();	    
+		return workingSequence.flat();
 	};
 
 
-	public run(stream: Glyph[], params?: any): Glyph[] {
+	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
-		let sequence: Glyph[] | null = [];
+		let sequence: MetaGlyph[] | null = [];
 
 		if ( params ) {
 
-			params.split(',').forEach((p: string) => {
+			params.split(',').forEach( (p: string) => {
 
-				if (this.prefix === p.charAt(0)) {
+				if ( this.prefix === p.charAt(0) ) {
 					
 					sequence = this.process(stream, p.substring(1));
 				}
@@ -101,3 +111,4 @@ class Replicator extends Sprite {
 }
 
 export default Replicator
+

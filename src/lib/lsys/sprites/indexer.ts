@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Glyph, Id, Prim, Rule } from "../lsys";
+import { Glyph, Id, MetaGlyph, Prim, Rule } from "../lsys";
 import IdPrim from "../prims/idPrim";
 
 
@@ -23,9 +23,11 @@ class Indexer extends Sprite {
 	};
 
 
-	implant(rule: Glyph[], head: Rule): Prim[] {
+	public implant(directory: Map<number, MetaGlyph>, head: Rule): Prim[] {
 
-	    rule.forEach((glyph)=>{
+	    directory.forEach((glyphData)=>{
+
+	    	const glyph = glyphData.glyph;
 
 	    	if ( glyph.symbol === this.targetGlyph.symbol ) {
 
@@ -48,13 +50,25 @@ class Indexer extends Sprite {
 	};
 
 
+	public update( directory: Map<number, MetaGlyph> ): number[] {
+
+		directory.forEach( (glyphData, i) => {
+
+			const glyph = glyphData.glyph;
+			
+		});
+
+		return []
+	}
+
+
 	public sow() {
 
 		return [{ targets: [ this.targetGlyph ], prim: new IdPrim(1) }] ;
 	}
 
 
-	protected process(stream: Glyph[]): Glyph[] | null {
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 
 		for ( const prim of this.prims ) {
 
@@ -66,7 +80,7 @@ class Indexer extends Sprite {
 	};
 
 
-	run(stream: Glyph[], params?: any): Glyph[] {
+	run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
 		if ( params ) {
 

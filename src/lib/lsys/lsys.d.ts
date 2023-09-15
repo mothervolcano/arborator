@@ -1,7 +1,4 @@
 
-export type GlyphType = 'Rule' | 'Instruction' | 'Marker';
-
-
 
 // The base interface for all Prims
 export interface IPrim<T> {
@@ -85,14 +82,7 @@ export interface Imperative extends IPrim<Glyph> {
 export type Prim = Parameter | Flag | Imperative | Counter | Id
 
 
-interface ISprite {
-
-  implant( rule: Glyph[], head: Rule ): Prim[] | void;
-  sow( targes?: string[] ): { targets: Glyph[], prim: Prim }[] | void;
-  run( sequence: Glyph[], params?: any, context?: any ): Glyph[];
-}
-
-
+export type GlyphType = 'Rule' | 'Instruction' | 'Marker';
 
 /**
  * 
@@ -148,6 +138,14 @@ export interface Marker {
 
 
 export type Glyph = Rule | Instruction | Marker;
+
+
+export type MetaGlyph = {
+
+  glyph: Glyph;
+  id: number;
+  data: { [key:string]:any };
+}
 
 
 /**
@@ -235,14 +233,24 @@ export interface IProduction {
 
   readonly head: Glyph;
   readonly output: string;
+  plant(): void;
   read( params?: string | null, context?: any ): boolean | void;
   compose( ...str: string[] ): void;
   addSprite( sprite: ISprite ): void;
   addPrim( prim: Prim | string, symbols?: string | string[], save?: boolean ): Prim;
   process( params?: string, context?: any ): void;
-  encodeSequence( sequence: Array<Glyph> ): string;
+  // encodeSequence( sequence: Array<Glyph> ): string;
   write( context?: any ): string;
 
+}
+
+
+interface ISprite {
+
+  implant( directory: Map<number, any>, head: Rule ): Prim[] | void;
+  sow( targes?: string[] ): { targets: Glyph[], prim: Prim }[] | void;
+  update( directory: Map<number, MetaGlyph> ): number[];
+  run( stream: MetaGlyph[], params?: any, context?: any ): MetaGlyph[];
 }
 
 

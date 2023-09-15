@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Glyph, Prim, Rule } from "../lsys";
+import { Glyph, MetaGlyph, Prim, Rule } from "../lsys";
 
 
 
@@ -23,11 +23,11 @@ class IncognitoDiscloser extends Sprite {
 	}
 
 
-	public implant(rule: Glyph[], head: Rule): void {
+	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
 
-		rule.forEach((glyph, i) => {
+		directory.forEach((metaGlyph, i) => {
 
-			if (glyph.symbol === this.incognito.symbol) {
+			if (metaGlyph.glyph.symbol === this.incognito.symbol) {
 
 				this.spots.push(i);
 			}
@@ -35,35 +35,44 @@ class IncognitoDiscloser extends Sprite {
 
 		this.prims = head.prims;
 	}
-	
 
 	public sow(): void {
 
 		// no targets
 	}
 
+	public update( directory: Map<number, MetaGlyph> ): number[] {
 
-	protected process(stream: Glyph[]): Glyph[] | null {
+		directory.forEach( (glyphData, i) => {
+
+			const glyph = glyphData.glyph;
+			
+		});
+
+		return [];
+	}
+	
+
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 
 
-		const workingSequence = stream.map((glyph)=>{
+		const workingSequence = stream.map((metaGlyph)=>{
 
-			if (this.spots.includes(glyph.id)) {
+			// if (this.spots.includes(metaGlyph.glyph.id)) {
 
-				if ( this.prim != undefined && this.prim.type==='Imperative') {
+			// 	if ( this.prim != undefined && this.prim.type==='Imperative') {
 
-					// console.log(`DISCLOSED: ${this.prim.getValue().symbol}`)
+			// 		// console.log(`DISCLOSED: ${this.prim.getValue().symbol}`)
 
-					return this.prim.getValue();
+			// 		return this.prim.getValue();
 
-				} else {
+			// 	} else {
 
-					return glyph;
-				}
+			// 		return metaGlyph;
+			// 	}
+			// }
 
-			}
-
-			return glyph
+			return metaGlyph;
 
 		})
 
@@ -72,7 +81,7 @@ class IncognitoDiscloser extends Sprite {
 	}
 
 
-	public run(stream: Glyph[], params?: any): Glyph[] {
+	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
 		// this.prim = this.prims.find((prim) => prim.type==='Imperative')
 		
@@ -87,13 +96,13 @@ class IncognitoDiscloser extends Sprite {
 			})
 		}
 
-		const processedSequence = this.process(stream)
+		const sequence = this.process(stream)
 
-		if ( processedSequence ) {
+		if ( sequence ) {
 
-			// console.log(`FULL DISCLOSURE: ${processedSequence}`);
+			// console.log(`FULL DISCLOSURE: ${sequence}`);
 
-			return processedSequence;
+			return sequence;
 
 		} else {
 
@@ -103,5 +112,5 @@ class IncognitoDiscloser extends Sprite {
 }
 
 
-
 export default IncognitoDiscloser;
+

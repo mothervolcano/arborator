@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Glyph, Rule, Prim } from "../lsys";
+import { Glyph, Rule, Prim, MetaGlyph } from "../lsys";
 
 
 
@@ -15,20 +15,37 @@ class Doppelganger extends Sprite {
 		super();
 	}
 
-	implant(rule: Glyph[], head: Rule): void {
+	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
 
 		this.sourcePrims = head.prims;
 		this.workingPrims = head.prims.slice();
 	}
 
 
-	protected process(stream: Glyph[], idString: string): Glyph[] | null {
+	public sow(): void {
+
+		// nothing to sow here
+	}
+
+
+	public update( directory: Map<number, MetaGlyph> ): number[] {
+
+		// directory.forEach( (glyphData, i) => {
+
+		// 	const glyph = glyphData.glyph;
+			
+		// });
+
+		return [];
+	}
+
+
+	protected process(stream: MetaGlyph[], idString: string): MetaGlyph[] | null {
 	   
 		
 		console.log(`............................................`)
 		console.log(`!!! DOPPELGANGER DETECTED! #${idString}`);
-
-
+		
 
 		const id = Number.parseInt(idString);
 
@@ -49,13 +66,10 @@ class Doppelganger extends Sprite {
 	   return null; 
 	}
 
-	public sow(): void {
-
-		// nothing to sow here
-	}
 
 
-	run(stream: Glyph[], params?: any): Glyph[] {
+
+	run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
 
 		if ( params ) {
@@ -74,5 +88,5 @@ class Doppelganger extends Sprite {
 	}
 }
 
-
 export default Doppelganger;
+

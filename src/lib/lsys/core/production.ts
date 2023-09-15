@@ -1,27 +1,32 @@
-import { IProduction, GlyphType, Glyph, Rule, Instruction, Marker, IModel, Prim, Imperative, Parameter, ISprite } from '../lsys';
+import { IProduction, Glyph, MetaGlyph, Rule, Prim, Imperative, Parameter, ISprite } from '../lsys';
 import ImperativePrim from '../prims/imperativePrim';
 import ParameterPrim from '../prims/parameterPrim';
 
 
 abstract class Production implements IProduction {
 
-	protected _head: Rule;
+	protected static primExchangeQueue: Map<Prim, Glyph[]> = new Map();
+	
+	private _head: Rule;
+	private _rule: Glyph[];
+	private _output: string;
+
 	protected dialect: Glyph[]; 
-	protected _rule: Glyph[];
-	protected _sequence: Map<Glyph, number>;
-	protected _output: string;
-	protected prims: Map<Prim, any> = new Map();
+	protected directory: Map<number, MetaGlyph>;
+	protected sequence: MetaGlyph[];
 	protected sprites: Array<ISprite> = [];
-	protected static primQueue: Map<Prim, Glyph[]> = new Map();
+	protected prims: Map<Prim, any> = new Map();
 
-
+	
 	constructor(glyph: Rule, dialect?: Glyph[]) {
 
 		this._head = glyph;
+		
 		this.dialect = dialect || [];
-		this._sequence = new Map();
+		this.directory = new Map();
 
 		this._rule = dialect ? [] : [glyph];
+		this.sequence = dialect ? [] : [ { glyph: glyph, id: 1, data: {} }  ]
 		this._output = dialect ? '' : this.encodeSequence([glyph]);
 
 		return this;
@@ -46,24 +51,71 @@ abstract class Production implements IProduction {
 
 	protected cast(sequence: Array<Glyph>) {
 
-		this._rule = sequence.map((glyph, i) => {
-			
-			glyph.id = i;
 
-			if ( glyph.type==='Rule' ) {
+		sequence.forEach((glyph, i) => {
 
-				return glyph;
-
-			} else {
-
-				return { ...glyph, id: i };
-			}
+			this._rule[i] = glyph;
+			const dirIndex = i+1; // the directory index starts at 1 to help not confuse with the sequence array.
+			this.directory.set( dirIndex, { glyph: glyph, id: dirIndex, data: {} } ); 
+			this.sequence.push( this.directory.get( dirIndex )! );
 
 		});
+
+		// this._rule = sequence.map((glyph, i) => {
+
+		// 	if ( glyph.type==='Rule' ) {
+
+		// 		return glyph;
+
+		// 	} else {
+
+		// 		return { ...glyph };
+		// 	}
+
+		// });
 	};
 
+	public plant(): void {
 
-	decode(str: string): Glyph[] {
+		console.log('')
+		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
+		console.log(`ON THE WAITING LIST FOR PRIMS:`)
+
+		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primExchangeQueue.size}`)
+
+
+		let log = 'GUESTS: ';
+
+		for ( const guest of Production.primExchangeQueue ) {
+
+			if ( guest[1].includes(this.head) ) {
+
+				console.log(`${guest[0].prefix} --> this one is for me ( ${this.head.symbol} )`)
+
+				this.addPrim( guest[0] );
+
+				if ( guest[1].length <= 1 ) {
+
+					Production.primExchangeQueue.delete(guest[0]);
+
+				} else {
+
+					Production.primExchangeQueue.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
+				}
+
+			}
+
+			// guest[1] = updatedGuests;
+
+
+			log += `${guest[1].map((g)=>g.symbol)}( ${guest[0].prefix} ), `
+		}
+
+		console.log(log);
+	}
+
+
+	protected decode(str: string): Glyph[] {
 
 		const sequence = str.split('').map((char) => { 
 
@@ -83,7 +135,7 @@ abstract class Production implements IProduction {
 	};
 
 
-	encodeGlyph( glyph: Glyph ): string {
+	protected encodeGlyph( glyph: Glyph ): string {
 
 		if ( glyph.type === 'Rule' && glyph.prims.length ) {
 
@@ -101,7 +153,7 @@ abstract class Production implements IProduction {
 	};
 
 
-	encodeSequence(sequence: Array<Glyph>): string {
+	protected encodeSequence(sequence: Array<Glyph>): string {
 
 		const series = sequence.map((g) => {
 
@@ -126,6 +178,13 @@ abstract class Production implements IProduction {
 
 		return series;
 	};
+
+	
+	protected printSequence( sequence: string[] ) {
+
+		this._output = sequence.join('');
+	};
+
 
 	abstract compose(...str: string[]): void;
 	abstract process(params?: string, context?: any): void;
@@ -207,8 +266,11 @@ abstract class Production implements IProduction {
 
 	public addSprite( sprite: ISprite ) {
 
-		const prims = sprite.implant( this._rule, this.head );
-		const primSeeds = sprite.sow();	
+		
+		//-------------------------------------------------
+		// STEP 1
+
+		const prims = sprite.implant( this.directory, this.head );
 
 		if ( prims ) {
 
@@ -217,6 +279,15 @@ abstract class Production implements IProduction {
 				this.addPrim( prim );
 			}
 		};
+		
+		this.sprites.push( sprite );
+
+
+		//-------------------------------------------------
+		// STEP 2
+		
+
+		const primSeeds = sprite.sow();	
 
 		if ( primSeeds ) {
 
@@ -227,11 +298,10 @@ abstract class Production implements IProduction {
 				// 	if ( glyph.type==='Rule') { glyph.prims.push(seed.prim) } 
 				// }
 				
-				Production.primQueue.set( seed.prim, seed.targets );
+				Production.primExchangeQueue.set( seed.prim, seed.targets );
 			}
 		}
 		
-		this.sprites.push( sprite );
 
 	};
 
@@ -242,12 +312,12 @@ abstract class Production implements IProduction {
 		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
 		console.log(`ON THE WAITING LIST FOR PRIMS:`)
 
-		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primQueue.size}`)
+		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primExchangeQueue.size}`)
 
 
 		let log = 'GUESTS: ';
 
-		for ( const guest of Production.primQueue ) {
+		for ( const guest of Production.primExchangeQueue ) {
 
 			if ( guest[1].includes(this.head) ) {
 
@@ -257,11 +327,11 @@ abstract class Production implements IProduction {
 
 				if ( guest[1].length <= 1 ) {
 
-					Production.primQueue.delete(guest[0]);
+					Production.primExchangeQueue.delete(guest[0]);
 
 				} else {
 
-					Production.primQueue.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
+					Production.primExchangeQueue.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
 				}
 
 			}

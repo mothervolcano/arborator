@@ -1,5 +1,5 @@
 import Production from "../../lib/lsys/core/production";
-import { Glyph, Imperative, Parameter, Prim, Rule } from "../../lib/lsys/lsys";
+import { Glyph, Imperative, MetaGlyph, Parameter, Prim, Rule } from "../../lib/lsys/lsys";
 import ImperativePrim from "../../lib/lsys/prims/imperativePrim";
 import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 
@@ -27,28 +27,12 @@ class YRule extends Production {
 	public process(params?: string) {
 
 
-		// --------------------------------------------------------
-		// 1 Parse the parameters
-
-
-		// let parsedParams: Prim[] = []
-		
-		// if (params) {
-			
-		// 	console.log(`PROCESSING ${this.head.symbol} RULE... ${params}`)
-
-		// 	parsedParams = params.split(',').map((s, i) => { 
-
-		// 		return this.addPrim(s.charAt(0), 'Y', false);
-
-		// 	});
-		// }
 
 		// --------------------------------------------------------
-		// 2  Create the rule sequence
+		// 1  Start the stream
 
 
-		let sequence: Glyph[] = this._rule.slice();
+		let stream: MetaGlyph[] = this.sequence.slice();
 
 
 		// ---------------------------------------------------------------------------
@@ -58,41 +42,12 @@ class YRule extends Production {
 
 			for ( const sprite of this.sprites ) {
 
-				sequence = sprite.run( sequence, params );
+				stream = sprite.run( stream, params );
 			}
 		}
 
 
-		// -------------------------------------------------------------
-		// 4 Apply the prims
 
-		sequence = sequence.map( (glyph, i) =>{
-
-			console.log(`YRule processing ${glyph.symbol}`);
-
-			let updatedParams: Prim[] = [];
-			
-			for ( const prim of this.head.prims ) {
-
-				if ( prim.places.includes(i) ) {
-
-					console.log(`${glyph.symbol} says: this ${prim.type} prim is for me!`);
-
-					updatedParams.push( prim ); 
-
-				}
-			}
-
-			if ( updatedParams.length && glyph.type==='Rule' ) { 
-
-				glyph.prims = updatedParams;
-				return  glyph;
-			}
-
-
-			return glyph;
-
-		});
 
 		// const debugMark: Rule = { type: 'Rule', symbol: 'x', params: [] }
 		// const debugInfo: Rule = { type: 'Rule', symbol: 'i', params: [] }
@@ -106,12 +61,12 @@ class YRule extends Production {
 		// 	sequence.push(...[ debugMark, debugInfo ]);
 		// }
 		
-		const sequenceSeries: string[] = sequence.map( (glyph) => {
+		const sequence: string[] = stream.map( (metaGlyph) => {
 
-			return this.encodeGlyph(glyph);
+			return this.encodeGlyph(metaGlyph.glyph);
 		});
 
-		this._output = sequenceSeries.join('');
+		this.printSequence(sequence);
 	}
 }
 

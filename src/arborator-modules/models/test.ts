@@ -55,8 +55,8 @@ class Test extends Model {
 		Y.addSprite( new Indexer(alphabet.rule('B'),1) );
 
 		// Y.addSprite( new Accumulator( alphabet.glyph('f') ));
-		Y.addSprite( new Accumulator(1,2) )
-		Y.addSprite( new Replicator('f') );
+		Y.addSprite( new Accumulator(1,4) );
+		Y.addSprite( new Replicator( alphabet.glyph('f') ));
 		Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.collect('-+') ) );
 		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('B') )); 
 		
@@ -66,7 +66,7 @@ class Test extends Model {
 
 		// B.addSprite( new Doppelganger() );
 		B.addSprite( new Accumulator(1));
-		B.addSprite( new Replicator('f'));
+		B.addSprite( new Replicator( alphabet.glyph('f') ));
 		B.addSprite( new IncognitoDiscloser( alphabet.glyph('*') ));
 		// B.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('K').symbol )); 
 		// B.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));

@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Glyph, Prim, Rule } from "../lsys";
+import { Glyph, MetaGlyph, Prim, Rule } from "../lsys";
 
 
 
@@ -22,12 +22,20 @@ class PrimMapper extends Sprite {
 	}
 
 
-	public implant(rule: Glyph[], head: Rule): Prim[] {
+	public implant(directory: Map<number, MetaGlyph>, head: Rule): Prim[] {
 	 	
 		
-		this.targetGlyphs = rule.filter((g) => g.symbol === this.target.symbol );	
+		this.targetGlyphs = []
 
-		this.prim.places = [ this.targetGlyphs[this.position-1].id ];
+		for ( const [ i, metaGlyph ] of directory ) {
+
+			if ( metaGlyph.glyph.symbol === this.target.symbol  ) {
+
+				this.targetGlyphs.push( metaGlyph.glyph );
+			}
+		}	
+
+		// this.prim.places = [ this.targetGlyphs[this.position-1].id ];
 
 		// this.prim.places = rule.map((g, i) => {
 
@@ -46,10 +54,21 @@ class PrimMapper extends Sprite {
 		// return [ 'We need to covert Glyphs to strings of its symbols here' ];
 	}
 
+	public update( directory: Map<number, MetaGlyph> ): number[] {
 
-	protected process(stream: Glyph[]): Glyph[] | null {
+		// directory.forEach( (glyphData) => {
 
-		for ( const glyph of stream ) {
+		// 	const glyph = glyphData.glyph;
+			
+		// });
+
+		return []
+	}
+
+
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
+
+		for ( const metaGlyph of stream ) {
 
 		}
 
@@ -57,7 +76,7 @@ class PrimMapper extends Sprite {
 	}
 
 
-	public run(stream: Glyph[], context?: any): Glyph[] {
+	public run(stream: MetaGlyph[], context?: any): MetaGlyph[] {
 	  	
 		this.process(stream)
 
@@ -66,3 +85,4 @@ class PrimMapper extends Sprite {
 }
 
 export default PrimMapper;
+

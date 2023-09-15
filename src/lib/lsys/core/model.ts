@@ -98,6 +98,8 @@ abstract class Model implements IModel {
 
 		if (production.head.type === 'Rule' && !this.productions.has(production.head.symbol)) {
 
+			production.plant();
+
 			this.productions.set(production.head.symbol, production);
 		}
 

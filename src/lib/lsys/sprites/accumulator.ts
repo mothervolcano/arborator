@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Counter, Glyph, Prim, Rule } from "../lsys";
+import { Counter, Glyph, MetaGlyph, Prim, Rule } from "../lsys";
 import CounterPrim from "../prims/counterPrim";
 
 
@@ -21,13 +21,31 @@ class Accumulator extends Sprite {
 	};
 
 
-	public implant(rule: Glyph[], head: Rule): Prim[] {
+	public implant(directory: Map<number, MetaGlyph>, head: Rule): Prim[] {
 	 
 		return [ this.prim ];
 	};
 
 
-	protected process(stream: Glyph[]): Glyph[] | null {
+	public sow(): void {
+
+		// nothing to sow here
+	}
+
+
+	public update( directory: Map<number, MetaGlyph>): number[] {
+
+		directory.forEach( (glyphData, i) => {
+
+			const glyph = glyphData.glyph;
+			
+		});
+
+		return [];
+	};
+
+
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 
 		
 		const workingSequence = stream.map((glyph)=>{
@@ -40,13 +58,8 @@ class Accumulator extends Sprite {
 		return workingSequence.flat();
 	};
 
-	public sow(): void {
 
-		// nothing to sow here
-	}
-
-
-	public run(stream: Glyph[], params?: any): Glyph[] {
+	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
 		if ( params ) {
 
