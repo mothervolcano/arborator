@@ -54,10 +54,11 @@ class Perpetuator extends Sprite {
 		return [{ targets: [ this.targetGlyph ], prim: new ParameterPrim() }] ;  
 	};
 
-	update(directory: Map<number, MetaGlyph>): number[] {
+
+	update( params: string ): string {
 	    
-	    return [];
-	}
+	    return params;
+	};
 
 
 	protected process(stream: MetaGlyph[], countString: string): MetaGlyph[] | null {
