@@ -14,6 +14,8 @@ class IncognitoPerpetuator extends Sprite {
 	private targetGlyph: Glyph;
 	private targetGlyphIDs: number[] = [];
 
+	private place: number | undefined;
+
 	/**
 	 * 
 	 * Locates each Incognito Glyph in the Production Rule directory and saves its index key
@@ -24,12 +26,14 @@ class IncognitoPerpetuator extends Sprite {
 	 * 
 	 */
 	
-	constructor( incognito: Glyph, targetGlyph: Glyph ) {
+	constructor( incognito: Glyph, targetGlyph: Glyph, place?: number ) {
 
 		super();
 
 		this.incognito = incognito;
 		this.targetGlyph = targetGlyph;
+
+		this.place = place;
 	};
 
 
@@ -140,7 +144,7 @@ class IncognitoPerpetuator extends Sprite {
 
 		console.log(`.. glyphs: ${glyphs.map((g) => g.symbol).join('') }`)
 
-		let incognitoIndex: number = 0;
+		let incognitoIndex: number = this.place ? this.place-1 : 0;
 
 		const workingSequence = stream.map((metaGlyph)=>{
 
@@ -158,7 +162,10 @@ class IncognitoPerpetuator extends Sprite {
 					metaGlyph.data.prims = [prim];
 				}
 
-				incognitoIndex = (incognitoIndex + 1 >= glyphs.length) ? 0 : incognitoIndex + 1;
+				if ( !this.place ) {
+
+					incognitoIndex = (incognitoIndex + 1 >= glyphs.length) ? 0 : incognitoIndex + 1;
+				}
 			}
 
 			return metaGlyph;

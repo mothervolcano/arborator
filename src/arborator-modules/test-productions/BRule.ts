@@ -1,5 +1,6 @@
 import Production from "../../lib/lsys/core/production";
 import { Glyph, Imperative, MetaGlyph, Prim, Rule } from "../../lib/lsys/lsys";
+import IdPrim from "../../lib/lsys/prims/idPrim";
 import ImperativePrim from "../../lib/lsys/prims/imperativePrim";
 import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 
@@ -57,44 +58,57 @@ class BRule extends Production {
 
 		// --------------------------------------------------------------
 		// DEBUG 
+		
+		const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', prims: [] }
+		const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', prims: [] }
 
-		// const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', params: [] }
-		// const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', params: [] }
+		if ( this.head.symbol === 'K' && params ) {
 
-		// const debugGlyph = sequence.find( (g) => g.symbol === 'f');
+			const prim = new IdPrim();
 
-		// // sequence.slice().forEach((glyph,i)=>{    
+			params.split(',').forEach( (p: string) => {
 
-		// // 	if ( debugGlyph!.symbol === glyph.symbol ) {
+				if ( p.charAt(0) === '=') {
+					
+					prim.cast( Number.parseInt(p.substring(1)) )
+				}
+			})
 
-		// // 		debugInfo.params = [ this.prims[0]];
-
-		// // 		sequence.splice( i, 0, ...[ debugMark, debugInfo ]);
-		// // 	}
-		// // });
+			debugInfo.prims = [ prim ];
+			stream.unshift( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: {} } ]);
 
 
-		// debugInfo.params = [ this.prims[0] ];
+			// const debugGlyph = stream.find( (g) => g.glyph.symbol === 'K');
 
-		// sequence.push( ...[ debugMark, debugInfo ]);
+			// stream.slice().forEach((mg) => {
+
+			// 	if ( mg.glyph.symbol === 'f' ) {
+
+			// 		debugInfo.prims = [ this.head.prims[0] ];
+			// 		stream.unshift( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: {} } ]);
+
+			// 	}
+			// })			
+		}
+		
 
 		
-		console.log('')
-		console.log(`ENCODING ${this.head.symbol} RULE sequence...`)
+		// console.log('')
+		// console.log(`ENCODING ${this.head.symbol} RULE sequence...`)
 
 
 		const sequence: string[] = stream.map( (metaGlyph) => {
 
-			console.log(`. Processing ${metaGlyph.glyph.type} ${metaGlyph.glyph.symbol}`)
+			// console.log(`. Processing ${metaGlyph.glyph.type} ${metaGlyph.glyph.symbol}`)
 
 			if ( metaGlyph.glyph.type==='Rule' ) {
 
-				console.log(`. Checking updates for Rule Glyph ${metaGlyph.glyph.symbol}`)
-				console.log(`. Data: ${Object.keys( metaGlyph.data )}`)
+				// console.log(`. Checking updates for Rule Glyph ${metaGlyph.glyph.symbol}`)
+				// console.log(`. Data: ${Object.keys( metaGlyph.data )}`)
 
 				if ( metaGlyph.data.prims && metaGlyph.data.prims.length ) {
 
-					console.log(`. ${metaGlyph.data.prims.length} New prims found!`)
+					// console.log(`. ${metaGlyph.data.prims.length} New prims found!`)
 
 					for ( const primUpdate of metaGlyph.data.prims ) {
 
@@ -112,12 +126,12 @@ class BRule extends Production {
 
 					metaGlyph.data = {};
 
-					console.log(`.. Encoding ${metaGlyph.glyph.symbol}`)
+					// console.log(`.. Encoding ${metaGlyph.glyph.symbol}`)
 					return this.encodeGlyph(metaGlyph.glyph);
 				}
 			}
 
-			console.log(`... Encoding ${metaGlyph.glyph.symbol} ....`)
+			// console.log(`... Encoding ${metaGlyph.glyph.symbol} ....`)
 			return this.encodeGlyph(metaGlyph.glyph);
 
 		});

@@ -8,6 +8,7 @@ import IdPrim from "../prims/idPrim";
 class Indexer extends Sprite {
 
 	private targetGlyph: Glyph;
+	private targetGlyphIDs: number[] = [];
 	private id: number;
 	private prims: Id[];
 	// private spots: number[] = [];
@@ -23,40 +24,28 @@ class Indexer extends Sprite {
 	};
 
 
-	public implant(directory: Map<number, MetaGlyph>, head: Rule): Prim[] {
+	public implant( directory: Map<number, MetaGlyph>, head: Rule ): void {
 
-	    directory.forEach((glyphData)=>{
+	    directory.forEach((metaGlyph)=>{
 
-	    	const glyph = glyphData.glyph;
+	    	if ( metaGlyph.glyph.symbol === this.targetGlyph.symbol ) {
 
-	    	if ( glyph.symbol === this.targetGlyph.symbol ) {
+	    		if (metaGlyph.glyph.type==='Rule') {
 
-	    		if (glyph.type==='Rule') {
-
-	    			// this.spots.push(glyph.id)
-
-	    			const prim = new IdPrim( this.id )
-	    			prim.places = [ glyph.id ];
-
-	    			this.prims.push(prim);
-
-	    			this.id++
+					this.targetGlyphIDs.push(metaGlyph.id);
 	    		}
 	    	}
 	    });
-
-	    // return this.prims;
-	    return [new IdPrim( this.id )];
 	};
 
 
 	public update( directory: Map<number, MetaGlyph> ): number[] {
 
-		directory.forEach( (glyphData, i) => {
+		// directory.forEach( (glyphData, i) => {
 
-			const glyph = glyphData.glyph;
+		// 	const glyph = glyphData.glyph;
 			
-		});
+		// });
 
 		return []
 	}
@@ -64,34 +53,54 @@ class Indexer extends Sprite {
 
 	public sow() {
 
-		return [{ targets: [ this.targetGlyph ], prim: new IdPrim(1) }] ;
+		return [{ targets: [ this.targetGlyph ], prim: new IdPrim(this.id) }] ;
 	}
 
 
 	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 
-		for ( const prim of this.prims ) {
+		let id = this.id;
 
-			prim.process();
-			prim.process();
-		}
-	    
-		return null
+		stream.map((metaGlyph)=>{
+
+			if ( this.targetGlyphIDs.includes(metaGlyph.id) ) {
+
+				const prim = new IdPrim(id);
+
+    			if ( metaGlyph.data.prims ) {
+
+					metaGlyph.data.prims.push(prim);
+
+				} else { 
+
+					metaGlyph.data.prims = [prim];
+				}
+
+				id++;
+			}
+
+		});
+		
+		this.id = id;
+
+		return null;
 	};
 
 
 	run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
-		if ( params ) {
+		this.process( stream );
 
-			params.split(',').forEach((p: string) => {
-
-			})
-		}
-
-		this.process(stream);
-	    
 		return stream;
+
+		// if ( sequence ) {
+
+		// 	return sequence;
+
+		// } else {
+
+		// 	return stream;
+		// } 
 	};
 }
 

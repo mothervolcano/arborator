@@ -35,11 +35,11 @@ class Accumulator extends Sprite {
 
 	public update( directory: Map<number, MetaGlyph>): number[] {
 
-		directory.forEach( (glyphData, i) => {
+		// directory.forEach( (glyphData, i) => {
 
-			const glyph = glyphData.glyph;
+		// 	const glyph = glyphData.glyph;
 			
-		});
+		// });
 
 		return [];
 	};
@@ -48,14 +48,7 @@ class Accumulator extends Sprite {
 	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 
 		
-		const workingSequence = stream.map((glyph)=>{
-
-
-			return glyph;
-
-		});
-
-		return workingSequence.flat();
+		return stream;
 	};
 
 

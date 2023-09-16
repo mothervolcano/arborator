@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Glyph, Rule, Prim, MetaGlyph } from "../lsys";
+import { Glyph, Rule, Id, Counter, Prim, MetaGlyph } from "../lsys";
 
 
 
@@ -10,15 +10,21 @@ class Doppelganger extends Sprite {
 	private workingPrims: Prim[] = [];
 	private imagePrims: Map<number, Prim[]> = new Map();
 
+	private head: Rule | null;
+
 	constructor() {
 
 		super();
+
+		this.head = null;
 	}
 
 	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
 
 		this.sourcePrims = head.prims;
 		this.workingPrims = head.prims.slice();
+
+		this.head = head;
 	}
 
 
@@ -42,12 +48,16 @@ class Doppelganger extends Sprite {
 
 	protected process(stream: MetaGlyph[], idString: string): MetaGlyph[] | null {
 	   
-		
+		console.log('')
 		console.log(`............................................`)
-		console.log(`!!! DOPPELGANGER DETECTED! #${idString}`);
+		console.log(`!!! DOPPELGANGER DETECTED! ${idString}`);
 		
 
-		const id = Number.parseInt(idString);
+		const id = Number.parseInt(idString.substring(1));
+
+		const idPrim = this.sourcePrims.find( (p) => p.prefix === '#' ) as Id;
+		idPrim?.cast(id);
+
 
 		if ( this.imagePrims.has(id) ) {
 
@@ -55,18 +65,36 @@ class Doppelganger extends Sprite {
 
 		} else {
 
-			const image = this.sourcePrims.slice();
-
 			console.log(`new prims image: ${ this.sourcePrims.map((p)=>p.prefix).join(' / ') }`)
+			
+			const image = this.sourcePrims.map( p => p.clone() );
 			
 			this.imagePrims.set( id, image );
 		}
 
 
+		stream.forEach((metaGlyph) => {
+
+			if ( metaGlyph.glyph.symbol === this.head!.symbol && metaGlyph.glyph.type==='Rule' ) {
+
+				metaGlyph.glyph.prims = this.imagePrims.get(id)!.map( p => p.clone() );
+
+		// const counterPrim = metaGlyph.glyph.prims.find( (p) => p.prefix === '+' ) as Counter;
+
+		// if( id === 4) {
+
+		// 	counterPrim.process()
+		// 	counterPrim.process()
+		// 	counterPrim.process()
+		// }
+
+				console.log(`${metaGlyph.glyph.symbol} prims: ${metaGlyph.glyph.prims.map( p => `${p.prefix}${p.getValue()}` ).join(' ') }`)
+			}
+		})
+
+
 	   return null; 
 	}
-
-
 
 
 	run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
@@ -78,7 +106,7 @@ class Doppelganger extends Sprite {
 
 				if ( p.charAt(0) === '#' ) {
 					
-					this.process(stream, p.substring(1));
+					this.process(stream, p);
 				}
 
 			})

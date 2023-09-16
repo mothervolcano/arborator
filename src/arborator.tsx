@@ -76,6 +76,7 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Marker', '=' );
   alphabet.registerGlyph( 'Marker', '?' );
   alphabet.registerGlyph( 'Marker', '_' );
+  alphabet.registerGlyph( 'Marker', '#' );
 
 
   switch ( selectedModel ) {

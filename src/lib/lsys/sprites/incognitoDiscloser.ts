@@ -1,106 +1,93 @@
 import Sprite from "../core/sprite";
-import { Glyph, MetaGlyph, Prim, Rule } from "../lsys";
+import { Glyph, Imperative, MetaGlyph, Prim, Rule } from "../lsys";
 
-
-
-
+/**
+ * 
+ * The Incognito Discloser will replace the incognito Glyph ( * ) by
+ * another Glyph that is determined by... ? 
+ * 
+ * 
+ */ 
 
 class IncognitoDiscloser extends Sprite {
 
 
 	private incognito: Glyph;
-	private prim: Prim | null | undefined;
-	private prims: Prim[] = [];
-	private spots: number[] = [];
+	private incognitoIDs: number[] = [];
+	private discloser: Imperative;
 
-	constructor(incognito: Glyph ) {
+	
+	constructor( incognito: Glyph, discloser: Imperative ) {
 
 		super();
 
 		this.incognito = incognito;
-		this.prim = null;
+		this.discloser = discloser;
 
-	}
+	};
 
 
 	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
 
-		directory.forEach((metaGlyph, i) => {
+		directory.forEach((metaGlyph) => {
 
 			if (metaGlyph.glyph.symbol === this.incognito.symbol) {
 
-				this.spots.push(i);
+				this.incognitoIDs.push(metaGlyph.id);
 			}
 		})
+	};
 
-		this.prims = head.prims;
-	}
-
+	
 	public sow(): void {
 
 		// no targets
-	}
+	};
 
+	
 	public update( directory: Map<number, MetaGlyph> ): number[] {
 
-		directory.forEach( (glyphData, i) => {
-
-			const glyph = glyphData.glyph;
-			
-		});
-
 		return [];
-	}
+	};
 	
 
-	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
+	protected process(stream: MetaGlyph[], glyphString: string): MetaGlyph[] | null {
 
 
 		const workingSequence = stream.map((metaGlyph)=>{
 
-			// if (this.spots.includes(metaGlyph.glyph.id)) {
+			if ( this.incognitoIDs.includes(metaGlyph.id) ) {
 
-			// 	if ( this.prim != undefined && this.prim.type==='Imperative') {
+				const prim = this.discloser.recast(glyphString);
 
-			// 		// console.log(`DISCLOSED: ${this.prim.getValue().symbol}`)
-
-			// 		return this.prim.getValue();
-
-			// 	} else {
-
-			// 		return metaGlyph;
-			// 	}
-			// }
+				metaGlyph.glyph = prim.getValue();
+			}
 
 			return metaGlyph;
 
 		})
 
-
 		return workingSequence;
-	}
+	};
 
 
 	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
-		// this.prim = this.prims.find((prim) => prim.type==='Imperative')
+		let sequence: MetaGlyph[] | null = [];
 		
 		if ( params ) {
 
 			params.split(',').forEach((p: string) => {
 
-				if (this.prim && this.prim.prefix === p.charAt(0)) {
+				if (this.discloser && this.discloser.prefix === p.charAt(0)) {
 					
-					this.prim.process(p);
+					sequence = this.process(stream, p );
 				}
 			})
 		}
 
-		const sequence = this.process(stream)
 
 		if ( sequence ) {
-
-			// console.log(`FULL DISCLOSURE: ${sequence}`);
 
 			return sequence;
 

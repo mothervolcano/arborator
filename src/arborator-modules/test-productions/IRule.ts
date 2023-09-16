@@ -64,24 +64,23 @@ class IRule extends Production {
 
 		// -------------------------------------------------------------
 		// 4 Apply the prims
+
+
+		// if ( this.head.symbol === 'Y' ) {
+
+		// 	const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', prims: [] }
+		// 	const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', prims: [] }
+
+		// 	const debugGlyph = stream.find( (g) => g.glyph.symbol === 'B');
+
+		// 	debugInfo.prims = [ this.head.prims[0] ];
+
+		// 	stream.push( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: {} } ]);
+					
+		// }
 		
 
 
-
-		// const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', params: [] }
-		// const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', params: [] }
-
-		// const debugGlyph = sequence.find( (g) => g.symbol === 'B');
-
-		// sequence.slice().forEach((glyph,i)=>{    
-
-		// 	if ( debugGlyph!.symbol === glyph.symbol ) {
-
-		// 		debugInfo.params = [ this.prims[1]];
-
-		// 		sequence.splice( i, 0, ...[ debugMark, debugInfo ]);
-		// 	}
-		// });
 
 
 		console.log('')
