@@ -117,15 +117,33 @@ class Composer implements IComposer {
 				const currChar = this.thread[this.currentIndex];
 				const nextChar = this.thread[this.currentIndex + 1];
 
-				const product = this.model.read(currChar);
+				const symbol = this.model.read(currChar);
 
-				if (typeof product === 'string') {
+				if (typeof symbol === 'string') {
+		
+					if ( symbol === 'i' ) {
 
-					nextThread.push(product);
+						const paramString = this.extractParameters(this.strip.join(''));
+
+						if ( paramString ) {
+
+							console.log(`!!!!!! ${paramString}`)
+
+							nextThread.push(symbol);
+							nextThread.push('(')
+							nextThread.push(...paramString.split(''));
+							nextThread.push(')')
+							this.next(paramString.length + 2);
+						}
+
+					} else {
+
+						nextThread.push(symbol);
+					}
 
 				} else { 
 
-					if (product.read(nextChar, 'parameter?')) {
+					if (symbol.read(nextChar, 'parameter?')) {
 						
 						const paramString = this.extractParameters(this.strip.join(''));
 
@@ -133,7 +151,7 @@ class Composer implements IComposer {
 
 						if (paramString) {
 							
-							product.read(paramString);
+							symbol.read(paramString);
 							this.next(paramString.length + 2);
 
 						} else {
@@ -143,10 +161,13 @@ class Composer implements IComposer {
 
 					} else {
 
-						product.read();
+						symbol.read();
+
 					}
 
-					nextThread.push(...product.write().split(''));
+					// NOTE: handle parameter 'packing' here. 
+
+					nextThread.push(...symbol.write().split(''));
 				}
 
 				this.next();

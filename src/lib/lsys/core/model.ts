@@ -131,7 +131,7 @@ abstract class Model implements IModel {
 
 		const glyph = this.alphabet.glyph(symbol);
 
-		if ( glyph.type === 'Rule' && this.hasProduction( symbol ) ) {
+		if ( glyph.type === 'Rule' && this.hasProduction( symbol )) {
 
 			return this.getProduction( symbol )!;
 
