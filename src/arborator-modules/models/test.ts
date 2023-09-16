@@ -32,6 +32,7 @@ class Test extends Model {
 	private length: number;
 	private angle: number;
 	private angleRotationStep: number;
+	private turnDirection: string | undefined;
 	private radius: number;
 	
 
@@ -43,12 +44,12 @@ class Test extends Model {
 		// const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('O*') ).compose('O'); 
 
 		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-IYf*') ).compose('IY'); 
-		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-BKf*') ).compose('[*B][*B]f'); 
+		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-BKf*') ).compose('[-fB][+fB]f'); 
 		
-		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BKf*') ).compose('*K');
+		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-≈±BKf*') ).compose('f[≈B]ff');
 		// const K: IProduction = new BRule( alphabet.rule('K'), alphabet.collect('[]+-BKf*') ).compose('ff[*B]f')
 		
-		const K: IProduction = new BRule( alphabet.rule('K'), alphabet.collect('[]+-BKf*') ).compose('f')
+		const K: IProduction = new BRule( alphabet.rule('K'), alphabet.collect('[]+-≈±BKf*') ).compose('ff[≈ff]f[±ff]K')
 
 		// I.addSprite( new Accumulator( alphabet.glyph('f') ));
 
@@ -56,28 +57,28 @@ class Test extends Model {
 		// Y.addSprite( new Accumulator( alphabet.glyph('B') ));
 
 		// Y.addSprite( new Accumulator( alphabet.glyph('f') ));
-		
+
 		Y.addSprite( new Indexer(alphabet.rule('B'),1) );
 		Y.addSprite( new Accumulator(1,1) );
 		Y.addSprite( new Replicator( alphabet.glyph('f') ));
-		Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.collect('-+') ) );
-		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('B') )); 
+		// Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.collect('-+') ) );
+		// Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('B') )); 
 
 
 		// B.addSprite( new Doppelganger() );
-		B.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ) );
+		// B.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ) );
 		B.addSprite( new Accumulator(1,1) );
-		B.addSprite( new Accumulator(2,2) );
-		B.addSprite( new Replicator( alphabet.glyph('K') ));
+		// B.addSprite( new Accumulator(2,2) );
+		// B.addSprite( new Replicator( alphabet.glyph('K') ));
 		B.addSprite( new Perpetuator( alphabet.glyph('K') ));
-		B.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('K') )); 
+		// B.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('K') )); 
 		// B.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));
 		// B.addSprite( new Replicator('f') );
 
 
 		
 		// K.addSprite( new Doppelganger() );
-		K.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ));
+		// K.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ));
 
 		// K.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('K').symbol )); 
 
@@ -150,7 +151,7 @@ class Test extends Model {
 
 		const addMark = ( tool: any, context?: any  ) => { 
 
-			console.log(`ADD MARK: ${context.params}`)
+			// console.log(`ADD MARK: ${context.params}`)
 
 			this.addMark( tool.position() );
 
@@ -177,7 +178,9 @@ class Test extends Model {
 
 			this.angleRotationStep = context ? context.angle : this.angleRotationStep
 
-			// console.log(`TURN LEFT: + --> ${this.angleRotationStep}`)
+			console.log(`TURN LEFT: + --> ${this.turnDirection}`)
+
+			this.turnDirection = 'LEFT';
 
 			tool.left(this.angleRotationStep)
 		};
@@ -187,10 +190,55 @@ class Test extends Model {
 
 			this.angleRotationStep = context ? context.angle : this.angleRotationStep
 
-			// console.log(`TURN RIGHT: - --> ${this.angleRotationStep}`)
+			console.log(`TURN RIGHT: - --> ${this.turnDirection}`)
+
+			this.turnDirection = 'RIGHT';
 
 			tool.right(this.angleRotationStep)
 		};
+
+		
+		const turn = (tool: any, context?: any) => {
+
+			this.angleRotationStep = context ? context.angle : this.angleRotationStep
+
+			console.log(`KEEP THE TURN: - --> ${this.turnDirection}`)
+
+			if ( this.turnDirection === 'LEFT' ) {
+
+				tool.left(this.angleRotationStep)
+
+			} else if ( this.turnDirection === 'RIGHT') {
+
+				tool.right(this.angleRotationStep)
+
+			} else {
+
+				// DO NOTHING
+			}
+		};
+
+
+		const turnOpposite = (tool: any, context?: any) => {
+
+			this.angleRotationStep = context ? context.angle : this.angleRotationStep
+
+			console.log(`TURN THE OPPOSITE WAY to: ${this.turnDirection}`)
+
+			if ( this.turnDirection === 'LEFT' ) {
+
+				tool.right(this.angleRotationStep)
+
+			} else if ( this.turnDirection === 'RIGHT') {
+
+				tool.left(this.angleRotationStep)
+
+			} else {
+
+				// DO NOTHING
+			}
+		}
+
 
 		const saveState = (tool: any, context?: any ) => {
 
@@ -224,6 +272,8 @@ class Test extends Model {
 		this.addCommand( new Command('f', moveForward) );
 		this.addCommand( new Command('+', turnRight) );
 		this.addCommand( new Command('-', turnLeft) );
+		this.addCommand( new Command('≈', turn) );
+		this.addCommand( new Command('±', turnOpposite) );
 		this.addCommand( new Command('[', saveState) );
 		this.addCommand( new Command(']', restoreState) );
 		// this.addCommand( new Command('B', addMark ));

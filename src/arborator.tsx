@@ -53,6 +53,8 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Instruction', 'f' );
   alphabet.registerGlyph( 'Instruction', '+' );
   alphabet.registerGlyph( 'Instruction', '-' );
+  alphabet.registerGlyph( 'Instruction', '≈' );
+  alphabet.registerGlyph( 'Instruction', '±' );
   alphabet.registerGlyph( 'Instruction', '[' );
   alphabet.registerGlyph( 'Instruction', ']' );
   alphabet.registerGlyph( 'Instruction', 'i' );
