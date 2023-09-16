@@ -53,7 +53,7 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Instruction', 'f' );
   alphabet.registerGlyph( 'Instruction', '+' );
   alphabet.registerGlyph( 'Instruction', '-' );
-  alphabet.registerGlyph( 'Instruction', '≈' );
+  alphabet.registerGlyph( 'Instruction', '=' );
   alphabet.registerGlyph( 'Instruction', '±' );
   alphabet.registerGlyph( 'Instruction', '[' );
   alphabet.registerGlyph( 'Instruction', ']' );
@@ -62,23 +62,9 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Marker', '(' );
   alphabet.registerGlyph( 'Marker', ')' );
   alphabet.registerGlyph( 'Marker', ',' );
-  alphabet.registerGlyph( 'Marker', '1' );
-  alphabet.registerGlyph( 'Marker', '2' );
-  alphabet.registerGlyph( 'Marker', '3' );
-  alphabet.registerGlyph( 'Marker', '4' );
-  alphabet.registerGlyph( 'Marker', '5' );
-  alphabet.registerGlyph( 'Marker', '6' );
-  alphabet.registerGlyph( 'Marker', '7' );
-  alphabet.registerGlyph( 'Marker', '8' );
-  alphabet.registerGlyph( 'Marker', '9' );
-  alphabet.registerGlyph( 'Marker', '0' );
   alphabet.registerGlyph( 'Marker', '.' );
   alphabet.registerGlyph( 'Marker', '*' );
-  alphabet.registerGlyph( 'Marker', '!' );
-  alphabet.registerGlyph( 'Marker', '=' );
   alphabet.registerGlyph( 'Marker', '?' );
-  alphabet.registerGlyph( 'Marker', '_' );
-  alphabet.registerGlyph( 'Marker', '#' );
 
 
   switch ( selectedModel ) {

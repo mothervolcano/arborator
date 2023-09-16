@@ -44,12 +44,12 @@ class Test extends Model {
 		// const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('O*') ).compose('O'); 
 
 		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-IYf*') ).compose('IY'); 
-		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-BKf*') ).compose('[-fB][+fB]f'); 
+		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-BKf*') ).compose('[*fB][*fB]f'); 
 		
-		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-≈±BKf*') ).compose('f[≈B]ff');
+		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-=±BKf*') ).compose('f[=B]ff');
 		// const K: IProduction = new BRule( alphabet.rule('K'), alphabet.collect('[]+-BKf*') ).compose('ff[*B]f')
 		
-		const K: IProduction = new BRule( alphabet.rule('K'), alphabet.collect('[]+-≈±BKf*') ).compose('ff[≈ff]f[±ff]K')
+		const K: IProduction = new BRule( alphabet.rule('K'), alphabet.collect('[]+-=±BKf*') ).compose('ff[=ff]f[±ff]K')
 
 		// I.addSprite( new Accumulator( alphabet.glyph('f') ));
 
@@ -61,12 +61,12 @@ class Test extends Model {
 		Y.addSprite( new Indexer(alphabet.rule('B'),1) );
 		Y.addSprite( new Accumulator(1,1) );
 		Y.addSprite( new Replicator( alphabet.glyph('f') ));
-		// Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.collect('-+') ) );
-		// Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('B') )); 
+		Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.collect('-+') ) );
+		Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('B') )); 
 
 
 		// B.addSprite( new Doppelganger() );
-		// B.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ) );
+		B.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ) );
 		B.addSprite( new Accumulator(1,1) );
 		// B.addSprite( new Accumulator(2,2) );
 		// B.addSprite( new Replicator( alphabet.glyph('K') ));
@@ -272,7 +272,7 @@ class Test extends Model {
 		this.addCommand( new Command('f', moveForward) );
 		this.addCommand( new Command('+', turnRight) );
 		this.addCommand( new Command('-', turnLeft) );
-		this.addCommand( new Command('≈', turn) );
+		this.addCommand( new Command('=', turn) );
 		this.addCommand( new Command('±', turnOpposite) );
 		this.addCommand( new Command('[', saveState) );
 		this.addCommand( new Command(']', restoreState) );
