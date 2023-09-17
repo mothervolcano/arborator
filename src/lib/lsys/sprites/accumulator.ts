@@ -1,83 +1,125 @@
+import { countReset } from "console";
 import Sprite from "../core/sprite";
-import { Counter, Glyph, MetaGlyph, Prim, Rule } from "../lsys";
-import CounterPrim from "../prims/counterPrim";
+import { Counter, Glyph, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
+import ParameterPrim from "../prims/parameterPrim";
 
 
 
 class Accumulator extends Sprite {
 
-	private start: number;
-	private step: number;
-	private prim: Counter;
+	private prefix: string = '=';
 
-	constructor( start: number = 0, step: number = 1 ) {
+	private targetGlyph: Glyph | undefined;
+	private prim: Parameter | Counter | undefined;
+
+	constructor( prefix: string ) {
 
 		super();
 
-		this.start = start;
-		this.step = step;
-		this.prim = new CounterPrim(this.start, this.step);
+		this.prefix = prefix;
 
-	};
-
-
-	public implant(directory: Map<number, MetaGlyph>, head: Rule): Prim[] {
-	 
-		return [ this.prim ];
-	};
-
-
-	public sow(): void {
-
-		// nothing to sow here
 	}
 
+	implant(directory: Map<number, any>, dialect: Glyph[]): void {
 
-	public update( directory: Map<number, MetaGlyph>): number[] {
+		this.targetGlyph = directory.get(0).glyph as Rule;
 
-		// directory.forEach( (glyphData, i) => {
-
-		// 	const glyph = glyphData.glyph;
+		if ( this.targetGlyph ) {
 			
-		// });
+			this.prim = this.targetGlyph.prims.find((p) => p.prefix === this.prefix ) as Parameter | Counter;
 
-		return [];
+		} else {
+
+			throw new Error(`ERROR @ Accumulator: head glyph not found`);
+		}
+
+
+		// directory.forEach((metaGlyph)=> {
+
+		// 	// Find the ids of each incognito in the directory so we can track them if the sequence changes or mutates
+
+		// 	if (metaGlyph.glyph.symbol === this.targetGlyph.symbol ) {
+
+		// 		this.targetGlyphIDs.push(metaGlyph.id);
+		// 	}
+
+		// });    
 	};
 
 
-	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
+	sow(targets?: string[] | undefined): void | { targets: Glyph[]; prim: Prim; }[] {
+	    
+	}
 
+	update(params: string): string {
+
+		return params;
+	}
+
+	protected process(stream: MetaGlyph[], countString: string): MetaGlyph[] | null {
+	    
+	    const count = Number.parseInt(countString.substring(1));
+
+	    if ( this.prim ) {
+
+	    	this.prim.cast( count + 1 );
+
+	    } else {
+
+	    	throw new Error(`ERROR @ Accumulator: missing required prim`);
+	    }
+
+
+		const workingSequence = stream.map((metaGlyph) => {
+
+			// if ( this.targetGlyphIDs.includes( metaGlyph.id) ) {
+
+			// 	const prim = count ? new ParameterPrim( count + 1 ) : new ParameterPrim(1);
+
+			// 	if ( metaGlyph.data.prims ) {
+
+			// 		metaGlyph.data.prims.push(prim);
+
+			// 	} else { 
+
+			// 		metaGlyph.data.prims = [prim];
+			// 	}
 		
-		return stream;
-	};
+			// }	
 
+			return metaGlyph;
 
-	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
+		});	
+		
+		return workingSequence;
+	}
+
+	run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
+
+		let sequence: MetaGlyph[] | null = [];
 
 		if ( params ) {
 
-			params.split(',').forEach((p: string) => {
+			params.split(',').forEach( (p: string) => {
 
-				if (this.prim.prefix === p.charAt(0)) {
+				if ( this.prefix === p.charAt(0) ) {
 					
-					this.prim.process();
+					sequence = this.process(stream, p );
 				}
 			})
 		}
-	  	
-		const sequence = this.process(stream)
 
-		if ( sequence ) {
+		if ( sequence && sequence.length ) {
 
 			return sequence;
 
 		} else {
 
 			return stream;
-		} 
+		}   
 	}
 }
 
+
+
 export default Accumulator;
-
-
