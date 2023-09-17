@@ -8,8 +8,8 @@ import Alphabet from './lib/lsys/core/alphabet';
 import Composer from './lib/lsys/core/composer';
 
 
-import Tree from './arborator-modules/models/tree';
 import Test from './arborator-modules/models/test';
+import Test2 from './arborator-modules/models/test2';
 import Turtle from './lib/lsys/tools/turtle';
 
 let view: any
@@ -51,6 +51,7 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Rule', 'R' );
   alphabet.registerGlyph( 'Rule', 'O' );
   alphabet.registerGlyph( 'Instruction', 'f' );
+  alphabet.registerGlyph( 'Instruction', '.' );
   alphabet.registerGlyph( 'Instruction', '+' );
   alphabet.registerGlyph( 'Instruction', '-' );
   alphabet.registerGlyph( 'Instruction', '=' );
@@ -62,7 +63,6 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Marker', '(' );
   alphabet.registerGlyph( 'Marker', ')' );
   alphabet.registerGlyph( 'Marker', ',' );
-  alphabet.registerGlyph( 'Marker', '.' );
   alphabet.registerGlyph( 'Marker', '*' );
   alphabet.registerGlyph( 'Marker', '?' );
 
@@ -74,7 +74,7 @@ export function initModel( selectedModel: string ) {
       break;
 
     case 'PINE':
-      model = new Tree( alphabet, 'I' );
+      model = new Test2( alphabet, 'O' );
       break;
   }
 
