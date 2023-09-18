@@ -30,11 +30,11 @@ const defaultParamSchema: Param[] = [
 
 const pineParamSchema: Param[] = [
 
-	{ id: 'ogp1', name: 'iterationsNum', value: 8, range: [1, 10], step: 1, label: "P1", },
+	{ id: 'ogp1', name: 'iterationsNum', value: 12, range: [1, 10], step: 1, label: "P1", },
 	{ id: 'ogp5', name: 'scaleCtrl', value: 1, range: [1, 3], step: 0.01, label: "P3", },
-	{ id: 'ogp2', name: 'angleRotationStepCtrl', value: 30, range: [0, 60], step: 0.1, label: "P2", },
-	{ id: 'mkp3', name: 'lengthCtrl', value: 1, range: [0.25, 5], step: 0.01, label: "P4", },
-	{ id: 'ogp5', name: 'empty', value: 1, range: [0, 2], step: 1, label: "Olga P5", },
+	{ id: 'ogp2', name: 'angleRotationStepCtrl', value: 30, range: [0, 60], step: 0.1, label: "angle", },
+	{ id: 'mkp3', name: 'lengthCtrl', value: 1, range: [0.25, 5], step: 0.01, label: "length", },
+	{ id: 'ogp5', name: 'angleStepCtrl', value: 1, range: [-2, 2], step: 0.01, label: "angle step reduction", },
 	{ id: 'ogp6', name: 'empty', value: 1, range: [0, 2], step: 1, label: "Olga P6", },
 	{ id: 'ogp7', name: 'empty', value: 1, range: [0, 2], step: 1, label: "Olga P7", },
 ];
@@ -140,7 +140,7 @@ const UI = () => {
 
 			// console.log(`GENERATE HANDLER: initModel() + generate()`);
 			
-			initModel(selectedModel.option)
+			initModel(selectedModel.option, _modelParams)
 			generate(_modelParams);
 
 			setCurrentModel(selectedModel);

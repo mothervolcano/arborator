@@ -55,9 +55,11 @@ abstract class Production implements IProduction {
 		sequence.forEach((glyph, i) => {
 
 			this._rule[i] = glyph;
-			const dirIndex = i+1; // the directory index starts at 1 to help not confuse with the sequence array.
+			const dirIndex = i+1; // the directory index starts at 1 to reserve 0 for the head glyph
 			this.directory.set( dirIndex, { glyph: glyph, id: dirIndex, data: {} } ); 
 			this.sequence.push( this.directory.get( dirIndex )! );
+
+			this.directory.set(0, { glyph: this._head, id: 0, data: {} });
 
 		});
 
@@ -270,7 +272,7 @@ abstract class Production implements IProduction {
 		//-------------------------------------------------
 		// STEP 1
 
-		const prims = sprite.implant( this.directory, this.head );
+		const prims = sprite.implant( this.directory, this.dialect );
 
 		if ( prims ) {
 

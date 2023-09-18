@@ -127,8 +127,6 @@ class Composer implements IComposer {
 
 						if ( paramString ) {
 
-							console.log(`!!!!!! ${paramString}`)
-
 							nextThread.push(symbol);
 							nextThread.push('(')
 							nextThread.push(...paramString.split(''));

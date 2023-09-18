@@ -19,9 +19,10 @@ import IncognitoDiscloser from '../../lib/lsys/sprites/incognitoDiscloser';
 import Indexer from '../../lib/lsys/sprites/indexer';
 import Doppelganger from '../../lib/lsys/sprites/doppelganger';
 import Replicator from '../../lib/lsys/sprites/replicator';
-import Perpetuator from '../../lib/lsys/sprites/perpetuator';
-import Generator from '../../lib/lsys/sprites/generator';
+import Propagator from '../../lib/lsys/sprites/propagator';
+import Dispenser from '../../lib/lsys/sprites/dispenser';
 import Accumulator from '../../lib/lsys/sprites/accumulator';
+import Generator from '../../lib/lsys/sprites/generator';
 
 
 class Test2 extends Model {
@@ -36,33 +37,40 @@ class Test2 extends Model {
 	private lengthReductionUnit: number;
 	private angle: number;
 	private angleRotationStep: number;
+	private angleStepShift: number;
 	private turnDirection: string | undefined;
 	private radius: number;
 	
 
-	constructor( alphabet: IAlphabet, axiom: string ) {
+	constructor( alphabet: IAlphabet, axiom: string, iterationsNum: number ) {
 
 		super( alphabet, axiom );
 
+		console.log(`INIT MODEL with ${iterationsNum} iterations`)
 
-		const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('[]+-IOf*') ).compose('IO'); 
-		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-IYf*') ).compose('Y'); 
-		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-IBKf*') ).compose('ff[-B][+B]f'); 
-		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-=±BKfx*') ).compose('ffB');
+		const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('[]+-<IOf*') ).compose('O'); 
+		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-<>.Yf*') ).compose('Y'); 
+		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-<>.Bf*x') ).compose('ff[<-.Bx][<+.Bx]f'); 
+		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-=±<>.BKf*x') ).compose('ff[=.ff.Kx..][±.ff...Kx].B');
+		const K: IProduction = new BRule( alphabet.rule('K'), alphabet.collect('[]+-=±<>.f*x') ).compose('[=.ffx][±.ffx]');
+
+		O.addSprite( new Generator( alphabet.rule('I'), new ParameterPrim(iterationsNum) ));
+		O.addSprite( new Propagator( alphabet.rule('I'), '=' ))
 
 		// O.addSprite( new Escalator(1,1) );
-		// O.addSprite( new Perpetuator( alphabet.rule('I'), '+' ));
+		// I.addSprite( new Perpetuator( alphabet.rule('Y'), '=' ));
 
-		Y.addPrim( new ParameterPrim(1) );
-		Y.addSprite( new Accumulator( '=' ))
+		// Y.addPrim( new ParameterPrim(1) );
+		// Y.addSprite( new Accumulator( '=' ))
 		// I.addSprite( new Perpetuator( alphabet.rule('Y'), '=' ))
 		// I.addSprite( new Generator( alphabet.rule('Y'), new CounterPrim(), new ParameterPrim() ))
 
 		
+		this.addProduction(O);
 		this.addProduction(I);
 		this.addProduction(Y);
 		this.addProduction(B);
-		this.addProduction(O);
+		this.addProduction(K);
 
 
 
@@ -73,11 +81,12 @@ class Test2 extends Model {
 		this.scale = 1;
 		this.length = 10;
 		this.lengthReduction = 1;
-		this.lengthReductionUnit = 4/5;
+		this.lengthReductionUnit = this.length / (iterationsNum);
 		this.lengthReductionFactor = 1;
 		
 		this.angle = -90
-		this.angleRotationStep = 45;
+		this.angleRotationStep = 30;
+		this.angleStepShift = 0;
 
 		this.radius = 10
 
@@ -130,29 +139,41 @@ class Test2 extends Model {
 
 			// console.log(`MOVE FORWARD: f --> ${this.length} / ${tool.position()}`);
 
-			tool.forward( this.length * this.lengthReduction * context.length );
+			tool.forward( this.length * context.length );
 
-			this.lengthReduction = 1;
 		};
 
 
-		const inchForward = (tool: any, context?: any) => {
+		const reduceLength = (tool: any, context?: any) => {
 
-			this.lengthReduction *= this.lengthReductionUnit;
+			if ( this.length > 3 ) { this.length -= this.lengthReductionUnit };
 
-			console.log(`LENGTH REDUCTION: ${this.lengthReduction}`)
+			console.log(`LENGTH REDUCTION: ${this.length}`)
 		};
+
+
+		const increaseAngle = (tool: any, context?: any) => {
+
+			this.angleStepShift += context?.angleReduction ? context.angleReduction : 1;
+		};
+
+
+		const decreaseAngle = (tool: any, context?: any) => {
+
+			this.angleStepShift -= context?.angleReduction ? context.angleReduction : 1;
+		};
+
 
 
 		const turnLeft = (tool: any, context?: any) => {
 
 			this.angleRotationStep = context ? context.angle : this.angleRotationStep
 
-			// console.log(`TURN LEFT: + --> ${this.turnDirection}`)
+			console.log(`TURN LEFT: + --> ${this.angleRotationStep}`)
 
 			this.turnDirection = 'LEFT';
 
-			tool.left(this.angleRotationStep)
+			tool.left(this.angleRotationStep + this.angleStepShift)
 		};
 
 
@@ -164,7 +185,7 @@ class Test2 extends Model {
 
 			this.turnDirection = 'RIGHT';
 
-			tool.right(this.angleRotationStep)
+			tool.right(this.angleRotationStep + this.angleStepShift)
 		};
 
 		
@@ -176,11 +197,11 @@ class Test2 extends Model {
 
 			if ( this.turnDirection === 'LEFT' ) {
 
-				tool.left(this.angleRotationStep)
+				tool.left(this.angleRotationStep + this.angleStepShift)
 
 			} else if ( this.turnDirection === 'RIGHT') {
 
-				tool.right(this.angleRotationStep)
+				tool.right(this.angleRotationStep + this.angleStepShift)
 
 			} else {
 
@@ -193,15 +214,15 @@ class Test2 extends Model {
 
 			this.angleRotationStep = context ? context.angle : this.angleRotationStep
 
-			console.log(`TURN THE OPPOSITE WAY to: ${this.turnDirection}`)
+			// console.log(`TURN THE OPPOSITE WAY to: ${this.turnDirection}`)
 
 			if ( this.turnDirection === 'LEFT' ) {
 
-				tool.right(this.angleRotationStep)
+				tool.right(this.angleRotationStep + this.angleStepShift)
 
 			} else if ( this.turnDirection === 'RIGHT') {
 
-				tool.left(this.angleRotationStep)
+				tool.left(this.angleRotationStep + this.angleStepShift)
 
 			} else {
 
@@ -240,7 +261,9 @@ class Test2 extends Model {
 
 
 		this.addCommand( new Command('f', moveForward) );
-		this.addCommand( new Command('.', inchForward) );
+		this.addCommand( new Command('.', reduceLength) );
+		this.addCommand( new Command('>', increaseAngle) );
+		this.addCommand( new Command('<', decreaseAngle) );
 		this.addCommand( new Command('+', turnRight) );
 		this.addCommand( new Command('-', turnLeft) );
 		this.addCommand( new Command('=', turn) );
@@ -255,6 +278,24 @@ class Test2 extends Model {
 	private addMark( position: any ) {
 
 		const mark = new Path.Circle({center: position, radius: this.radius * this.scale, fillColor: 'green', opacity: 0.25})
+	}
+
+	public reset() {
+
+		this.states = [];
+
+		this.scale = 1;
+		this.length = 10;
+		this.lengthReduction = 1;
+		// this.lengthReductionUnit = this.length / (iterationsNum);
+		this.lengthReductionFactor = 1;
+		
+		this.angle = -90
+		this.angleRotationStep = 30;
+		this.angleStepShift = 0;
+
+		this.radius = 10
+
 	}
 
 }
