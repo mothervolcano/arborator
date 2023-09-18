@@ -30,7 +30,9 @@ export function reset() {
   
 }
 
-export function initModel( selectedModel: string ) {
+export function initModel( selectedModel: string, params: any ) {
+
+  const { iterationsNum } = params;
 
   paperScope.project.clear();
 
@@ -56,6 +58,8 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Instruction', '-' );
   alphabet.registerGlyph( 'Instruction', '=' );
   alphabet.registerGlyph( 'Instruction', '±' );
+  alphabet.registerGlyph( 'Instruction', '>' );
+  alphabet.registerGlyph( 'Instruction', '<' );
   alphabet.registerGlyph( 'Instruction', '[' );
   alphabet.registerGlyph( 'Instruction', ']' );
   alphabet.registerGlyph( 'Instruction', 'i' );
@@ -70,11 +74,11 @@ export function initModel( selectedModel: string ) {
   switch ( selectedModel ) {
 
     case 'DEFAULT':
-      model = new Test( alphabet, 'I' );
+      model = new Test( alphabet, 'I', iterationsNum );
       break;
 
     case 'PINE':
-      model = new Test2( alphabet, 'O' );
+      model = new Test2( alphabet, 'O', iterationsNum );
       break;
   }
 
@@ -127,23 +131,32 @@ export function draw(
 
 ) {
 
-  const { lengthCtrl, angleRotationStepCtrl } = params;
+  const { lengthCtrl, angleRotationStepCtrl, angleStepCtrl, iterationsNum } = params;
 
   console.log(`DRAW! angleCtrl: ${lengthCtrl}`);
 
   layer.removeChildren();
 
+  model.reset();
   pen.init( origin.x, origin.y, -90 );
 
 
-  for ( const command of sequence ) {
+  // for ( const command of sequence ) {
 
-      command[0].run( pen, { length: lengthCtrl, angle: angleRotationStepCtrl, params: command[1] } );
+  //     command[0].run( pen, { length: lengthCtrl, angle: angleRotationStepCtrl, params: command[1] });
+  // }
+
+
+  for ( let i=0; i<sequence.length; i++ ) {
+
+    const command = sequence[i];
+
+    command[0].run( pen, { length: lengthCtrl, angle: angleRotationStepCtrl, angleReduction: angleStepCtrl, params: command[1] } );
   }
 
-  layer.position = origin;
 
-  console.log(`Turtle path: ${pen.path().position}`)
+
+  layer.position = origin;
 
 };
 

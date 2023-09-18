@@ -6,6 +6,8 @@ import ParameterPrim from "../prims/parameterPrim";
 
 class Propagator extends Sprite {
 
+	private count: number = 0;
+
 	private prefix: string = '+';
 
 	private targetGlyph: Glyph;
@@ -21,7 +23,6 @@ class Propagator extends Sprite {
 
 
 	public implant(directory: Map<number, any>, dialect: Glyph[]): void {
-
 
 		directory.forEach((metaGlyph)=> {
 
@@ -40,9 +41,7 @@ class Propagator extends Sprite {
 
 				this.targetGlyphIDs.push(metaGlyph.id);
 			}
-
-		});
-	    
+		});    
 	};
 
 
@@ -53,20 +52,26 @@ class Propagator extends Sprite {
 
 
 	update( params: string ): string {
-	    
+
+		params.split(',').forEach( (p: string) => {
+
+			if ( this.prefix === p.charAt(0) ) {
+				
+				this.count = Number.parseInt(p.substring(1));
+			}
+		})
+   
 	    return params;
 	};
 
 
-	protected process(stream: MetaGlyph[], countString: string): MetaGlyph[] | null {
-
-		const count = Number.parseInt(countString.substring(1));
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 
 		const workingSequence = stream.map((metaGlyph) => {
 
 			if ( this.targetGlyphIDs.includes( metaGlyph.id) ) {
 
-				const prim = count ? new ParameterPrim( count ) : new ParameterPrim();
+				const prim = this.count ? new ParameterPrim( this.count ) : new ParameterPrim();
 
 				if ( metaGlyph.data.prims ) {
 
@@ -91,17 +96,8 @@ class Propagator extends Sprite {
 	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
 		let sequence: MetaGlyph[] | null = [];
-
-		if ( params ) {
-
-			params.split(',').forEach( (p: string) => {
-
-				if ( this.prefix === p.charAt(0) ) {
-					
-					sequence = this.process(stream, p );
-				}
-			})
-		}
+			
+		sequence = this.process(stream);
 
 		if ( sequence && sequence.length ) {
 
@@ -113,8 +109,8 @@ class Propagator extends Sprite {
 		}
 	    
 	};
-
 }
 
 
 export default Propagator;
+

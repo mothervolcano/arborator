@@ -8,6 +8,7 @@ import ParameterPrim from "../prims/parameterPrim";
 class Accumulator extends Sprite {
 
 	private prefix: string = '=';
+	private count: number = 0;
 
 	private targetGlyph: Glyph | undefined;
 	private prim: Parameter | Counter | undefined;
@@ -53,62 +54,37 @@ class Accumulator extends Sprite {
 
 	update(params: string): string {
 
+		params.split(',').forEach( (p: string) => {
+
+			if ( this.prefix === p.charAt(0) ) {
+				
+				this.count = Number.parseInt(p.substring(1));
+			}
+		})
+
 		return params;
 	}
 
-	protected process(stream: MetaGlyph[], countString: string): MetaGlyph[] | null {
-	    
-	    const count = Number.parseInt(countString.substring(1));
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 
 	    if ( this.prim ) {
 
-	    	this.prim.cast( count + 1 );
+	    	this.prim.cast( this.count + 1 );
 
 	    } else {
 
 	    	throw new Error(`ERROR @ Accumulator: missing required prim`);
 	    }
-
-
-		const workingSequence = stream.map((metaGlyph) => {
-
-			// if ( this.targetGlyphIDs.includes( metaGlyph.id) ) {
-
-			// 	const prim = count ? new ParameterPrim( count + 1 ) : new ParameterPrim(1);
-
-			// 	if ( metaGlyph.data.prims ) {
-
-			// 		metaGlyph.data.prims.push(prim);
-
-			// 	} else { 
-
-			// 		metaGlyph.data.prims = [prim];
-			// 	}
 		
-			// }	
-
-			return metaGlyph;
-
-		});	
-		
-		return workingSequence;
+		return stream;
 	}
 
-	run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
+	run(stream: MetaGlyph[]): MetaGlyph[] {
 
 		let sequence: MetaGlyph[] | null = [];
 
-		if ( params ) {
-
-			params.split(',').forEach( (p: string) => {
-
-				if ( this.prefix === p.charAt(0) ) {
-					
-					sequence = this.process(stream, p );
-				}
-			})
-		}
-
+		sequence = this.process(stream);
+		
 		if ( sequence && sequence.length ) {
 
 			return sequence;

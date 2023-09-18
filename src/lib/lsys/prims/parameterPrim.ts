@@ -59,7 +59,7 @@ class ParameterPrim extends BasePrim<number> implements Parameter {
 
 	public write() {
 
-		if ( this.value ) {
+		if ( this.value !== null && this.value !== undefined ) {
 
 			return `${this.prefix}${this.value.toString()}`;
 

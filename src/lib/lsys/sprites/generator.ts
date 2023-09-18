@@ -4,6 +4,7 @@ import { Counter, Glyph, Id, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
 
 class Generator extends Sprite {
 
+	private count: number = 0
 
 	private sourceGlyph: Rule;
 	private seedPrim: Parameter | Counter | Id;
@@ -55,21 +56,27 @@ class Generator extends Sprite {
 
 
 	update(params: string): string {
+
+		params.split(',').forEach( (p: string) => {
+
+			if ( p.charAt(0) === this.seedPrim.prefix ) {
+				
+				this.count = Number.parseInt(p.substring(1)) - 1;
+			}
+		})
 	    
 	    return params;
 	};
 
 
-	protected process(stream: MetaGlyph[], countString?: any): MetaGlyph[] | null {
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 	    
 	    const sequence: MetaGlyph[] = [];
 
 	    // ------------------------------------------------
 
-	    const count = Number.parseInt(countString) - 1;
-
     	const prim = this.seedPrim.clone();
-		prim.cast(count);
+		prim.cast(this.count);
 
     	const newMetaGlyph = {
 
@@ -91,20 +98,11 @@ class Generator extends Sprite {
 	};
 
 
-	run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
+	run(stream: MetaGlyph[]): MetaGlyph[] {
 
 		let sequence: MetaGlyph[] | null = [];
 
-		if ( params ) {
-
-			params.split(',').forEach( (p: string) => {
-
-				if ( p.charAt(0) === this.seedPrim.prefix ) {
-					
-					sequence = this.process(stream, p.substring(1));
-				}
-			})
-		}
+		sequence = this.process(stream);
 
 		if ( sequence && sequence.length ) {
 

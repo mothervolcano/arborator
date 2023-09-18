@@ -53,9 +53,9 @@ abstract class Sprite implements ISprite {
 
 	}
 
-	abstract implant(directory: Map<number, any>, head: Rule): void;
+	abstract implant(directory: Map<number, any>, dialect: Glyph[]): void;
 	abstract sow(targets?: string[]): { targets: Glyph[], prim: Prim }[] | void;
-	abstract update(directory: Map<number, MetaGlyph>): number[];
+	abstract update( params: string ): string;
 	abstract run(stream: MetaGlyph[], params?: any): MetaGlyph[];
 
 	protected abstract process(stream: MetaGlyph[], context?: any): MetaGlyph[] | null;

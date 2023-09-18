@@ -55,6 +55,7 @@ class KRule extends Production {
 
 			for ( const sprite of this.sprites ) {
 
+				params = params ? sprite.update(params) : params;
 				stream = sprite.run( stream, params, this.head.symbol );
 			}
 

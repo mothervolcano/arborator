@@ -1,38 +1,55 @@
 import Sprite from "../core/sprite";
-import { Glyph, MetaGlyph, Rule } from "../lsys";
+import { Counter, Glyph, Id, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
+import ParameterPrim from "../prims/parameterPrim";
 
 
 
 
 class Replicator extends Sprite {
 
+	private count: number = 0;
 
-	private prefix: string = '+';
+	private readerPrim: Counter | Parameter | Id;
+	private writerPrim: Counter | Parameter | Id | null;
 
-	private i: number | null;
+	private place: number | undefined;
 	private targetGlyph: Glyph;
 	private targetGlyphIDs: number[] = [];
 
 
-	constructor( targetSymbol: Glyph, i?: number ) {
+	constructor( targetGlyph: Glyph, readerPrim: Counter | Parameter | Id, writerPrim: Counter | Parameter | Id | null = null, place?: number ) {
 
 		super();
 
-		this.i = i || null;
-		this.targetGlyph = targetSymbol;
+		this.targetGlyph = targetGlyph;
+		this.place = place;
+
+		this.readerPrim = readerPrim;
+		this.writerPrim = writerPrim || readerPrim;
 
 	};
 
 
-	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
-	    	
-		for ( const [ i, metaGlyph ] of directory ) {
-			
+	public implant(directory: Map<number, MetaGlyph>, dialect: Glyph[]): void {
+
+		const eligibles: MetaGlyph[] = [];
+
+		directory.forEach((metaGlyph)=> {
+
 			if ( metaGlyph.glyph.symbol === this.targetGlyph.symbol ) {
+
+				eligibles.push( metaGlyph );
 
 				this.targetGlyphIDs.push(metaGlyph.id);
 			}
-		}
+		});
+
+
+		this.targetGlyphIDs = eligibles.filter( (metaGlyph, i) => { 
+
+			return this.place ? i === this.place-1 : true;
+
+		}).map( metaGlyph => metaGlyph.id );
 
 	};
 
@@ -43,16 +60,24 @@ class Replicator extends Sprite {
 	};
 
 
-	public update( directory: Map<number, MetaGlyph> ): number[] {
+	public update( params: string ): string {
 
+		if ( params ) {
 
-		return [];
+			params.split(',').forEach( (p: string) => {
+
+				if ( p.charAt(0) === this.readerPrim.prefix ) {
+					
+					this.count = Number.parseInt(p.substring(1));
+				}
+			})
+		}
+
+		return params;
 	}
 
 
-	protected process(stream: MetaGlyph[], countString: string): MetaGlyph[] | null {
-
-		const count = Number.parseInt(countString);
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 
 		const workingSequence = stream.map((metaGlyph) => {
 
@@ -62,9 +87,25 @@ class Replicator extends Sprite {
 
 				// ---------------------------------------
 				
-				for ( let i=0; i<count; i++ ) {
+				for ( let i=this.count; i>=0; i-- ) {
+				// for ( let i=0; i<=count; i++ ) {
 
-					sequence.push( metaGlyph );
+					const newMetaGlyph = {
+
+						glyph: metaGlyph.glyph,
+						id: 900,
+						data: {}
+					}
+
+					if (metaGlyph.glyph.type==='Rule') {
+
+						const prim = this.writerPrim!.clone();
+						prim.cast(i+1);
+
+						newMetaGlyph.data = { prims: [ prim ] }
+					}
+
+					sequence.push( newMetaGlyph );
 				}
 
 				// ---------------------------------------
@@ -81,20 +122,11 @@ class Replicator extends Sprite {
 	};
 
 
-	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
+	public run(stream: MetaGlyph[]): MetaGlyph[] {
 
 		let sequence: MetaGlyph[] | null = [];
 
-		if ( params ) {
-
-			params.split(',').forEach( (p: string) => {
-
-				if ( this.prefix === p.charAt(0) ) {
-					
-					sequence = this.process(stream, p.substring(1));
-				}
-			})
-		}
+		sequence = this.process(stream);
 
 		if ( sequence && sequence.length ) {
 
@@ -103,10 +135,8 @@ class Replicator extends Sprite {
 		} else {
 
 			return stream;
-		} 
-	    
+		}     
 	};
-
 
 }
 

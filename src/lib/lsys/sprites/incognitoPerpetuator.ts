@@ -38,7 +38,7 @@ class IncognitoPerpetuator extends Sprite {
 
 
 
-	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
+	public implant(directory: Map<number, MetaGlyph>, dialect: Glyph[]): void {
 
 
 		directory.forEach((metaGlyph)=> {
@@ -55,7 +55,7 @@ class IncognitoPerpetuator extends Sprite {
 			if (metaGlyph.glyph.symbol === this.targetGlyph.symbol ) {
 
 				console.log(`-----------------------------------------`)
-				console.log(`IMPLANTING INCOGNITO PERPETUATOR IN: ${head.symbol}`)
+				console.log(`IMPLANTING INCOGNITO PERPETUATOR IN: ${dialect}`)
 				// console.log(`--> ${directory.map((g)=>g.symbol).join('')}`)
 				console.log(``)
 				console.log(`TARGET: ${metaGlyph.glyph.symbol}`)
@@ -84,7 +84,7 @@ class IncognitoPerpetuator extends Sprite {
 	};
 
 
-	public update( directory: Map<number, MetaGlyph> ): number[] {
+	public update( params: string ): string {
 
 		// console.log(`UPDATING INCOGNITO PERPETUATOR: ${directory.size}`)
 
@@ -132,7 +132,7 @@ class IncognitoPerpetuator extends Sprite {
 
 		// return this.targetGlyphIDs;
 
-		return [];
+		return params;
 	}
 
 

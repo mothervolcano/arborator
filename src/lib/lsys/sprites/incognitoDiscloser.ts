@@ -15,6 +15,7 @@ class IncognitoDiscloser extends Sprite {
 	private incognito: Glyph;
 	private incognitoIDs: number[] = [];
 	private discloser: Imperative;
+	private disclosure: string = '?';
 
 	
 	constructor( incognito: Glyph, discloser: Imperative ) {
@@ -27,7 +28,7 @@ class IncognitoDiscloser extends Sprite {
 	};
 
 
-	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
+	public implant(directory: Map<number, MetaGlyph>, dialect: Glyph[]): void {
 
 		directory.forEach((metaGlyph) => {
 
@@ -45,20 +46,30 @@ class IncognitoDiscloser extends Sprite {
 	};
 
 	
-	public update( directory: Map<number, MetaGlyph> ): number[] {
+	public update( params: string ): string {
 
-		return [];
+
+		params.split(',').forEach((p: string) => {
+
+			if (this.discloser && this.discloser.prefix === p.charAt(0)) {
+				
+				this.disclosure = p;
+			}
+		})
+
+
+		return params;
 	};
 	
 
-	protected process(stream: MetaGlyph[], glyphString: string): MetaGlyph[] | null {
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 
 
 		const workingSequence = stream.map((metaGlyph)=>{
 
 			if ( this.incognitoIDs.includes(metaGlyph.id) ) {
 
-				const prim = this.discloser.recast(glyphString);
+				const prim = this.discloser.recast(this.disclosure);
 
 				metaGlyph.glyph = prim.getValue();
 			}
@@ -71,21 +82,11 @@ class IncognitoDiscloser extends Sprite {
 	};
 
 
-	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
+	public run(stream: MetaGlyph[]): MetaGlyph[] {
 
 		let sequence: MetaGlyph[] | null = [];
-		
-		if ( params ) {
 
-			params.split(',').forEach((p: string) => {
-
-				if (this.discloser && this.discloser.prefix === p.charAt(0)) {
-					
-					sequence = this.process(stream, p );
-				}
-			})
-		}
-
+		sequence = this.process(stream);
 
 		if ( sequence ) {
 

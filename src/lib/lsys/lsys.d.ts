@@ -194,6 +194,7 @@ export interface IModel {
   hasCommand( symbol: string ): boolean;
   getCommand( symbol: string, context?: any ): ICommand | undefined;
   read( symbol: string ): IProduction | string;
+  reset():void;
 
 }
 
@@ -247,9 +248,9 @@ export interface IProduction {
 
 interface ISprite {
 
-  implant( directory: Map<number, any>, head: Rule ): Prim[] | void;
+  implant( directory: Map<number, any>, dialect: Glyph[] ): Prim[] | void;
   sow( targes?: string[] ): { targets: Glyph[], prim: Prim }[] | void;
-  update( directory: Map<number, MetaGlyph> ): number[];
+  update( params: string ): string;
   run( stream: MetaGlyph[], params?: any, context?: any ): MetaGlyph[];
 }
 

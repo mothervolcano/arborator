@@ -141,6 +141,11 @@ abstract class Model implements IModel {
 		}
 	}
 
+	public reset() {
+
+		
+	}
+
 }
 
 export default Model;

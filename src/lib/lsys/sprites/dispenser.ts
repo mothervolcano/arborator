@@ -8,6 +8,8 @@ import { Counter, Glyph, Id, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
 class Dispenser extends Sprite {
 	
 
+	private count: number = 0;
+	
 	private sourceGlyph: Glyph;
 
 	private readerPrim: Counter | Parameter | Id;
@@ -45,19 +47,26 @@ class Dispenser extends Sprite {
 	};
 
 	public update(params: string): string {
+
+		params.split(',').forEach( (p: string) => {
+
+			if ( p.charAt(0) === this.readerPrim.prefix ) {
+				
+				this.count = Number.parseInt(p.substring(1));
+			}
+		})
 	    
 	    return params;
 	};
 
-	protected process(stream: MetaGlyph[], countString: string): MetaGlyph[] | null {
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 	    
-		const count = Number.parseInt(countString);
 	    
 	    const sequence: MetaGlyph[] = [];
 
 		// ---------------------------------------
 		
-		for ( let i=count; i>=0; i-- ) {
+		for ( let i=this.count; i>=0; i-- ) {
 		// for ( let i=0; i<=count; i++ ) {
 
 			const newMetaGlyph = {
@@ -91,20 +100,11 @@ class Dispenser extends Sprite {
 	};
 
 
-	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
+	public run(stream: MetaGlyph[]): MetaGlyph[] {
 	    
 		let sequence: MetaGlyph[] | null = [];
 
-		if ( params ) {
-
-			params.split(',').forEach( (p: string) => {
-
-				if ( p.charAt(0) === this.readerPrim.prefix ) {
-					
-					sequence = this.process(stream, p.substring(1));
-				}
-			})
-		}
+		sequence = this.process(stream);
 
 		if ( sequence && sequence.length ) {
 
