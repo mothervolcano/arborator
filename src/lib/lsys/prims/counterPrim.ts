@@ -1,22 +1,23 @@
 import BasePrim from "./basePrim";
 
-import { Accumulator } from "../lsys";
+import { Counter } from "../lsys";
 
 
-class AccumulatorPrim extends BasePrim<number> implements Accumulator {
+class CounterPrim extends BasePrim<number> implements Counter {
 
-	private accValue: number = 0;
+	private step: number;
  
-	protected _type: 'Accumulator' = 'Accumulator';
+	protected _type: 'Counter' = 'Counter';
 	protected value: number;
 	public stub: any;
 	public places: number[];
 
-	constructor( value: number = 0) {
+	constructor( start: number = 0, step: number = 1 ) {
 
 		super( '+' );
 
-		this.value = value;
+		this.value = start;
+		this.step = step;
 
 		this.places = [];
 	}
@@ -31,7 +32,6 @@ class AccumulatorPrim extends BasePrim<number> implements Accumulator {
 	public cast( val: number ) {
 
 		this.value = val;
-		this.accValue = val;
 
 		return this;
 	}
@@ -39,15 +39,23 @@ class AccumulatorPrim extends BasePrim<number> implements Accumulator {
 	public recast( str: string ) {
 
 		this.value = Number.parseInt(str.substring(1));
-		this.accValue = this.value;
 
 		return this;
 	}
 
-	public process( value: string = '1' ): number {
+	public process( inputValue?: number | string ): number {
 
-		this.accValue += Number.parseInt(value);
-		this.value = this.accValue;
+		if ( inputValue !== undefined ) {
+
+			const valueIn = typeof inputValue === 'string' ? Number.parseInt(inputValue) : inputValue;
+
+			this.value += valueIn;
+
+		} else {
+
+			this.value += this.step;
+		}
+
 
 		return this.value;
 	}
@@ -76,14 +84,14 @@ class AccumulatorPrim extends BasePrim<number> implements Accumulator {
 		}
 	}
 
-	public clone(): AccumulatorPrim {
+	public clone(): CounterPrim {
     	
-    	const cloned = new AccumulatorPrim(this.value);
+    	const cloned = new CounterPrim(this.value);
 
     	return cloned;
 	}
 }
 
 
-export default AccumulatorPrim;
+export default CounterPrim;
 

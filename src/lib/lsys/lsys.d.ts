@@ -1,7 +1,4 @@
 
-export type GlyphType = 'Rule' | 'Instruction' | 'Marker';
-
-
 
 // The base interface for all Prims
 export interface IPrim<T> {
@@ -20,7 +17,7 @@ export interface IPrim<T> {
 }
 
 
-export type PrimType = 'Parameter' | 'Flag' | 'Imperative' | 'Accumulator';
+export type PrimType = 'Parameter' | 'Flag' | 'Imperative' | 'Counter' | 'Id';
 
 
 // The interface for Parameters specifically
@@ -34,12 +31,24 @@ export interface Parameter extends IPrim<number> {
   clone(): any;
 }
 
-// The interface for Accumulators specifically
-export interface Accumulator extends IPrim<number> {
-  type: 'Accumulator';
+// The interface for Parameters specifically
+export interface Id extends IPrim<number> {
+  type: 'Id';
   cast(value: number): this;
   recast(str: string): this;
-  process(value?: string): number;
+  process(value?: number | string): void;
+  read(str: string): number;
+  write(): string;
+  clone(): any;
+}
+
+
+// The interface for Accumulators specifically
+export interface Counter extends IPrim<number> {
+  type: 'Counter';
+  cast(value: number): this;
+  recast(str: string): this;
+  process(value?: number | string ): number;
   read(str: string): number;
   write(): string;
   clone(): any;
@@ -70,16 +79,10 @@ export interface Imperative extends IPrim<Glyph> {
 }
 
 
-export type Prim = Parameter | Flag | Imperative | Accumulator
+export type Prim = Parameter | Flag | Imperative | Counter | Id
 
 
-interface ISprite {
-
-  implant( rule: Glyph[], prims: Prim[] ): void;
-  run( sequence: Glyph[], params?: any, context?: any ): Glyph[];
-}
-
-
+export type GlyphType = 'Rule' | 'Instruction' | 'Marker';
 
 /**
  * 
@@ -96,7 +99,7 @@ export interface Rule {
   type: 'Rule';
   id: number;
   symbol: string;
-  params: Prim[];
+  prims: Prim[];
 
 }
 
@@ -135,6 +138,14 @@ export interface Marker {
 
 
 export type Glyph = Rule | Instruction | Marker;
+
+
+export type MetaGlyph = {
+
+  glyph: Glyph;
+  id: number;
+  data: { [key:string]:any };
+}
 
 
 /**
@@ -220,16 +231,26 @@ export interface IComposer {
 
 export interface IProduction {
 
-  readonly glyph: Glyph;
+  readonly head: Glyph;
   readonly output: string;
+  plant(): void;
   read( params?: string | null, context?: any ): boolean | void;
   compose( ...str: string[] ): void;
   addSprite( sprite: ISprite ): void;
   addPrim( prim: Prim | string, symbols?: string | string[], save?: boolean ): Prim;
   process( params?: string, context?: any ): void;
-  encode( sequence: Array<Glyph> ): string;
+  // encodeSequence( sequence: Array<Glyph> ): string;
   write( context?: any ): string;
 
+}
+
+
+interface ISprite {
+
+  implant( directory: Map<number, any>, head: Rule ): Prim[] | void;
+  sow( targes?: string[] ): { targets: Glyph[], prim: Prim }[] | void;
+  update( directory: Map<number, MetaGlyph> ): number[];
+  run( stream: MetaGlyph[], params?: any, context?: any ): MetaGlyph[];
 }
 
 

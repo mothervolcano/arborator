@@ -1,95 +1,95 @@
 import Sprite from "../core/sprite";
-import { Glyph, Prim } from "../lsys";
+import { Glyph, Imperative, MetaGlyph, Prim, Rule } from "../lsys";
 
-
-
-
+/**
+ * 
+ * The Incognito Discloser will replace the incognito Glyph ( * ) by
+ * another Glyph that is determined by... ? 
+ * 
+ * 
+ */ 
 
 class IncognitoDiscloser extends Sprite {
 
 
 	private incognito: Glyph;
-	private prim: Prim;
-	private spots: number[] = [];
+	private incognitoIDs: number[] = [];
+	private discloser: Imperative;
 
-	constructor(incognito: Glyph, prim: Prim) {
+	
+	constructor( incognito: Glyph, discloser: Imperative ) {
 
 		super();
 
 		this.incognito = incognito;
-		this.prim = prim;
+		this.discloser = discloser;
 
-	}
+	};
 
 
-	public implant(rule: Glyph[], prims: Prim[]): void {
+	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
 
-		rule.forEach((glyph, i) => {
+		directory.forEach((metaGlyph) => {
 
-			if (glyph.symbol === this.incognito.symbol) {
+			if (metaGlyph.glyph.symbol === this.incognito.symbol) {
 
-				this.spots.push(i);
+				this.incognitoIDs.push(metaGlyph.id);
+			}
+		})
+	};
+
+	
+	public sow(): void {
+
+		// no targets
+	};
+
+	
+	public update( directory: Map<number, MetaGlyph> ): number[] {
+
+		return [];
+	};
+	
+
+	protected process(stream: MetaGlyph[], glyphString: string): MetaGlyph[] | null {
+
+
+		const workingSequence = stream.map((metaGlyph)=>{
+
+			if ( this.incognitoIDs.includes(metaGlyph.id) ) {
+
+				const prim = this.discloser.recast(glyphString);
+
+				metaGlyph.glyph = prim.getValue();
 			}
 
-		})
-
-		prims.push(this.prim);
-	     
-	}
-
-
-	protected process(stream: Glyph[]): Glyph[] | null {
-	      
-		
-		const workingSequence = stream.map((glyph)=>{
-
-			if (this.spots.includes(glyph.id)) {
-
-				if (this.prim.type === 'Imperative') {
-
-					// console.log(`DISCLOSED: ${this.prim.getValue().symbol}`)
-
-					return this.prim.getValue();
-
-				} else {
-
-					return glyph;
-				}
-
-			}
-
-			return glyph
+			return metaGlyph;
 
 		})
-
 
 		return workingSequence;
-	}
+	};
 
 
-	public run(stream: Glyph[], params?: any): Glyph[] {
+	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
+		let sequence: MetaGlyph[] | null = [];
+		
 		if ( params ) {
 
 			params.split(',').forEach((p: string) => {
 
-
-				if (this.prim.prefix === p.charAt(0)) {
-
-					// console.log(`INCOGNITO: ${p}`)
+				if (this.discloser && this.discloser.prefix === p.charAt(0)) {
 					
-					this.prim.process(p);
+					sequence = this.process(stream, p );
 				}
 			})
 		}
 
-		const processedSequence = this.process(stream)
 
-		if ( processedSequence ) {
+		if ( sequence ) {
 
-			// console.log(`FULL DISCLOSURE: ${processedSequence}`);
-
-			return processedSequence;
+			return sequence;
 
 		} else {
 
@@ -99,5 +99,5 @@ class IncognitoDiscloser extends Sprite {
 }
 
 
-
 export default IncognitoDiscloser;
+

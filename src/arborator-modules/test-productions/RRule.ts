@@ -1,5 +1,5 @@
 import Production from "../../lib/lsys/core/production";
-import { Glyph, Imperative, Prim, Rule } from "../../lib/lsys/lsys";
+import { Glyph, Imperative, MetaGlyph, Prim, Rule } from "../../lib/lsys/lsys";
 import ImperativePrim from "../../lib/lsys/prims/imperativePrim";
 import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 
@@ -20,7 +20,7 @@ class RRule extends Production {
 
 	public compose(rule: string) {
 
-		this._rule = this.decode(rule);
+		this.cast(this.decode(rule));
 
 		return this;
 	}
@@ -29,70 +29,9 @@ class RRule extends Production {
 	public process(params?: string) {
 
 
-		// --------------------------------------------------------
-		// 1 Parse the parameters
+		const stream = this.sequence.slice();
 
 
-		let parsedParams: Prim[] = []
-		
-		if (params) {
-			
-			console.log(`PROCESSING ${this.glyph.symbol} RULE... ${params}`)
-
-			parsedParams = params.split(',').map((s) => { 
-
-				return this.addPrim(s.charAt(0), 'R', false).recast(s);
-
-			});	
-		}
-
-		// --------------------------------------------------------
-		// 2  Create the rule sequence
-
-
-		let sequence: Glyph[] = [];
-
-		sequence = this._rule.map( (glyph) =>  {
-
-			if (glyph.type === 'Marker' && glyph.symbol === '*' ) {
-
-				const prim = parsedParams.find( (p) => p.type === 'Imperative' )
-
-				if ( prim && prim.type === 'Imperative' ) {
-
-					return prim.getValue();
-
-				} else {
-
-					throw new Error("R Rule requires an imperative as parameter");
-				}
-			}
-
-			return glyph;
-		});
-
-		
-		sequence = sequence.map( (glyph) => { 
-
-			if (glyph.type === 'Rule' && glyph.symbol === this.glyph.symbol) {
-
-				if ( parsedParams.length ) {
-
-					if (parsedParams[0].type === 'Parameter') {
-
-						parsedParams[0].setValue(1);		
-					} 
-
-					return { ...glyph, params: [...parsedParams] };
-
-				} else {
-
-					return { ...glyph, params: [] };
-				}
-			}
-
-			return glyph;
-		});
 
 		// ---------------------------------------
 		// DEBUG
@@ -110,7 +49,13 @@ class RRule extends Production {
 		// }
 		
 		
-		this._output = this.encode(sequence);
+		const sequence: string[] = stream.map( (metaGlyph) => {
+
+			return this.encodeGlyph(metaGlyph.glyph);
+		});
+
+		this.printSequence(sequence);
+		
 	}
 }
 

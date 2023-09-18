@@ -8,8 +8,8 @@ import Alphabet from './lib/lsys/core/alphabet';
 import Composer from './lib/lsys/core/composer';
 
 
-import Tree from './arborator-modules/models/tree';
 import Test from './arborator-modules/models/test';
+import Test2 from './arborator-modules/models/test2';
 import Turtle from './lib/lsys/tools/turtle';
 
 let view: any
@@ -51,8 +51,11 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Rule', 'R' );
   alphabet.registerGlyph( 'Rule', 'O' );
   alphabet.registerGlyph( 'Instruction', 'f' );
+  alphabet.registerGlyph( 'Instruction', '.' );
   alphabet.registerGlyph( 'Instruction', '+' );
   alphabet.registerGlyph( 'Instruction', '-' );
+  alphabet.registerGlyph( 'Instruction', '=' );
+  alphabet.registerGlyph( 'Instruction', '±' );
   alphabet.registerGlyph( 'Instruction', '[' );
   alphabet.registerGlyph( 'Instruction', ']' );
   alphabet.registerGlyph( 'Instruction', 'i' );
@@ -60,22 +63,8 @@ export function initModel( selectedModel: string ) {
   alphabet.registerGlyph( 'Marker', '(' );
   alphabet.registerGlyph( 'Marker', ')' );
   alphabet.registerGlyph( 'Marker', ',' );
-  alphabet.registerGlyph( 'Marker', '1' );
-  alphabet.registerGlyph( 'Marker', '2' );
-  alphabet.registerGlyph( 'Marker', '3' );
-  alphabet.registerGlyph( 'Marker', '4' );
-  alphabet.registerGlyph( 'Marker', '5' );
-  alphabet.registerGlyph( 'Marker', '6' );
-  alphabet.registerGlyph( 'Marker', '7' );
-  alphabet.registerGlyph( 'Marker', '8' );
-  alphabet.registerGlyph( 'Marker', '9' );
-  alphabet.registerGlyph( 'Marker', '0' );
-  alphabet.registerGlyph( 'Marker', '.' );
   alphabet.registerGlyph( 'Marker', '*' );
-  alphabet.registerGlyph( 'Marker', '!' );
-  alphabet.registerGlyph( 'Marker', '=' );
   alphabet.registerGlyph( 'Marker', '?' );
-  alphabet.registerGlyph( 'Marker', '_' );
 
 
   switch ( selectedModel ) {
@@ -85,7 +74,7 @@ export function initModel( selectedModel: string ) {
       break;
 
     case 'PINE':
-      model = new Tree( alphabet, 'I' );
+      model = new Test2( alphabet, 'O' );
       break;
   }
 

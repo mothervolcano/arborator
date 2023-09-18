@@ -1,102 +1,118 @@
 import Sprite from "../core/sprite";
-import { Glyph, Prim } from "../lsys";
+import { Glyph, MetaGlyph, Prim, Rule } from "../lsys";
+import ImperativePrim from "../prims/imperativePrim";
 
 
 
 
 class GlyphSwapper extends Sprite {
 
-	private spots: number[] = [];
-	private subIndex: number = 0;
+	private stubs:Glyph[] = [];
 
-	private target:Glyph;
-	private sub:Glyph | Glyph[];
+	private targetGlyph:Glyph;
+	private targetGlyphIDs: number[] = [];
+	private subs:Glyph[];
 
-	constructor( target: Glyph, sub: Glyph | Glyph[] ) {
+
+	constructor( target: Glyph, subs: Glyph | Glyph[] ) {
 
 		super();
 
-		this.target = target;
-		this.sub = sub;
-	}
+		this.targetGlyph = target;
+		this.subs = Array.isArray(subs) ? subs : [ subs ];
+	};
 
-	public implant(rule: Glyph[], prims: Prim[]): void {
+
+	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
 	 			
-		rule.forEach((glyph, i)=>{
 
-			if ( glyph.symbol === this.target.symbol ) {
+		directory.forEach( (metaGlyph) => {
 
-				this.spots.push(i);
-				// this.target.id = i;
+			if ( metaGlyph.glyph.symbol === this.targetGlyph.symbol ) {
 
-				if ( Array.isArray(this.sub) ) {
+				console.log(`-----------------------------------------`)
+				console.log(`IMPLANTING GLYPH SWAPPER IN: ${head.symbol}`)
+				// console.log(`--> ${directory.map((g)=>g.symbol).join('')}`)
+				console.log(``)
+				console.log(`TARGET: ${metaGlyph.glyph.symbol}`)
+				// console.log(`ID: ${glyph.id}`)
+				console.log(``)
 
-					this.sub[this.subIndex].id = i;
-					
-					if ( this.subIndex + 1 >= this.sub.length ) {
+				this.targetGlyphIDs.push(metaGlyph.id);
 
-						this.subIndex = 0;
-
-					} else {
-
-						this.subIndex++;
-					}
-
-				} else {
-
-					this.sub.id = i;
-				}
 			}
 		});
-	}
-
-	protected process(stream: Glyph[]): Glyph[] | null {
+	};
 
 
-		const workingSequence = stream.map((glyph)=>{
+	public sow(): void {
 
-			if ( this.spots.includes(glyph.id) ) {
+		// nothing to sow here
+	};
 
-				if ( Array.isArray(this.sub) ) {
 
-					// console.log(`!!!! SWAP: ${this.sub[this.subIndex].symbol}`)
+	public update( directory: Map<number, MetaGlyph> ): number[] {
 
-					const sub = this.sub[this.subIndex];
+		// console.log(`UPDATING GLYPH SWAPPER: ${directory.size}`)
 
-					if ( this.subIndex + 1 >= this.sub.length ) {
+		// let subIndex: number = 0;
 
-						this.subIndex = 0;
-						
-					} else {
+		// for ( const i of this.targetGlyphIDs ) {
 
-						this.subIndex++;
-					}
+		// 	const glyphMirror = directory.get(i);
 
-					return sub;
+		// 	if ( glyphMirror ) {
+				
+		// 		console.log(`Replacing Glyph in directory with: ${this.subs[subIndex]}`)
 
-				} else {
+		// 		glyphMirror.glyph = this.subs[subIndex];
 
-					return this.sub;
-				}
+		// 		subIndex = (subIndex + 1 >= this.subs.length) ? 0 : subIndex + 1;
 
-			} else {
+		// 	} else {
 
-				return glyph;
+		// 		throw new Error(`ERROR @ GlyphSwapper: ${this.targetGlyph.symbol} could not be found in the Production Rule library`);
+		// 	}
+		// }
+
+		return [];
+	};
+
+
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
+
+		let subIndex: number = 0;
+
+		const workingSequence = stream.map((metaGlyph)=>{
+
+			if ( metaGlyph.glyph.symbol === this.targetGlyph.symbol ) {
+
+				const sub = this.subs[subIndex];
+
+				metaGlyph.glyph = sub;
+
+				subIndex = (subIndex + 1 >= this.subs.length) ? 0 : subIndex + 1;
 			}
+
+			return metaGlyph;
+
 		});
 
-		// console.log(`!!!! FINISHED SWAPPING`)
+		console.log(`!!!! FINISHED SWAPPING`);
+		console.log('');
 
 		return workingSequence;
-	}
+	};
 
-	public run(stream: Glyph[], context?: any): Glyph[] {
+
+
+	public run(stream: MetaGlyph[], params?: any ): MetaGlyph[] {
 	  	
-		const processedSequence = this.process(stream)
+		const sequence = this.process(stream)
 
-		if ( processedSequence ) {
+		if ( sequence ) {
 
-			return processedSequence;
+			return sequence;
 
 		} else {
 
@@ -106,3 +122,4 @@ class GlyphSwapper extends Sprite {
 }
 
 export default GlyphSwapper;
+

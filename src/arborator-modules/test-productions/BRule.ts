@@ -1,5 +1,6 @@
 import Production from "../../lib/lsys/core/production";
-import { Glyph, Imperative, Prim, Rule } from "../../lib/lsys/lsys";
+import { Glyph, Imperative, MetaGlyph, Prim, Rule } from "../../lib/lsys/lsys";
+import IdPrim from "../../lib/lsys/prims/idPrim";
 import ImperativePrim from "../../lib/lsys/prims/imperativePrim";
 import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 
@@ -13,9 +14,6 @@ class BRule extends Production {
 
 		super(glyph, dialect);
 
-		// this.addPrim(new ParameterPrim(1));
-		// this.addPrim(new ParameterPrim(1));
-		// this.addPrim(new ImperativePrim( dialect[2] ));
 	}
 	
 
@@ -31,78 +29,11 @@ class BRule extends Production {
 
 
 		// --------------------------------------------------------
-		// 1 Parse the parameters
+		// 1 Start the stream
 
 
-		// let parsedParams: Prim[] = []
-
-		// if ( params ) {
-
-		// 	params.split(',').forEach((p)=>{
-
-		// 		for ( const prim of this.prims ) {
-
-		// 			if (prim.prefix===p.charAt(0)){
-
-		// 				prim.process(p);
-		// 			}
-		// 		}
-		// 	})
-		// };
+		let stream: MetaGlyph[] = this.sequence.slice();
 		
-		// if (params) {
-
-		console.log(``)
-		console.log(`...........................................`)
-			
-		console.log(`${this.glyph.symbol} RULE PARAMS: ${params}`)
-
-		// 	parsedParams = params.split(',').map((s) => { 
-
-		// 		return this.addPrim(s.charAt(0), 'B', false).recast(s);
-
-		// 	});	
-		// }
-
-		// --------------------------------------------------------
-		// 2  Create the rule sequence
-
-
-		let sequence: Glyph[] = this._rule.slice();
-
-		// sequence = sequence.map((glyph,i)=>{
-
-		// 	for ( const prim of this.prims ) {
-
-		// 		if ( prim.places.includes(i) && prim.type === 'Imperative' ){
-
-		// 			// return prim.getValue();
-		// 		}
-		// 	}
-
-		// 	return glyph;
-
-		// });
-
-		// sequence = this._rule.map( (glyph) =>  {
-
-		// 	if (glyph.type === 'Marker' && glyph.symbol === '*' ) {
-
-		// 		const prim = this.prims.find( (p) => p.type === 'Imperative' )
-
-		// 		if ( prim && prim.type === 'Imperative' ) {
-
-		// 			return prim.getValue();
-
-		// 		} else {
-
-		// 			throw new Error("B Rule requires an imperative as parameter");
-		// 		}
-		// 	}
-
-		// 	return glyph;
-		// });
-
 
 		// ---------------------------------------------------------------------------
 		// 3  Run the sprites (if any)
@@ -111,7 +42,9 @@ class BRule extends Production {
 
 			for ( const sprite of this.sprites ) {
 
-				sequence = sprite.run( sequence, params, this.glyph.symbol );
+				sprite.update( this.directory );
+
+				stream = sprite.run( stream, params, this.head.symbol );
 			}
 
 		} else {
@@ -123,110 +56,88 @@ class BRule extends Production {
 		}
 
 
-		// -------------------------------------------------------------
-		// 4 Apply the prims
+		// --------------------------------------------------------------
+		// DEBUG 
+		
+		const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', prims: [] }
+		const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', prims: [] }
 
-		sequence = sequence.map( (glyph, i) =>{
+		if ( this.head.symbol === 'K' && params ) {
 
-			// console.log(`YRule processing ${glyph.symbol}`);
+			const prim = new IdPrim();
 
-			let updatedParams: Prim[] = [];
-			
-			for ( const prim of this.prims ) {
+			params.split(',').forEach( (p: string) => {
 
-				// console.log(`Reading ${this.glyph.symbol}' Prims: ${prim.getValue()} [ ${prim.places} ]`)
+				if ( p.charAt(0) === '=') {
+					
+					prim.cast( Number.parseInt(p.substring(1)) )
+				}
+			})
 
-				if ( glyph.type === 'Rule' ) {
+			debugInfo.prims = [ prim ];
+			stream.unshift( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: {} } ]);
 
-					if ( prim.places.includes(glyph.id) ) {
 
-						// console.log(`${glyph.symbol} says: this ${prim.type} prim is for me!`);
+			// const debugGlyph = stream.find( (g) => g.glyph.symbol === 'K');
 
-						updatedParams.push( prim ); 
-					}	
+			// stream.slice().forEach((mg) => {
+
+			// 	if ( mg.glyph.symbol === 'f' ) {
+
+			// 		debugInfo.prims = [ this.head.prims[0] ];
+			// 		stream.unshift( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: {} } ]);
+
+			// 	}
+			// })			
+		}
+		
+
+		
+		// console.log('')
+		// console.log(`ENCODING ${this.head.symbol} RULE sequence...`)
+
+
+		const sequence: string[] = stream.map( (metaGlyph) => {
+
+			// console.log(`. Processing ${metaGlyph.glyph.type} ${metaGlyph.glyph.symbol}`)
+
+			if ( metaGlyph.glyph.type==='Rule' ) {
+
+				// console.log(`. Checking updates for Rule Glyph ${metaGlyph.glyph.symbol}`)
+				// console.log(`. Data: ${Object.keys( metaGlyph.data )}`)
+
+				if ( metaGlyph.data.prims && metaGlyph.data.prims.length ) {
+
+					// console.log(`. ${metaGlyph.data.prims.length} New prims found!`)
+
+					for ( const primUpdate of metaGlyph.data.prims ) {
+
+						const prim = metaGlyph.glyph.prims.find((p) => p.prefix === primUpdate.prefix );
+
+						if ( prim ) {
+
+							prim.cast( primUpdate.getValue() );
+
+						} else {
+							
+							throw new Error(`Processing ERROR @ ${this.head.symbol} RULE: ${ primUpdate.prefix } Prim not found on ${metaGlyph.glyph.symbol}. `)
+						}
+					}
+
+					metaGlyph.data = {};
+
+					// console.log(`.. Encoding ${metaGlyph.glyph.symbol}`)
+					return this.encodeGlyph(metaGlyph.glyph);
 				}
 			}
 
-			if ( updatedParams.length ) { 
+			// console.log(`... Encoding ${metaGlyph.glyph.symbol} ....`)
+			return this.encodeGlyph(metaGlyph.glyph);
 
-				return  { ...glyph, params: [ ...updatedParams ] } 
-
-			}
-
-			return glyph;
 		});
 
+		this.printSequence(sequence);
 
-		
-		// sequence = sequence.map( (glyph) => { 
-
-		// 	if ( glyph.type === 'Rule' ) {
-
-		// 		if ( glyph.symbol === this.glyph.symbol ) {
-
-		// 			if ( parsedParams.length ) {
-
-		// 				if (parsedParams[0].type === 'Parameter') {
-
-		// 					// parsedParams[0].value += 1;		
-		// 				}  
-
-		// 				return { ...glyph, params: [...parsedParams] };
-
-		// 			} else {
-
-		// 				return { ...glyph, params: [] };
-		// 			}
-		// 		}
-
-
-		// 		if ( glyph.symbol === 'R' ) {
-
-		// 			if ( parsedParams.length ) {
-
-		// 				if (parsedParams[0].type === 'Parameter') {
-
-		// 				 	parsedParams[0].setValue(1);		
-		// 				}  
-
-		// 				return { ...glyph, params: [...parsedParams] };
-
-		// 			} else {
-
-		// 				return { ...glyph, params: [] };
-		// 			}
-		// 		}
-		// 	}
-
-		// 	return glyph;
-		// });
-
-
-		// --------------------------------------------------------------
-		// DEBUG 
-
-		// const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', params: [] }
-		// const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', params: [] }
-
-		// const debugGlyph = sequence.find( (g) => g.symbol === 'f');
-
-		// // sequence.slice().forEach((glyph,i)=>{    
-
-		// // 	if ( debugGlyph!.symbol === glyph.symbol ) {
-
-		// // 		debugInfo.params = [ this.prims[0]];
-
-		// // 		sequence.splice( i, 0, ...[ debugMark, debugInfo ]);
-		// // 	}
-		// // });
-
-
-		// debugInfo.params = [ this.prims[0] ];
-
-		// sequence.push( ...[ debugMark, debugInfo ]);
-
-		
-		this._output = this.encode(sequence);
 	}
 }
 

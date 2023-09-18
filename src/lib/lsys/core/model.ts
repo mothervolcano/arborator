@@ -96,9 +96,11 @@ abstract class Model implements IModel {
 
 	protected addProduction(production: IProduction) {
 
-		if (production.glyph.type === 'Rule' && !this.productions.has(production.glyph.symbol)) {
+		if (production.head.type === 'Rule' && !this.productions.has(production.head.symbol)) {
 
-			this.productions.set(production.glyph.symbol, production);
+			production.plant();
+
+			this.productions.set(production.head.symbol, production);
 		}
 
 	}
@@ -129,7 +131,7 @@ abstract class Model implements IModel {
 
 		const glyph = this.alphabet.glyph(symbol);
 
-		if ( glyph.type === 'Rule' && this.hasProduction( symbol ) ) {
+		if ( glyph.type === 'Rule' && this.hasProduction( symbol )) {
 
 			return this.getProduction( symbol )!;
 

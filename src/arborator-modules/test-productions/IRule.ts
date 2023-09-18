@@ -1,5 +1,6 @@
+import { error } from "console";
 import Production from "../../lib/lsys/core/production";
-import { Glyph, Prim, Rule } from "../../lib/lsys/lsys";
+import { Glyph, MetaGlyph, Prim, Rule } from "../../lib/lsys/lsys";
 import ImperativePrim from "../../lib/lsys/prims/imperativePrim";
 import ParameterPrim from "../../lib/lsys/prims/parameterPrim";
 
@@ -30,35 +31,15 @@ class IRule extends Production {
 		// --------------------------------------------------------
 		// 1 Parse the parameters
 
-		// console.log(`PROCESSING ${this.glyph.symbol} RULE... ${params}`)
+		// console.log(`PROCESSING ${this.head.symbol} RULE... ${params}`)
 
-		// let parsedParams: Prim[] = []
+		let updateIndex: number[] = [];
+		let stream: MetaGlyph[] = this.sequence.slice();
+
+
+		// stream = this.processPrims( stream, params );
+
 		
-		// if (params) {
-			
-
-		// 	// parsedParams = params.split(',').map((s, i) => { 
-
-		// 	// 	if (this.prims[i].read(s)) {
-
-		// 	// 		this.prims[i].recast(s);
-
-		// 	// 		return this.prims[i];
-
-		// 	// 	} else {
-
-		// 	// 		throw new Error(`Production is unable to process ${s} parameter`)
-		// 	// 	}
-
-		// 	// })	
-		// }
-
-		// --------------------------------------------------------
-		// 2  Create the rule sequence
-
-		let sequence: Glyph[] = this._rule.slice();
-
-
 		// ---------------------------------------------------------------------------
 		// 3  Run the sprites (if any)
 
@@ -66,7 +47,9 @@ class IRule extends Production {
 
 			for ( const sprite of this.sprites ) {
 
-				sequence = sprite.run( sequence, params, this.glyph.symbol );
+				// updateIndex.push( ...sprite.update( this.directory ) );
+
+				stream = sprite.run( stream, params, this.head.symbol );
 			}
 
 		} else {
@@ -78,57 +61,73 @@ class IRule extends Production {
 		}
 
 
+
 		// -------------------------------------------------------------
 		// 4 Apply the prims
 
-		sequence = sequence.map( (glyph) =>{
 
-			// console.log(`YRule processing ${glyph.symbol}`);
+		// if ( this.head.symbol === 'Y' ) {
 
-			let updatedParams: Prim[] = [];
-			
-			for ( const prim of this.prims ) {
+		// 	const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', prims: [] }
+		// 	const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', prims: [] }
 
-				// console.log(`Reading ${this.glyph.symbol}' Prims: ${prim.getValue()}`)
+		// 	const debugGlyph = stream.find( (g) => g.glyph.symbol === 'B');
 
-				if ( prim.places.includes(glyph.id) ) {
+		// 	debugInfo.prims = [ this.head.prims[0] ];
 
-					// console.log(`${glyph.symbol} says: this ${prim.type} prim is for me!`);
+		// 	stream.push( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: {} } ]);
+					
+		// }
+		
 
-					updatedParams.push( prim ); 
+
+
+
+		console.log('')
+		console.log(`ENCODING ${this.head.symbol} RULE sequence...`)
+
+
+		const sequence: string[] = stream.map( (metaGlyph) => {
+
+			console.log(`. Processing ${metaGlyph.glyph.type} ${metaGlyph.glyph.symbol}`)
+
+			if ( metaGlyph.glyph.type==='Rule' ) {
+
+				console.log(`. Checking updates for Rule Glyph ${metaGlyph.glyph.symbol}`)
+				console.log(`. Data: ${Object.keys( metaGlyph.data )}`)
+
+				if ( metaGlyph.data.prims && metaGlyph.data.prims.length ) {
+
+					console.log(`. ${metaGlyph.data.prims.length} New prims found!`)
+
+					for ( const primUpdate of metaGlyph.data.prims ) {
+
+						const prim = metaGlyph.glyph.prims.find((p) => p.prefix === primUpdate.prefix );
+
+						if ( prim ) {
+
+							prim.cast( primUpdate.getValue() );
+
+						} else {
+							
+							throw new Error(`Processing ERROR @ ${this.head.symbol} RULE: ${ primUpdate.prefix } Prim not found on ${metaGlyph.glyph.symbol}. `)
+						}
+					}
+
+					metaGlyph.data = {};
+
+					console.log(`.. Encoding ${metaGlyph.glyph.symbol}`)
+					return this.encodeGlyph(metaGlyph.glyph);
 				}
 			}
 
-			if ( updatedParams.length ) { 
+			console.log(`... Encoding ${metaGlyph.glyph.symbol} ....`)
+			return this.encodeGlyph(metaGlyph.glyph);
 
-				return  { ...glyph, params: [ ...updatedParams ] } 
-
-			}
-
-			return glyph;
 		});
 
 
-
-		// const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', params: [] }
-		// const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', params: [] }
-
-		// const debugGlyph = sequence.find( (g) => g.symbol === 'B');
-
-		// sequence.slice().forEach((glyph,i)=>{    
-
-		// 	if ( debugGlyph!.symbol === glyph.symbol ) {
-
-		// 		debugInfo.params = [ this.prims[1]];
-
-		// 		sequence.splice( i, 0, ...[ debugMark, debugInfo ]);
-		// 	}
-		// });
-
-
-
-		
-		this._output = this.encode(sequence);
+		this.printSequence(sequence);
 	}
 }
 

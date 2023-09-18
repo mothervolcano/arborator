@@ -1,46 +1,40 @@
-# Getting Started with Create React App
+### Intro
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+L-Systems, short for Lindenmayer Systems, are a class of mathematical models and formal grammars originally developed by Aristid Lindenmayer to describe the growth patterns of plants. However, they've been adapted for various applications, from procedural generation to fractal design and even music composition. The core idea is to start with an "axiom," a basic string of characters, and then iteratively replace those characters based on a set of "production rules."
 
-## Available Scripts
+Here's a simplified breakdown of the key components:
 
-In the project directory, you can run:
+- Axiom: The initial state, represented as a string. It serves as the starting point for the system's evolution.
 
-### `npm start`
+- Alphabet: A set of symbols that constitute the strings in the L-System.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Production Rules: A set of rules defining how each symbol in the alphabet should be replaced in each iteration. For example, if you have a rule that says "A -> AB" and an axiom of "A", then in the next iteration, your string will be "AB".
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
+Example: The Algae Growth L-System
+Axiom: A
+Alphabet: { A, B }
+Production Rules:
+A -> AB
+B -> A
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+In this example:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Start with A (the axiom)
+Apply the rules:
+A -> AB
+B -> A
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Iterations:
 
-### `npm run eject`
+0: A
+1: AB
+2: ABA
+3: ABAAB
+4: ABAABABA
+...
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+L-Systems can be used to create complex fractal structures, or biological models that emulate the branching of trees and biological organism growth.

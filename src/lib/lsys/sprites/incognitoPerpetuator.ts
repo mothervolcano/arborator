@@ -1,182 +1,191 @@
 import Sprite from "../core/sprite";
-import { Glyph, Imperative, Prim } from "../lsys";
+import { Glyph, Imperative, MetaGlyph, Prim, Rule } from "../lsys";
 import ImperativePrim from "../prims/imperativePrim";
 
 
 class IncognitoPerpetuator extends Sprite {
 
-	private primIndex: number = 0;
+	// private primIndex: number = 0;
 
-	private prims: Imperative[] = [];
+	// private prims: Imperative[] = [];
 	private incognito: Glyph;
-	private targetSymbol: string;
-	private targetGlyph: Glyph | null = null;
-	private spots: number[] = [];
+	private incognitoIDs: number[] = [];
+	// private targetSymbol: string;
+	private targetGlyph: Glyph;
+	private targetGlyphIDs: number[] = [];
 
-	constructor( incognito: Glyph, targetSymbol: string ) {
+	private place: number | undefined;
+
+	/**
+	 * 
+	 * Locates each Incognito Glyph in the Production Rule directory and saves its index key
+	 * to be used later once, and if, the Incognito is replaced by a designated Glyph.
+	 * 
+	 * This Sprite is often used together with GlyphSwapper.
+	 * 
+	 * 
+	 */
+	
+	constructor( incognito: Glyph, targetGlyph: Glyph, place?: number ) {
 
 		super();
 
 		this.incognito = incognito;
-		this.targetSymbol = targetSymbol;
-	}
+		this.targetGlyph = targetGlyph;
 
-	public implant(rule: Glyph[], prims: Prim[]): void {
+		this.place = place;
+	};
 
 
-		rule.forEach((glyph,i)=>{
 
-			// Track all the target Glyph places inside the Prim
+	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
 
-			if (glyph.symbol === this.targetSymbol) {
 
-				this.targetGlyph = glyph;
+		directory.forEach((metaGlyph)=> {
 
-				console.log(`-----------------------------------------`)
-				console.log(`IMPLANTING INCOGNITO PERPETUATOR IN:`)
-				console.log(`--> ${rule.map((g)=>g.symbol).join('')}`)
-				console.log(``)
-				console.log(`TARGET: ${glyph.symbol}`)
-				console.log(`ID: ${glyph.id}`)
-				console.log(``)
+			// Find the ids of each incognito in the directory so we can track them if the sequence changes or mutates
 
-				const prim = new ImperativePrim();
-				prim.places = [glyph.id];
+			if ( metaGlyph.glyph.symbol === this.incognito.symbol ) {
 
-				this.prims.push(prim);
-				prims.push(prim);
+				this.incognitoIDs.push(metaGlyph.id);
 			}
 
-			// Track all the Incognito Glyph places
+			// Find the ids of each incognito in the directory so we can track them if the sequence changes or mutates
 
-			if ( glyph.symbol === this.incognito.symbol ) {
+			if (metaGlyph.glyph.symbol === this.targetGlyph.symbol ) {
 
-				this.spots.push(i);
+				console.log(`-----------------------------------------`)
+				console.log(`IMPLANTING INCOGNITO PERPETUATOR IN: ${head.symbol}`)
+				// console.log(`--> ${directory.map((g)=>g.symbol).join('')}`)
+				console.log(``)
+				console.log(`TARGET: ${metaGlyph.glyph.symbol}`)
+				// console.log(`ID: ${glyph.id}`)
+				console.log(``)
+
+
+				this.targetGlyphIDs.push(metaGlyph.id);
 			}
 
 		})
-	 	
-		// this.prim.places = rule.map((g, i) => {
+	};
 
-		// 	if (g.symbol === this.target.symbol) {
+	/**
+	 * 
+	 * The sow method is being used here to add an ImperativePrim to the Production Rule we want to
+	 * perpetuate the Glyph through. Then it's up to the recipient Production Rule to determine
+	 * how the ImperativeRule will be interpreted.
+	 * 
+	 * 
+	 */ 
 
-		// 		return i;
+	public sow() {
+
+		return [{ targets: [ this.targetGlyph ], prim: new ImperativePrim() }] ;
+	};
+
+
+	public update( directory: Map<number, MetaGlyph> ): number[] {
+
+		// console.log(`UPDATING INCOGNITO PERPETUATOR: ${directory.size}`)
+
+		/**
+		 * 
+		 * Use the stored IDs to locate the target Glyphs in case their position in the sequence has changed. 
+		 * Now that the incognitos have been revealed we are able to use the disclosed Glyph to updated the target's ImperativePrims
+		 * 
+		 * We do that by retrieving the disclosed Glyph and storing it as data of each target's MetaGlyph.
+		 * Later, during encoding, that data is read and used to encode each target with the right Glyph Value.
+		 * 
+		 * But now we're working with MetaGlyphs. We can achieve all this in the implant stage. Regardless if the incognito has 
+		 * been disclosed or not by that time we can already save their references in each target's data object. 
+		 * 
+		 * Then when this Sprite is processed it will be able to handle it all internally.
+		 * So the Production will only need to iterate the sequence once at the end. All the updated data it requires to sucessfully encode
+		 * each glpyph should be available in each MetaGlyph.
+		 * 
+		 * 
+		 */ 
+
+		// let incognitoIndex: number = 0;
+
+		// for ( const i of this.targetGlyphIDs ) {
+
+		// 	const metaGlyph = directory.get(i);
+
+		// 	if ( metaGlyph ) {
+
+		// 		const glyph = directory.get( this.incognitoIDs[incognitoIndex] )?.glyph
+
+		// 		console.log(`Glyph in directory @ Sprite: ${glyph?.symbol}`)
+
+		// 		metaGlyph.data.prims.push( glyph ? new ImperativePrim( glyph ) : new ImperativePrim() );
+				
+		// 		console.log(`#Prims: ${metaGlyph.data.prims.length}`)
+
+		// 		incognitoIndex = (incognitoIndex + 1 >= this.incognitoIDs.length) ? 0 : incognitoIndex + 1;
+
+		// 	} else {
+
+		// 		throw new Error(`ERROR @ IncognitoPerpetuator: ${this.targetGlyph.symbol} could not be found in the Production Rule library`);
 		// 	}
+		// }
 
-		// 	if (g.symbol === this.incognito.symbol ) {
+		// return this.targetGlyphIDs;
 
-		// 		this.spots.push(i);
-		// 	}
-
-		// }).filter(n => n !== undefined) as number[];
-
-		// prims.push(this.prim);
+		return [];
 	}
 
 
-	protected process(stream: Glyph[]): Glyph[] | null {
+	protected process( stream: MetaGlyph[] ): MetaGlyph[] | null {
 
-		console.log(`... stream: ${ stream.map((g)=>g.symbol).join('') }`)
+		console.log(`. stream: ${ stream.map((mg)=>mg.glyph.symbol).join('') }`)
+	
+		const glyphs = stream.filter((mg) => this.incognitoIDs.includes(mg.id) ).map((mg) => mg.glyph );
 
-		const workingSequence = stream.map((glyph)=>{
+		console.log(`.. glyphs: ${glyphs.map((g) => g.symbol).join('') }`)
 
-			if ( this.spots.includes(glyph.id) ) {
+		let incognitoIndex: number = this.place ? this.place-1 : 0;
 
-				console.log(`incognito: ${glyph.symbol}`)
-				if ( this.targetGlyph ) console.log(`target: ${glyph.symbol} @ ${glyph.id}`)
-				else console.log(`Missing Target Glyph`)
+		const workingSequence = stream.map((metaGlyph)=>{
 
-				const prim = this.prims[this.primIndex];
+			if ( this.targetGlyphIDs.includes(metaGlyph.id) ) {
+				
+				const glyph = glyphs[incognitoIndex];
+				const prim = glyph ? new ImperativePrim( glyph ) : new ImperativePrim();
 
-				console.log(`Prim value: ${prim.getValue().symbol}`)
+				if ( metaGlyph.data.prims ) {
 
-				if ( prim.getValue().symbol === '?' ) { prim.cast(glyph); } // If the prim has a glyph then the incognito has been disclosed
-				// else { return prim.getValue() }
+					metaGlyph.data.prims.push(prim);
 
-				// prim.cast(glyph);
+				} else { 
 
-				console.log(`cast prim with: ${glyph.symbol}`)
-				console.log(`places to add prim: ${prim.places}`)
-
-				if ( this.primIndex + 1 >= this.prims.length ) {
-
-					this.primIndex = 0;
-
-				} else {
-
-					this.primIndex++
+					metaGlyph.data.prims = [prim];
 				}
 
-				return prim.getValue();
+				if ( !this.place ) {
+
+					incognitoIndex = (incognitoIndex + 1 >= glyphs.length) ? 0 : incognitoIndex + 1;
+				}
 			}
 
-			return glyph;
+			return metaGlyph;
 
 		});
 
 		return workingSequence;
-	}
+	};
 
 
-	// protected process(stream: Glyph[]): Glyph[] | null {
-
-	// 	console.log(`... stream: ${ stream.map((g)=>g.symbol).join('') }`)
-
-	// 	for ( const glyph of stream ) {
-			
-	// 		if ( this.spots.includes(glyph.id) ) {
-
-	// 			console.log(`incognito: ${glyph.symbol}`)
-	// 			if ( this.targetGlyph ) console.log(`target: ${glyph.symbol} @ ${glyph.id}`)
-	// 			else console.log(`Missing Target Glyph`)
-
-	// 			const prim = this.prims[this.primIndex];
-
-	// 			console.log(`Prim value: ${prim.getValue().symbol}`)
-
-	// 			if ( prim.getValue().symbol === '?' ) { prim.cast(glyph); } // If the prim has a glyph then the incognito has been disclosed
-
-	// 			console.log(`cast prim with: ${glyph.symbol}`)
-	// 			console.log(`places to add prim: ${prim.places}`)
-
-	// 			if ( this.primIndex + 1 >= this.prims.length ) {
-
-	// 				this.primIndex = 0;
-
-	// 			} else {
-
-	// 				this.primIndex++
-	// 			}
-	// 		}
-	// 	}
-
-	// 	return null;
-	// }
-
-	public run(stream: Glyph[], params?: any, context?: any): Glyph[] {
+	public run(stream: MetaGlyph[], params?: any, context?: any ): MetaGlyph[] {
 	  		
 		console.log(``)
 		console.log(`RUNNING INCOGNITO PERPETUATOR FOR: ${context}`)
 
-		if ( params ) {
+		const sequence = this.process( stream );
 
-			params.split(',').forEach((p: string) => {
+		if ( sequence ) {
 
-				for ( const prim of this.prims ) {
-
-					if (prim.prefix === p.charAt(0)) {
-						
-						prim.process(p);
-					}
-				}
-			})
-		};
-
-		const processedSequence = this.process(stream)
-
-		if ( processedSequence ) {
-
-			return processedSequence;
+			return sequence;
 
 		} else {
 

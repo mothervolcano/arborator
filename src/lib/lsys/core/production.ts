@@ -1,27 +1,33 @@
-import { IProduction, GlyphType, Glyph, Rule, Instruction, Marker, IModel, Prim, Imperative, Parameter, ISprite } from '../lsys';
+import { IProduction, Glyph, MetaGlyph, Rule, Prim, Imperative, Parameter, ISprite } from '../lsys';
 import ImperativePrim from '../prims/imperativePrim';
 import ParameterPrim from '../prims/parameterPrim';
 
 
 abstract class Production implements IProduction {
 
-	protected _glyph: Glyph;
+	protected static primExchangeQueue: Map<Prim, Glyph[]> = new Map();
+	
+	private _head: Rule;
+	private _rule: Glyph[];
+	private _output: string;
+
 	protected dialect: Glyph[]; 
-	protected _rule: Glyph[];
-	protected _sequence: Map<Glyph, number>;
-	protected _output: string;
-	protected prims: Array<Prim> = [];
+	protected directory: Map<number, MetaGlyph>;
+	protected sequence: MetaGlyph[];
 	protected sprites: Array<ISprite> = [];
+	protected prims: Map<Prim, any> = new Map();
 
+	
+	constructor(glyph: Rule, dialect?: Glyph[]) {
 
-	constructor(glyph: Glyph, dialect?: Glyph[]) {
-
-		this._glyph = glyph;
+		this._head = glyph;
+		
 		this.dialect = dialect || [];
-		this._sequence = new Map();
+		this.directory = new Map();
 
 		this._rule = dialect ? [] : [glyph];
-		this._output = dialect ? '' : this.encode([glyph]);
+		this.sequence = dialect ? [] : [ { glyph: glyph, id: 1, data: {} }  ]
+		this._output = dialect ? '' : this.encodeSequence([glyph]);
 
 		return this;
 	};
@@ -32,9 +38,9 @@ abstract class Production implements IProduction {
 		return this._rule;
 	}
 
-	get glyph() {
+	get head() {
 
-		return this._glyph;
+		return this._head;
 	}
 
 	get output() {
@@ -43,7 +49,73 @@ abstract class Production implements IProduction {
 	}
 
 
-	decode(str: string): Glyph[] {
+	protected cast(sequence: Array<Glyph>) {
+
+
+		sequence.forEach((glyph, i) => {
+
+			this._rule[i] = glyph;
+			const dirIndex = i+1; // the directory index starts at 1 to help not confuse with the sequence array.
+			this.directory.set( dirIndex, { glyph: glyph, id: dirIndex, data: {} } ); 
+			this.sequence.push( this.directory.get( dirIndex )! );
+
+		});
+
+		// this._rule = sequence.map((glyph, i) => {
+
+		// 	if ( glyph.type==='Rule' ) {
+
+		// 		return glyph;
+
+		// 	} else {
+
+		// 		return { ...glyph };
+		// 	}
+
+		// });
+	};
+
+	public plant(): void {
+
+		console.log('')
+		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
+		console.log(`ON THE WAITING LIST FOR PRIMS:`)
+
+		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primExchangeQueue.size}`)
+
+
+		let log = 'GUESTS: ';
+
+		for ( const guest of Production.primExchangeQueue ) {
+
+			if ( guest[1].includes(this.head) ) {
+
+				console.log(`${guest[0].prefix} --> this one is for me ( ${this.head.symbol} )`)
+
+				this.addPrim( guest[0] );
+
+				if ( guest[1].length <= 1 ) {
+
+					Production.primExchangeQueue.delete(guest[0]);
+
+				} else {
+
+					Production.primExchangeQueue.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
+				}
+
+			}
+
+			// guest[1] = updatedGuests;
+
+
+			log += `${guest[1].map((g)=>g.symbol)}( ${guest[0].prefix} ), `
+		}
+
+		console.log(log);
+	}
+
+
+	protected decode(str: string): Glyph[] {
 
 		const sequence = str.split('').map((char) => { 
 
@@ -55,7 +127,7 @@ abstract class Production implements IProduction {
 
 			} else {
 
-				throw new Error(`${char} it's not part of this ${this._glyph.symbol} production dialect`);
+				throw new Error(`${char} it's not part of this ${this._head.symbol} production dialect`);
 			}
 		});
 
@@ -63,13 +135,31 @@ abstract class Production implements IProduction {
 	};
 
 
-	encode(sequence: Array<Glyph>): string {
+	protected encodeGlyph( glyph: Glyph ): string {
+
+		if ( glyph.type === 'Rule' && glyph.prims.length ) {
+
+			const paramSeries = glyph.prims.map((p) => {
+
+				return p.write();
+			});
+
+			return `${glyph.symbol}(${paramSeries.join(',')})`;
+
+		} else {
+
+			return glyph.symbol;
+		}
+	};
+
+
+	protected encodeSequence(sequence: Array<Glyph>): string {
 
 		const series = sequence.map((g) => {
 
-			if (g.type === 'Rule' && g.params?.length) {
+			if (g.type === 'Rule' && g.prims?.length) {
 
-				const paramSeries = g.params.map((p) => {
+				const paramSeries = g.prims.map((p) => {
 
 					return p.write();
 
@@ -89,18 +179,15 @@ abstract class Production implements IProduction {
 		return series;
 	};
 
+	
+	protected printSequence( sequence: string[] ) {
+
+		this._output = sequence.join('');
+	};
+
+
 	abstract compose(...str: string[]): void;
 	abstract process(params?: string, context?: any): void;
-
-	
-	protected cast(sequence: Array<Glyph>) {
-
-		this._rule = sequence.map((glyph, i) => {
-
-			return { ...glyph, id: i };
-		});
-
-	};
 
 
 	public addPrim(input: Prim | string, symbols?: string | string[], save: boolean = true): Prim {
@@ -161,7 +248,16 @@ abstract class Production implements IProduction {
 
 		if (save) { 
 
-			this.prims.push(prim); 
+			if ( !this.prims.has(prim) ) {
+
+				this.prims.set(prim, prim.prefix);
+
+				this.head.prims.push(prim); 
+
+			} else {
+
+				throw new Error(`ERROR: Trying to re-add ${prim.type} Prim to ${this.head.symbol}`);
+			}
 		}
 
 		return prim;	
@@ -170,51 +266,135 @@ abstract class Production implements IProduction {
 
 	public addSprite( sprite: ISprite ) {
 
-		sprite.implant( this._rule, this.prims );
+		
+		//-------------------------------------------------
+		// STEP 1
+
+		const prims = sprite.implant( this.directory, this.head );
+
+		if ( prims ) {
+
+			for ( const prim of prims ) {
+
+				this.addPrim( prim );
+			}
+		};
+		
 		this.sprites.push( sprite );
+
+
+		//-------------------------------------------------
+		// STEP 2
+		
+
+		const primSeeds = sprite.sow();	
+
+		if ( primSeeds ) {
+
+			for ( const seed of primSeeds ) {
+		
+				// for ( const glyph of seed.targets ) {
+
+				// 	if ( glyph.type==='Rule') { glyph.prims.push(seed.prim) } 
+				// }
+				
+				Production.primExchangeQueue.set( seed.prim, seed.targets );
+			}
+		}
+		
+
 	};
 
 
-	// TODO remove this methods. The Sprites took over!
+	protected processPrims( stream: Glyph[], params?: string ): Glyph[] {
 
-	protected processPrims(sequence: Array<Glyph>) {
+		console.log('')
+		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
+		console.log(`ON THE WAITING LIST FOR PRIMS:`)
 
-		// if (sequence.length && this.prims.length) {
+		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primExchangeQueue.size}`)
 
-		// 	const updatedPrims = this.prims.map((prim) => {
 
-		// 		let updatedPrim = prim;
+		let log = 'GUESTS: ';
 
-		// 		// ------------------------------------------------------------
+		for ( const guest of Production.primExchangeQueue ) {
 
-		// 		// try to see if at least there's some data to complete the configuration of the prim.
-		// 		// the data it needs can be extracted from a Glyph and it's very likely that the right Glyph
-		// 		// is part of the sequence array
+			if ( guest[1].includes(this.head) ) {
 
-		// 		if (updatedPrim.type === 'Imperative' && updatedPrim.getValue().symbol === '?') {
+				console.log(`${guest[0].prefix} --> this one is for me ( ${this.head.symbol} )`)
 
-		// 			for (let i = 0; i < sequence.length; i++) {
+				this.addPrim( guest[0] );
 
-		// 				if (updatedPrim.places.includes(i)) {
+				if ( guest[1].length <= 1 ) {
 
-		// 					updatedPrim.set(sequence[i]);
-		// 				}
-		// 			}
-		// 		} 
-		
+					Production.primExchangeQueue.delete(guest[0]);
 
-		// 		// -----------------------------------------------------------------
+				} else {
 
-		// 		sequence.forEach((glyph, i) => {
+					Production.primExchangeQueue.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
+				}
 
-		// 			// THERE MIGHT NOT BE NECESSARY TO DO ANTHING HERE. Mark for deletion;
-		// 		});
+			}
 
-		// 		return updatedPrim;
-		// 	})
+			// guest[1] = updatedGuests;
 
-		// 	this.prims = updatedPrims;
-		// }
+
+			log += `${guest[1].map((g)=>g.symbol)}( ${guest[0].prefix} ), `
+		}
+
+		console.log(log);
+
+		// ----------------------------------------------------------------
+
+		const workingSequence: Glyph[] = stream.map((glyph) => {
+
+
+			
+
+			return glyph;
+
+		});
+
+		// -----------------------------------------------------------------
+
+		console.log('')
+
+		if ( params ) {
+
+			const parsedParams = params.split(',').map((s, i) => { 
+
+				return s.charAt(0);
+			});
+
+
+			console.log('')
+			console.log(`....................................`)
+			console.log(`${this.head.symbol} PRIM SIGNATURE:`)
+
+			let log: string = '';
+
+			for ( const prim of this.prims ) {
+
+				log += `${prim[1]} / `
+			}
+
+			console.log(`___ADDED:  ${log}`);
+			console.log(`RECEIVED:  ${parsedParams.join(' / ')} /`)
+
+		} else {
+
+		}
+
+
+		if ( workingSequence ) {
+
+			return workingSequence;
+
+		} else {
+
+			return stream;
+		} 
+
 	};
 
 
