@@ -35,11 +35,13 @@ class Escalator extends Sprite {
 
 	public update( params: string ): string {
 
-		// directory.forEach( (glyphData, i) => {
+		params.split(',').forEach((p: string) => {
 
-		// 	const glyph = glyphData.glyph;
-			
-		// });
+			if (this.prim.prefix === p.charAt(0)) {
+				
+				this.prim.process();
+			}
+		})
 
 		return params;
 	};
@@ -53,17 +55,6 @@ class Escalator extends Sprite {
 
 
 	public run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
-
-		if ( params ) {
-
-			params.split(',').forEach((p: string) => {
-
-				if (this.prim.prefix === p.charAt(0)) {
-					
-					this.prim.process();
-				}
-			})
-		}
 	  	
 		const sequence = this.process(stream)
 

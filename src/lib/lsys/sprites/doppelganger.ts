@@ -10,21 +10,19 @@ class Doppelganger extends Sprite {
 	private workingPrims: Prim[] = [];
 	private imagePrims: Map<number, Prim[]> = new Map();
 
-	private head: Rule | null;
+	private head: Rule | undefined;
+	private directory: Map<number, MetaGlyph> | undefined;
 
 	constructor() {
 
 		super();
 
-		this.head = null;
 	}
 
-	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
+	public implant(directory: Map<number, MetaGlyph>, dialect: Glyph[]): void {
 
-		this.sourcePrims = head.prims;
-		this.workingPrims = head.prims.slice();
 
-		this.head = head;
+		this.directory = directory;
 	}
 
 
@@ -34,63 +32,82 @@ class Doppelganger extends Sprite {
 	}
 
 
-	public update( directory: Map<number, MetaGlyph> ): number[] {
+	public update( params: string ): string {
 
-		// directory.forEach( (glyphData, i) => {
+		let id: number | undefined;
+		let updatedParams: string | undefined;
 
-		// 	const glyph = glyphData.glyph;
-			
-		// });
+		params.split(',').forEach((p: string) => {
 
-		return [];
+			if ( p.charAt(0) === '#' ) {
+				
+				id = Number.parseInt(p.substring(1));
+			}
+		});
+	
+		if ( id ) {
+
+			console.log('')
+			console.log(`............................................`)
+			console.log(`!!! DOPPELGANGER DETECTED! ${id}`);
+
+
+			if ( this.imagePrims.has(id) ) {
+
+
+			} else {
+
+				const prims: Prim[] = [];
+
+				// params.split(',').forEach((p: string) => {
+
+				// 	let prim: Prim;
+
+				// 	switch (p.charAt(0)) {
+
+				// 		case '#':
+
+				// 			break;
+
+				// 		case '!':
+
+				// 			prim = new ImperativePrim() as Imperative;
+				// 			break;
+
+				// 		case '=':
+
+				// 			prim = new ParameterPrim() as Parameter;
+				// 			break;
+
+				// 		case '+':
+							
+				// 			break
+
+				// 		default: throw new Error(`ERROR @ Doppelganger: Failed to recreate Prims from input. ${p.charAt(0)} doesn't match the prefix of any valid Prim`);
+				// 	}
+
+				// });
+
+				const image = prims;
+				
+				this.imagePrims.set( id, image );
+			}
+
+
+			this.workingPrims = this.imagePrims.get(id)!;
+	
+
+		} else {
+
+			throw new Error(`ERROR! Doppelganger Sprite requires an IdPrim`);
+		}
+
+
+		return updatedParams ? updatedParams : params;
 	}
 
 
 	protected process(stream: MetaGlyph[], idString: string): MetaGlyph[] | null {
-	   
-		console.log('')
-		console.log(`............................................`)
-		console.log(`!!! DOPPELGANGER DETECTED! ${idString}`);
-		
-
-		const id = Number.parseInt(idString.substring(1));
-
-		const idPrim = this.sourcePrims.find( (p) => p.prefix === '#' ) as Id;
-		idPrim?.cast(id);
-
-
-		if ( this.imagePrims.has(id) ) {
-
-			this.workingPrims = this.imagePrims.get(id)!;
-
-		} else {
-
-			console.log(`new prims image: ${ this.sourcePrims.map((p)=>p.prefix).join(' / ') }`)
-			
-			const image = this.sourcePrims.map( p => p.clone() );
-			
-			this.imagePrims.set( id, image );
-		}
-
-
-		stream.forEach((metaGlyph) => {
-
-			if ( metaGlyph.glyph.symbol === this.head!.symbol && metaGlyph.glyph.type==='Rule' ) {
-
-				metaGlyph.glyph.prims = this.imagePrims.get(id)!.map( p => p.clone() );
-
-		// const counterPrim = metaGlyph.glyph.prims.find( (p) => p.prefix === '+' ) as Counter;
-
-		// if( id === 4) {
-
-		// 	counterPrim.process()
-		// 	counterPrim.process()
-		// 	counterPrim.process()
-		// }
-
-				console.log(`${metaGlyph.glyph.symbol} prims: ${metaGlyph.glyph.prims.map( p => `${p.prefix}${p.getValue()}` ).join(' ') }`)
-			}
-		})
 
 
 	   return null; 
@@ -99,18 +116,6 @@ class Doppelganger extends Sprite {
 
 	run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
-
-		if ( params ) {
-
-			params.split(',').forEach((p: string) => {
-
-				if ( p.charAt(0) === '#' ) {
-					
-					this.process(stream, p);
-				}
-
-			})
-		}
 
 		return stream;
 	}

@@ -24,7 +24,7 @@ class Indexer extends Sprite {
 	};
 
 
-	public implant( directory: Map<number, MetaGlyph>, head: Rule ): void {
+	public implant( directory: Map<number, MetaGlyph>, dialect: Glyph[]): void {
 
 	    directory.forEach((metaGlyph)=>{
 
@@ -39,7 +39,7 @@ class Indexer extends Sprite {
 	};
 
 
-	public update( directory: Map<number, MetaGlyph> ): number[] {
+	public update( params: string ): string {
 
 		// directory.forEach( (glyphData, i) => {
 
@@ -47,7 +47,7 @@ class Indexer extends Sprite {
 			
 		// });
 
-		return []
+		return params;
 	}
 
 

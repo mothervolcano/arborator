@@ -42,8 +42,7 @@ class BRule extends Production {
 
 			for ( const sprite of this.sprites ) {
 
-				sprite.update( this.directory );
-
+				params = params ? sprite.update( params ) : params;
 				stream = sprite.run( stream, params, this.head.symbol );
 			}
 
@@ -64,7 +63,7 @@ class BRule extends Production {
 
 		if ( this.head.symbol === 'K' && params ) {
 
-			const prim = new IdPrim();
+			const prim = new ParameterPrim();
 
 			params.split(',').forEach( (p: string) => {
 
@@ -75,7 +74,10 @@ class BRule extends Production {
 			})
 
 			debugInfo.prims = [ prim ];
-			stream.unshift( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: {} } ]);
+
+			// debugInfo.prims = [ this.head.prims[0] ];
+			stream.push( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: { } } ]);
+			// stream.unshift( ...[ { glyph: debugMark, id: 99, data: {} } ]);
 
 
 			// const debugGlyph = stream.find( (g) => g.glyph.symbol === 'K');

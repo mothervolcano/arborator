@@ -23,7 +23,7 @@ class GlyphSwapper extends Sprite {
 	};
 
 
-	public implant(directory: Map<number, MetaGlyph>, head: Rule): void {
+	public implant(directory: Map<number, MetaGlyph>, dialect: Glyph[]): void {
 	 			
 
 		directory.forEach( (metaGlyph) => {
@@ -31,7 +31,7 @@ class GlyphSwapper extends Sprite {
 			if ( metaGlyph.glyph.symbol === this.targetGlyph.symbol ) {
 
 				console.log(`-----------------------------------------`)
-				console.log(`IMPLANTING GLYPH SWAPPER IN: ${head.symbol}`)
+				console.log(`IMPLANTING GLYPH SWAPPER IN: ${dialect}`)
 				// console.log(`--> ${directory.map((g)=>g.symbol).join('')}`)
 				console.log(``)
 				console.log(`TARGET: ${metaGlyph.glyph.symbol}`)
@@ -51,7 +51,7 @@ class GlyphSwapper extends Sprite {
 	};
 
 
-	public update( directory: Map<number, MetaGlyph> ): number[] {
+	public update( params: string ): string {
 
 		// console.log(`UPDATING GLYPH SWAPPER: ${directory.size}`)
 
@@ -75,7 +75,7 @@ class GlyphSwapper extends Sprite {
 		// 	}
 		// }
 
-		return [];
+		return params;
 	};
 
 
@@ -106,7 +106,7 @@ class GlyphSwapper extends Sprite {
 
 
 
-	public run(stream: MetaGlyph[], params?: any ): MetaGlyph[] {
+	public run(stream: MetaGlyph[]): MetaGlyph[] {
 	  	
 		const sequence = this.process(stream)
 

@@ -22,7 +22,7 @@ class PrimMapper extends Sprite {
 	}
 
 
-	public implant(directory: Map<number, MetaGlyph>, head: Rule): Prim[] {
+	public implant(directory: Map<number, MetaGlyph>, dialect: Glyph[]): Prim[] {
 	 	
 		
 		this.targetGlyphs = []
@@ -54,7 +54,7 @@ class PrimMapper extends Sprite {
 		// return [ 'We need to covert Glyphs to strings of its symbols here' ];
 	}
 
-	public update( directory: Map<number, MetaGlyph> ): number[] {
+	public update( params: string ): string {
 
 		// directory.forEach( (glyphData) => {
 
@@ -62,7 +62,7 @@ class PrimMapper extends Sprite {
 			
 		// });
 
-		return []
+		return params;
 	}
 
 

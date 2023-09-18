@@ -94,7 +94,7 @@ class Foundation extends Sprite {
 	};
 
 
-	run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
+	run(stream: MetaGlyph[]): MetaGlyph[] {
 
 		let sequence: MetaGlyph[] | null = [];
 		
