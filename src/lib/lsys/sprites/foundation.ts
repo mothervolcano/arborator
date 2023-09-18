@@ -2,23 +2,26 @@ import Sprite from "../core/sprite";
 import { Counter, Glyph, Id, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
 
 
-class Generator extends Sprite {
+
+class Foundation extends Sprite {
 
 
 	private sourceGlyph: Rule;
 	private seedPrim: Parameter | Counter | Id;
+	private writerPrim: Counter | Parameter | Id | null;
 
-	private headGlyph: Glyph | undefined;
 
-
-	constructor( sourceGlyph: Rule, seedPrim: Parameter | Counter | Id ) {
+	constructor( sourceGlyph: Rule, seedPrim: Parameter | Counter | Id, writerPrim: Counter | Parameter | Id | null = null ) {
 
 		super();
 
 		this.sourceGlyph = sourceGlyph;
 		this.seedPrim = seedPrim;
 
+		this.writerPrim = writerPrim || seedPrim;
+
 	};
+
 
 
 	implant(directory: Map<number, any>, dialect: Glyph[]): void {
@@ -40,17 +43,14 @@ class Generator extends Sprite {
 
 	    } else {
 
-	    	throw new Error(`ERROR @ Generator: ${this.sourceGlyph.symbol} is not part of this Production Rule dialect`);
-	    }
-
-	    this.headGlyph = directory.get(0).glyph;
-	    
+	    	throw new Error(`ERROR @ Foundation: ${this.sourceGlyph.symbol} is not part of this Production Rule dialect`);
+	    }    
 	}
 
 
 	sow(targets?: string[] | undefined): void | { targets: Glyph[]; prim: Prim; }[] {
 	    
-	    return [{ targets: [ this.sourceGlyph, this.headGlyph! ], prim: this.seedPrim }];  
+	    // return [{ targets: [ this.sourceGlyph ], prim: this.seedPrim }];  
 	};
 
 
@@ -60,27 +60,30 @@ class Generator extends Sprite {
 	};
 
 
-	protected process(stream: MetaGlyph[], countString?: any): MetaGlyph[] | null {
+	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 	    
 	    const sequence: MetaGlyph[] = [];
+   
+	    // ---------------------------------------
 
-	    // ------------------------------------------------
+	    const count = this.seedPrim.getValue();
 
-	    const count = Number.parseInt(countString) - 1;
+	    for ( let i=count; i>0; i-- ) {
 
-    	const prim = this.seedPrim.clone();
-		prim.cast(count);
+	    	const prim = this.writerPrim!.clone();
+			prim.cast(i);
 
-    	const newMetaGlyph = {
+	    	const newMetaGlyph = {
 
-			glyph: this.sourceGlyph,
-			id: 900,
-			data: { prims: [ prim ] }
-		}
+				glyph: this.sourceGlyph,
+				id: 900,
+				data: { prims: [ prim ] }
+			}
 
-		sequence.push( newMetaGlyph );
-	    
-	    // ------------------------------------------------
+			sequence.push( newMetaGlyph );
+	    }
+
+	    // ---------------------------------------
 
 		if ( sequence.length ) { 
 			
@@ -94,17 +97,8 @@ class Generator extends Sprite {
 	run(stream: MetaGlyph[], params?: any): MetaGlyph[] {
 
 		let sequence: MetaGlyph[] | null = [];
-
-		if ( params ) {
-
-			params.split(',').forEach( (p: string) => {
-
-				if ( p.charAt(0) === this.seedPrim.prefix ) {
-					
-					sequence = this.process(stream, p.substring(1));
-				}
-			})
-		}
+		
+		sequence = this.process(stream);
 
 		if ( sequence && sequence.length ) {
 
@@ -115,9 +109,9 @@ class Generator extends Sprite {
 			return stream;
 		} 
 	    
-	}
+	};
 
 }
 
 
-export default Generator;
+export default Foundation;
