@@ -1,11 +1,12 @@
 import Sprite from "../core/sprite";
 import { Glyph, MetaGlyph, Prim, Rule, Parameter, Counter } from "../lsys";
 import OperationPrim from "../prims/operationPrim";
+import BaseSprite from "./baseSprite";
 
 
 
 
-class Operator extends Sprite {
+class Operator extends BaseSprite {
 
 	private targetGlyph: Glyph | undefined;
 
