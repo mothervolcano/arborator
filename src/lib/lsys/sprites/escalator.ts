@@ -1,10 +1,11 @@
 import Sprite from "../core/sprite";
 import { Counter, Glyph, MetaGlyph, Prim, Rule } from "../lsys";
 import CounterPrim from "../prims/counterPrim";
+import BaseSprite from "./baseSprite";
 
 
 
-class Escalator extends Sprite {
+class Escalator extends BaseSprite {
 
 	private start: number;
 	private step: number;

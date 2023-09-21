@@ -1,9 +1,10 @@
 import Sprite from "../core/sprite";
 import { Counter, Glyph, Id, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
+import BaseSprite from "./baseSprite";
 
 
 
-class Foundation extends Sprite {
+class Foundation extends BaseSprite {
 
 
 	private sourceGlyph: Rule;

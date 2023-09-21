@@ -1,9 +1,10 @@
 import Sprite from "../core/sprite";
 import { Glyph, Imperative, MetaGlyph, Prim, Rule } from "../lsys";
 import ImperativePrim from "../prims/imperativePrim";
+import BaseSprite from "./baseSprite";
 
 
-class IncognitoPerpetuator extends Sprite {
+class IncognitoPerpetuator extends BaseSprite {
 
 	// private primIndex: number = 0;
 

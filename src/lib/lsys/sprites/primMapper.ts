@@ -1,9 +1,10 @@
 import Sprite from "../core/sprite";
 import { Glyph, MetaGlyph, Prim, Rule } from "../lsys";
+import BaseSprite from "./baseSprite";
 
 
 
-class PrimMapper extends Sprite {
+class PrimMapper extends BaseSprite {
 
 
 	private prim: Prim;

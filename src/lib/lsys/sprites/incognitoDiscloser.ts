@@ -1,5 +1,6 @@
 import Sprite from "../core/sprite";
 import { Glyph, Imperative, MetaGlyph, Prim, Rule } from "../lsys";
+import BaseSprite from "./baseSprite";
 
 /**
  * 
@@ -9,7 +10,7 @@ import { Glyph, Imperative, MetaGlyph, Prim, Rule } from "../lsys";
  * 
  */ 
 
-class IncognitoDiscloser extends Sprite {
+class IncognitoDiscloser extends BaseSprite {
 
 
 	private incognito: Glyph;
@@ -71,7 +72,7 @@ class IncognitoDiscloser extends Sprite {
 
 				const prim = this.discloser.recast(this.disclosure);
 
-				metaGlyph.glyph = prim.getValue();
+				metaGlyph.glyph = prim!.getValue();
 			}
 
 			return metaGlyph;

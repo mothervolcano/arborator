@@ -3,10 +3,11 @@ import Sprite from "../core/sprite";
 import { Counter, Glyph, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
 import CounterPrim from "../prims/counterPrim";
 import ParameterPrim from "../prims/parameterPrim";
+import BaseSprite from "./baseSprite";
 
 
 
-class Accumulator extends Sprite {
+class Accumulator extends BaseSprite {
 
 
 	private count: number;

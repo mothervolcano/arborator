@@ -1,11 +1,11 @@
 import Sprite from "../core/sprite";
 import { Counter, Glyph, Id, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
+import BaseSprite from "./baseSprite";
 
 
 
 
-
-class Dispenser extends Sprite {
+class Dispenser extends BaseSprite {
 	
 
 	private count: number = 0;

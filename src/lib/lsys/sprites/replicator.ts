@@ -1,11 +1,11 @@
 import Sprite from "../core/sprite";
 import { Counter, Glyph, Id, MetaGlyph, Operation, Parameter, Prim, Rule } from "../lsys";
 import ParameterPrim from "../prims/parameterPrim";
+import BaseSprite from "./baseSprite";
 
 
 
-
-class Replicator extends Sprite {
+class Replicator extends BaseSprite {
 
 	private count: number = 0;
 
@@ -62,16 +62,11 @@ class Replicator extends Sprite {
 
 	public update( params: string ): string {
 
-		if ( params ) {
+		super.update( params );
 
-			params.split(',').forEach( (p: string) => {
+		const prim = this.workingPrims.find((prim) => prim?.prefix === this.readerPrim.prefix) as Parameter | Counter | Id;
 
-				if ( p.charAt(0) === this.readerPrim.prefix ) {
-					
-					this.count = Number.parseInt(p.substring(1));
-				}
-			})
-		}
+		this.count = prim ? prim.getValue() : 0;
 
 		return params;
 	}

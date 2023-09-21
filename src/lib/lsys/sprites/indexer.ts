@@ -1,11 +1,11 @@
 import Sprite from "../core/sprite";
 import { Glyph, Id, MetaGlyph, Prim, Rule } from "../lsys";
 import IdPrim from "../prims/idPrim";
+import BaseSprite from "./baseSprite";
 
 
 
-
-class Indexer extends Sprite {
+class Indexer extends BaseSprite {
 
 	private targetGlyph: Glyph;
 	private targetGlyphIDs: number[] = [];

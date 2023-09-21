@@ -1,10 +1,11 @@
 import Sprite from "../core/sprite";
-import { Glyph, MetaGlyph, Prim, Rule } from "../lsys";
+import { Counter, Glyph, Id, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
 import ParameterPrim from "../prims/parameterPrim";
+import BaseSprite from "./baseSprite";
 
 
 
-class Propagator extends Sprite {
+class Propagator extends BaseSprite {
 
 	private count: number = 0;
 
@@ -30,15 +31,6 @@ class Propagator extends Sprite {
 
 			if (metaGlyph.glyph.symbol === this.targetGlyph.symbol ) {
 
-				console.log(`-----------------------------------------`)
-				console.log(`IMPLANTING PROPAGATOR IN: ${dialect}`)
-				// console.log(`--> ${directory.map((g)=>g.symbol).join('')}`)
-				console.log(``)
-				console.log(`TARGET: ${metaGlyph.glyph.symbol}`)
-				// console.log(`ID: ${glyph.id}`)
-				console.log(``)
-
-
 				this.targetGlyphIDs.push(metaGlyph.id);
 			}
 		});    
@@ -53,14 +45,12 @@ class Propagator extends Sprite {
 
 	update( params: string ): string {
 
-		params.split(',').forEach( (p: string) => {
+		super.update( params );
 
-			if ( this.prefix === p.charAt(0) ) {
-				
-				this.count = Number.parseInt(p.substring(1));
-			}
-		})
-   
+		const prim = this.workingPrims.find((prim) => prim?.prefix === this.prefix) as Parameter | Counter | Id;
+
+		this.count = prim ? prim.getValue() : 0;
+
 	    return params;
 	};
 

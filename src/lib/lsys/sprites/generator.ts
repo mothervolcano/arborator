@@ -1,8 +1,9 @@
 import Sprite from "../core/sprite";
 import { Counter, Glyph, Id, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
+import BaseSprite from "./baseSprite";
 
 
-class Generator extends Sprite {
+class Generator extends BaseSprite {
 
 	private count: number = 0
 
@@ -58,13 +59,11 @@ class Generator extends Sprite {
 
 	update(params: string): string {
 
-		params.split(',').forEach( (p: string) => {
+		super.update( params );
 
-			if ( p.charAt(0) === this.seedPrim.prefix ) {
-				
-				this.count = Number.parseInt(p.substring(1)) - 1;
-			}
-		})
+		const prim = this.workingPrims.find((prim) => prim?.prefix === this.seedPrim.prefix) as Parameter | Counter | Id;
+
+		this.count = prim ? prim.getValue() - 1 : 0;
 	    
 	    return params;
 	};

@@ -1,11 +1,12 @@
 import Sprite from "../core/sprite";
 import { Glyph, MetaGlyph, Prim, Rule } from "../lsys";
 import ImperativePrim from "../prims/imperativePrim";
+import BaseSprite from "./baseSprite";
 
 
 
 
-class GlyphSwapper extends Sprite {
+class GlyphSwapper extends BaseSprite {
 
 	private stubs:Glyph[] = [];
 

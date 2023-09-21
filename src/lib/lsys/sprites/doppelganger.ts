@@ -1,13 +1,14 @@
 import Sprite from "../core/sprite";
 import { Glyph, Rule, Id, Counter, Prim, MetaGlyph } from "../lsys";
+import BaseSprite from "./baseSprite";
 
 
 
 
-class Doppelganger extends Sprite {
+class Doppelganger extends BaseSprite {
 
 	private sourcePrims: Prim[] = [];
-	private workingPrims: Prim[] = [];
+	// private workingPrims: Prim[] = [];
 	private imagePrims: Map<number, Prim[]> = new Map();
 
 	private head: Rule | undefined;
