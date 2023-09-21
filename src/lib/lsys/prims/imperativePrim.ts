@@ -37,9 +37,16 @@ class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 
 	public recast( str: string ) {
 
+		if ( !str.includes(this.prefix ) ) {
+
+			return null;
+		}
+
+		const i = str.indexOf(this.prefix);
+
 		if ( this.value ) {
 
-			this.value.symbol = str.substring(1);
+			this.value.symbol = str.substring(i+1);
 
 		} else {
 
@@ -47,12 +54,13 @@ class ImperativePrim extends BasePrim<Glyph> implements Imperative {
 
 				type: 'Marker',
 				id: 0,
-				symbol: str.substring(1)
+				symbol: str.substring(i+1)
 			}
 		}
 
 		return this;
 	};
+
 
 	public process( value: string ) {
 

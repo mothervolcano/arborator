@@ -48,7 +48,7 @@ abstract class BasePrim<T> implements IPrim<T> {
 	}
 
 	abstract cast(val: T ): this;
-	abstract recast(str: string): this;
+	abstract recast(str: string): this | null;
 	abstract process(value:string): void;
 	abstract read( str: string ): T;
 	abstract write(): string;

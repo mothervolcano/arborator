@@ -35,7 +35,14 @@ class IdPrim extends BasePrim<number> implements Id {
 
 	public recast( str: string ) {
 
-		this.value = Number.parseInt(str.substring(1));
+		if ( !str.includes(this.prefix ) ) {
+
+			return null;
+		}
+
+		const i = str.indexOf(this.prefix);
+
+		this.value = Number.parseInt(str.substring(i+1));
 
 		return this;
 	};
