@@ -65,40 +65,40 @@ class IRule extends Production {
 		// 4 Apply the prims
 
 
-		// const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', prims: [] }
-		// const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', prims: [] }
+		const debugMark: Rule = { id: 0, type: 'Rule', symbol: 'x', prims: [] }
+		const debugInfo: Rule = { id: 0, type: 'Rule', symbol: 'i', prims: [] }
 
-		// if ( this.head.symbol === 'I' && params ) {
+		if ( this.head.symbol === 'B' && params ) {
 
-		// 	const prim = new ParameterPrim();
+			const prim = new ParameterPrim();
 
-		// 	params.split(',').forEach( (p: string) => {
+			params.split(',').forEach( (p: string) => {
 
-		// 		if ( p.charAt(0) === '=') {
+				if ( p.charAt(0) === '#') {
 					
-		// 			prim.cast( Number.parseInt(p.substring(1)) )
-		// 		}
-		// 	})
+					prim.cast( Number.parseInt(p.substring(1)) )
+				}
+			})
 
-		// 	debugInfo.prims = [ prim ];
+			debugInfo.prims = [ prim ];
 
-		// 	// debugInfo.prims = [ this.head.prims[0] ];
-		// 	stream.push( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: { } } ]);
-		// 	// stream.unshift( ...[ { glyph: debugMark, id: 99, data: {} } ]);
+			// debugInfo.prims = [ this.head.prims[0] ];
+			stream.unshift( ...[ { glyph: debugInfo, id: 99, data: { } } ]);
+			// stream.unshift( ...[ { glyph: debugMark, id: 99, data: {} } ]);
 
 
-		// 	// const debugGlyph = stream.find( (g) => g.glyph.symbol === 'K');
+			// const debugGlyph = stream.find( (g) => g.glyph.symbol === 'K');
 
-		// 	// stream.slice().forEach((mg) => {
+			// stream.slice().forEach((mg) => {
 
-		// 	// 	if ( mg.glyph.symbol === 'f' ) {
+			// 	if ( mg.glyph.symbol === 'f' ) {
 
-		// 	// 		debugInfo.prims = [ this.head.prims[0] ];
-		// 	// 		stream.unshift( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: {} } ]);
+			// 		debugInfo.prims = [ this.head.prims[0] ];
+			// 		stream.unshift( ...[ { glyph: debugMark, id: 99, data: {} }, { glyph: debugInfo, id: 99, data: {} } ]);
 
-		// 	// 	}
-		// 	// })			
-		// }
+			// 	}
+			// })			
+		}
 		
 
 

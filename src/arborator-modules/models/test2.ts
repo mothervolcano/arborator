@@ -23,6 +23,8 @@ import Propagator from '../../lib/lsys/sprites/propagator';
 import Dispenser from '../../lib/lsys/sprites/dispenser';
 import Accumulator from '../../lib/lsys/sprites/accumulator';
 import Generator from '../../lib/lsys/sprites/generator';
+import Operator from '../../lib/lsys/sprites/operator';
+import OperationPrim from '../../lib/lsys/prims/operationPrim';
 
 
 class Test2 extends Model {
@@ -50,12 +52,22 @@ class Test2 extends Model {
 
 		const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('[]+-<IOf*') ).compose('O'); 
 		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-<>.Yf*') ).compose('Y'); 
-		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-<>.Bf*x') ).compose('ff[<-.Bx][<+.Bx]f'); 
-		const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-=±<>.BKf*x') ).compose('ff[=.ff.Kx..][±.ff...Kx].B');
-		const K: IProduction = new BRule( alphabet.rule('K'), alphabet.collect('[]+-=±<>.f*x') ).compose('[=.ffx][±.ffx]');
+		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-<>.Bf*x') ).compose('ffff[-B]f'); 
+		const B: IProduction = new IRule( alphabet.rule('B'), alphabet.collect('[]+-=±<>.BKf*x') ).compose('ffx[=fxK][±f]B');
+		const K: IProduction = new IRule( alphabet.rule('K'), alphabet.collect('[]+-=±<>.f*x') ).compose('f[=f][±f]');
 
 		O.addSprite( new Generator( alphabet.rule('I'), new ParameterPrim(iterationsNum) ));
-		O.addSprite( new Propagator( alphabet.rule('I'), '=' ))
+		I.addSprite( new Propagator( alphabet.rule('Y'), '#' ));
+		Y.addSprite( new Propagator( alphabet.rule('B'), '#' ));
+
+		B.addSprite( new Accumulator());
+		B.addSprite( new Propagator( alphabet.rule('K'), '+' ));
+		// B.addSprite( new Operator( new ParameterPrim(), new CounterPrim() ));
+		B.addSprite( new Replicator( alphabet.glyph('f'), new ParameterPrim(), null, 3 ));
+
+
+		K.addSprite( new Replicator( alphabet.glyph('f'), new ParameterPrim(), null, 3 ));
+		
 
 		// O.addSprite( new Escalator(1,1) );
 		// I.addSprite( new Perpetuator( alphabet.rule('Y'), '=' ));
@@ -88,7 +100,7 @@ class Test2 extends Model {
 		this.angleRotationStep = 30;
 		this.angleStepShift = 0;
 
-		this.radius = 10
+		this.radius = 7;
 
 
 		// ---------------------------------------------------------------------
@@ -294,7 +306,7 @@ class Test2 extends Model {
 		this.angleRotationStep = 30;
 		this.angleStepShift = 0;
 
-		this.radius = 10
+		this.radius = 7
 
 	}
 
