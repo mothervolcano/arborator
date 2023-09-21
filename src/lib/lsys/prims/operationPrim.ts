@@ -1,24 +1,24 @@
+import { Operation } from "../lsys";
 import BasePrim from "./basePrim";
 
-import { Parameter, Prim, PrimType } from "../lsys";
 
 
-class ParameterPrim extends BasePrim<number> implements Parameter {
 
-	protected _type: 'Parameter' = 'Parameter';
+class OperationPrim extends BasePrim<number> implements Operation {
+
+	protected _type: 'Operation' = 'Operation';
 	protected value: number;
 	public stub: any;
 	public places: number[];
 
-	constructor( value: number = 0 ) {
+	constructor( value: number = 0  ) {
 
-		super( '#' );
+		super( '=' );
 
 		this.value = value;
 
 		this.places = [];
 	}
-
 
 	get type() {
 
@@ -69,14 +69,13 @@ class ParameterPrim extends BasePrim<number> implements Parameter {
 		}
 	}
 
-	public clone(): ParameterPrim {
+	public clone(): OperationPrim {
     	
-    	const cloned = new ParameterPrim(this.value);
+    	const cloned = new OperationPrim(this.value);
 
     	return cloned;
 	}
 }
 
 
-export default ParameterPrim;
-
+export default OperationPrim;

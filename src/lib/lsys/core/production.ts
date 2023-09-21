@@ -5,7 +5,7 @@ import ParameterPrim from '../prims/parameterPrim';
 
 abstract class Production implements IProduction {
 
-	protected static primExchangeQueue: Map<Prim, Glyph[]> = new Map();
+	protected static primDropbox: Map<Prim, Glyph[]> = new Map();
 	
 	private _head: Rule;
 	private _rule: Glyph[];
@@ -83,12 +83,12 @@ abstract class Production implements IProduction {
 		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
 		console.log(`ON THE WAITING LIST FOR PRIMS:`)
 
-		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primExchangeQueue.size}`)
+		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primDropbox.size}`)
 
 
 		let log = 'GUESTS: ';
 
-		for ( const guest of Production.primExchangeQueue ) {
+		for ( const guest of Production.primDropbox ) {
 
 			if ( guest[1].includes(this.head) ) {
 
@@ -98,11 +98,11 @@ abstract class Production implements IProduction {
 
 				if ( guest[1].length <= 1 ) {
 
-					Production.primExchangeQueue.delete(guest[0]);
+					Production.primDropbox.delete(guest[0]);
 
 				} else {
 
-					Production.primExchangeQueue.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
+					Production.primDropbox.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
 				}
 
 			}
@@ -265,14 +265,26 @@ abstract class Production implements IProduction {
 		return prim;	
 	};
 
+	
+
 
 	public addSprite( sprite: ISprite ) {
 
 		
-		//-------------------------------------------------
-		// STEP 1
+		/**
+		* 
+	 	* STEP 1: Implant the Sprite onto the Production
+	 	* The Sprite receives the Production's directory and dialect (i.e., allowed Glyphs)
+	 	* and checks whether the required Prims are present.
+	 	* If required Prims are present, the Sprite stores these details for future reference.
+	 	* Any Prim(s) needed for the Sprite to operate on this Production are returned.
+	 	* 
+	 	*/ 
 
 		const prims = sprite.implant( this.directory, this.dialect );
+
+		
+		// Add the necessary Prims to this Production
 
 		if ( prims ) {
 
@@ -282,12 +294,19 @@ abstract class Production implements IProduction {
 			}
 		};
 		
+		// The Sprite is then added to this Production's list of Sprites.
+
 		this.sprites.push( sprite );
 
 
-		//-------------------------------------------------
-		// STEP 2
-		
+		/**
+		 * 
+		 * STEP 2: Prepare Prims for Other Productions
+		 * The sow() method of the Sprite identifies Prims that are intended for other Productions.
+		 * These Prims are stored in a static 'dropbox' to be picked up by their respective Productions.
+		 * 
+		 */ 
+
 
 		const primSeeds = sprite.sow();	
 
@@ -300,7 +319,7 @@ abstract class Production implements IProduction {
 				// 	if ( glyph.type==='Rule') { glyph.prims.push(seed.prim) } 
 				// }
 				
-				Production.primExchangeQueue.set( seed.prim, seed.targets );
+				Production.primDropbox.set( seed.prim, seed.targets );
 			}
 		}
 		
@@ -314,12 +333,12 @@ abstract class Production implements IProduction {
 		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
 		console.log(`ON THE WAITING LIST FOR PRIMS:`)
 
-		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primExchangeQueue.size}`)
+		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primDropbox.size}`)
 
 
 		let log = 'GUESTS: ';
 
-		for ( const guest of Production.primExchangeQueue ) {
+		for ( const guest of Production.primDropbox ) {
 
 			if ( guest[1].includes(this.head) ) {
 
@@ -329,11 +348,11 @@ abstract class Production implements IProduction {
 
 				if ( guest[1].length <= 1 ) {
 
-					Production.primExchangeQueue.delete(guest[0]);
+					Production.primDropbox.delete(guest[0]);
 
 				} else {
 
-					Production.primExchangeQueue.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
+					Production.primDropbox.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
 				}
 
 			}

@@ -94,6 +94,14 @@ abstract class Model implements IModel {
 	}
 
 
+	/**
+	 * 
+	 * When a new Production is added to the Model, the plant() method is automatically called.
+	 * This method checks the 'primDropbox' for any Prims meant for this Production.
+	 * If found, the Production adds these Prims.
+	 * 
+	 */ 
+
 	protected addProduction(production: IProduction) {
 
 		if (production.head.type === 'Rule' && !this.productions.has(production.head.symbol)) {

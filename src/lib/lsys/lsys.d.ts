@@ -17,10 +17,9 @@ export interface IPrim<T> {
 }
 
 
-export type PrimType = 'Parameter' | 'Flag' | 'Imperative' | 'Counter' | 'Id';
+export type PrimType = 'Parameter' | 'Operation' | 'Flag' | 'Imperative' | 'Counter' | 'Id';
 
 
-// The interface for Parameters specifically
 export interface Parameter extends IPrim<number> {
   type: 'Parameter';
   cast(value: number): this;
@@ -31,7 +30,18 @@ export interface Parameter extends IPrim<number> {
   clone(): any;
 }
 
-// The interface for Parameters specifically
+
+export interface Operation extends IPrim<number> {
+  type: 'Operation';
+  cast(value: number): this;
+  recast(str: string): this;
+  process(value?: string): void;
+  read(str: string): number;
+  write(): string;
+  clone(): any;
+}
+
+
 export interface Id extends IPrim<number> {
   type: 'Id';
   cast(value: number): this;
@@ -43,7 +53,7 @@ export interface Id extends IPrim<number> {
 }
 
 
-// The interface for Accumulators specifically
+
 export interface Counter extends IPrim<number> {
   type: 'Counter';
   cast(value: number): this;
@@ -55,7 +65,6 @@ export interface Counter extends IPrim<number> {
 }
 
 
-// The interface for Parameters specifically
 export interface Flag extends IPrim<number> {
   type: 'Flag';
   cast(value: number): this;
@@ -67,7 +76,7 @@ export interface Flag extends IPrim<number> {
 }
 
 
-// The interface for Parameters specifically
+
 export interface Imperative extends IPrim<Glyph> {
   type: 'Imperative';
   cast(value: Glyph): this;
@@ -79,7 +88,7 @@ export interface Imperative extends IPrim<Glyph> {
 }
 
 
-export type Prim = Parameter | Flag | Imperative | Counter | Id
+export type Prim = Parameter | Operation | Flag | Imperative | Counter | Id
 
 
 export type GlyphType = 'Rule' | 'Instruction' | 'Marker';
