@@ -1,5 +1,5 @@
 import Sprite from "../core/sprite";
-import { Counter, Glyph, Id, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
+import { Counter, Glyph, Id, MetaGlyph, Operation, Parameter, Prim, Rule } from "../lsys";
 import ParameterPrim from "../prims/parameterPrim";
 
 
@@ -9,15 +9,15 @@ class Replicator extends Sprite {
 
 	private count: number = 0;
 
-	private readerPrim: Counter | Parameter | Id;
-	private writerPrim: Counter | Parameter | Id | null;
+	private readerPrim: Counter | Parameter | Operation | Id;
+	private writerPrim: Counter | Parameter | Operation | Id | null;
 
 	private place: number | undefined;
 	private targetGlyph: Glyph;
 	private targetGlyphIDs: number[] = [];
 
 
-	constructor( targetGlyph: Glyph, readerPrim: Counter | Parameter | Id, writerPrim: Counter | Parameter | Id | null = null, place?: number ) {
+	constructor( targetGlyph: Glyph, readerPrim: Counter | Parameter | Operation | Id, writerPrim: Counter | Parameter | Operation | Id | null = null, place?: number ) {
 
 		super();
 
@@ -25,7 +25,7 @@ class Replicator extends Sprite {
 		this.place = place;
 
 		this.readerPrim = readerPrim;
-		this.writerPrim = writerPrim || readerPrim;
+		this.writerPrim = writerPrim;
 
 	};
 
@@ -97,7 +97,7 @@ class Replicator extends Sprite {
 						data: {}
 					}
 
-					if (metaGlyph.glyph.type==='Rule') {
+					if (metaGlyph.glyph.type==='Rule' && this.writerPrim !== null ) {
 
 						const prim = this.writerPrim!.clone();
 						prim.cast(i+1);

@@ -12,7 +12,7 @@ class IdPrim extends BasePrim<number> implements Id {
 
 	constructor( value: number = 0 ) {
 
-		super( '#' );
+		super( '@' );
 
 		this.value = value;
 

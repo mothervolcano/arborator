@@ -18,6 +18,7 @@ class Generator extends Sprite {
 
 		this.sourceGlyph = sourceGlyph;
 		this.seedPrim = seedPrim;
+		this.count = seedPrim.getValue();
 
 	};
 
