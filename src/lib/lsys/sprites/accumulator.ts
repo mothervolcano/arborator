@@ -1,33 +1,63 @@
 import { countReset } from "console";
 import Sprite from "../core/sprite";
 import { Counter, Glyph, MetaGlyph, Parameter, Prim, Rule } from "../lsys";
+import CounterPrim from "../prims/counterPrim";
 import ParameterPrim from "../prims/parameterPrim";
 
 
 
 class Accumulator extends Sprite {
 
-	private prefix: string = '=';
-	private count: number = 0;
+
+	private count: number;
 
 	private targetGlyph: Glyph | undefined;
-	private prim: Parameter | Counter | undefined;
+	private inputPrim: Parameter | Counter;
+	private prim: Counter;
 
-	constructor( prefix: string ) {
+
+	constructor( prim?: Parameter | Counter ) {
 
 		super();
 
-		this.prefix = prefix;
+		this.count = prim?.getValue() || 1;
+		this.prim = new CounterPrim(this.count, 1);
+		
+		this.inputPrim = prim ? prim : this.prim;
 
-	}
+	};
+
 
 	implant(directory: Map<number, any>, dialect: Glyph[]): void {
 
 		this.targetGlyph = directory.get(0).glyph as Rule;
 
 		if ( this.targetGlyph ) {
+
 			
-			this.prim = this.targetGlyph.prims.find((p) => p.prefix === this.prefix ) as Parameter | Counter;
+			// Check to see if the host Production has a compatible prim already in use
+
+			const presentInputPrim = this.targetGlyph.prims.find((p) => p.prefix === this.inputPrim.prefix );
+
+			if ( presentInputPrim && ( presentInputPrim.type === 'Counter' || presentInputPrim.type === 'Parameter' ) ) {
+
+				this.inputPrim = presentInputPrim;
+			}
+
+
+			// Check to see if the host Production has a compatible prim already in use
+
+			const presentPrim = this.targetGlyph.prims.find((p) => p.prefix === this.prim.prefix );
+
+			if ( presentPrim && presentPrim.type === 'Counter' ) {
+
+				this.prim = presentPrim;
+				// this.prim.cast( this.inputPrim.getValue() );
+			}
+
+
+			// If no compatible Prim is found then sow the one that is provided as master.
+			
 
 		} else {
 
@@ -50,34 +80,51 @@ class Accumulator extends Sprite {
 
 	sow(targets?: string[] | undefined): void | { targets: Glyph[]; prim: Prim; }[] {
 	    
-	}
+	    return [{ targets: [ this.targetGlyph! ], prim: this.prim }];  
+	};
+
 
 	update(params: string): string {
 
 		params.split(',').forEach( (p: string) => {
 
-			if ( this.prefix === p.charAt(0) ) {
+			if ( this.inputPrim.prefix === p.charAt(0) ) {
 				
 				this.count = Number.parseInt(p.substring(1));
 			}
 		})
 
 		return params;
-	}
+	};
+
 
 	protected process(stream: MetaGlyph[]): MetaGlyph[] | null {
 
-	    if ( this.prim ) {
+		const workingSequence = stream.map((metaGlyph) => {
 
-	    	this.prim.cast( this.count + 1 );
+			if ( this.targetGlyph!.symbol === metaGlyph.glyph.symbol ) {
 
-	    } else {
+				const prim = new CounterPrim( this.count );
+				prim.process();
 
-	    	throw new Error(`ERROR @ Accumulator: missing required prim`);
-	    }
-		
-		return stream;
-	}
+				if ( metaGlyph.data.prims ) {
+
+					metaGlyph.data.prims.push(prim);
+
+				} else { 
+
+					metaGlyph.data.prims = [prim];
+				}
+			}
+
+			return metaGlyph;
+
+		});
+
+		return workingSequence;
+
+	};
+
 
 	run(stream: MetaGlyph[]): MetaGlyph[] {
 
