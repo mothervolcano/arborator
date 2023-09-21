@@ -9,7 +9,7 @@ export interface IPrim<T> {
   setValue( value: T ): T;
   getValue(): T;
   cast(value: T): this;
-  recast(str: string): this;
+  recast(str: string): this | null;
   process(value:string): void;
   read(str: string): T;
   write(): string;
@@ -23,7 +23,7 @@ export type PrimType = 'Parameter' | 'Operation' | 'Flag' | 'Imperative' | 'Coun
 export interface Parameter extends IPrim<number> {
   type: 'Parameter';
   cast(value: number): this;
-  recast(str: string): this;
+  recast(str: string): this | null;
   process(value?: string): void;
   read(str: string): number;
   write(): string;
@@ -34,7 +34,7 @@ export interface Parameter extends IPrim<number> {
 export interface Operation extends IPrim<number> {
   type: 'Operation';
   cast(value: number): this;
-  recast(str: string): this;
+  recast(str: string): this | null;
   process(value?: string): void;
   read(str: string): number;
   write(): string;
@@ -45,7 +45,7 @@ export interface Operation extends IPrim<number> {
 export interface Id extends IPrim<number> {
   type: 'Id';
   cast(value: number): this;
-  recast(str: string): this;
+  recast(str: string): this | null;
   process(value?: number | string): void;
   read(str: string): number;
   write(): string;
@@ -57,7 +57,7 @@ export interface Id extends IPrim<number> {
 export interface Counter extends IPrim<number> {
   type: 'Counter';
   cast(value: number): this;
-  recast(str: string): this;
+  recast(str: string): this | null;
   process(value?: number | string ): number;
   read(str: string): number;
   write(): string;
@@ -68,7 +68,7 @@ export interface Counter extends IPrim<number> {
 export interface Flag extends IPrim<number> {
   type: 'Flag';
   cast(value: number): this;
-  recast(str: string): this;
+  recast(str: string): this | null;
   process(value?: string): void;
   read(str: string): number;
   write(): string;
@@ -80,7 +80,7 @@ export interface Flag extends IPrim<number> {
 export interface Imperative extends IPrim<Glyph> {
   type: 'Imperative';
   cast(value: Glyph): this;
-  recast(str: string): this;
+  recast(str: string): this | null;
   process(value?: string): void;
   read(str: string): Glyph;
   write(): string;

@@ -53,7 +53,40 @@ abstract class Sprite implements ISprite {
 
 	}
 
+	/**
+	 * The implant() method is responsible for passing crucial information to the Sprite 
+	 * about the Glyphs that make up the Production. 
+	 * This is how the Sprite gets the 'knowledge' it needs to operate.
+	 * 
+	 * Each Sprite has built-in logic to check if the required Prims are present 
+	 * in the Production's Glyphs. If not, the operation won't proceed.
+	 * 
+	 * These Prims are essential for the Sprite's subsequent operations.
+	 * 
+	 */ 
+
+	// The Production calls the Sprite's `implant()` method.
+	// This method takes two arguments:
+	// - A directory, which is a map of the Production's rules (sequence of Glyphs).
+	// - A dialect, which consists of all the Glyphs that the Production allows.
+
+	// Inside `implant()`, the Sprite will look for specific Prims
+	// that it needs in order to carry out its operations.
+	// It uses both the prefix and the type of the Prim for this check.
+
+
 	abstract implant(directory: Map<number, any>, dialect: Glyph[]): void;
+
+
+	// Prims that are required for other Productions are stored
+	// in a 'dropbox', which is a static Map object shared among all Productions
+
+	/**
+	 * Comment: The sow() method identifies which Prims need to be passed to 
+	 * other Productions and places them in the primDropbox.
+	 * 
+	 */ 
+
 	abstract sow(targets?: string[]): { targets: Glyph[], prim: Prim }[] | void;
 	abstract update( params: string ): string;
 	abstract run(stream: MetaGlyph[], params?: any): MetaGlyph[];
