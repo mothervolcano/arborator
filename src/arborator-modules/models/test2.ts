@@ -52,7 +52,7 @@ class Test2 extends Model {
 
 		const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('[]+-<IOf*') ).compose('O'); 
 		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-<>.Yf*') ).compose('Y'); 
-		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-<>.Bf*x') ).compose('ffff[-B]f'); 
+		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-<>.Bf*x') ).compose('ffff[-B][+B]f'); 
 		const B: IProduction = new IRule( alphabet.rule('B'), alphabet.collect('[]+-=±<>.BKf*x') ).compose('ffx[=fxK][±f]B');
 		const K: IProduction = new IRule( alphabet.rule('K'), alphabet.collect('[]+-=±<>.f*x') ).compose('f[=f][±f]');
 
