@@ -9,39 +9,42 @@ The elegance and simplicity of their mechanism inspired me to try a simple and s
 Before I knew it, what started as curiosity evolved into something of a passion. For this reason, I decided to continue my mild experimentation and start two projects: Arborator and FASS. These projects not only help me expand my understanding of  L-Systems concepts, but also serve as a personal challenge to take my coding skills to a new level.
 
 
+
 ## L-Systems 101
 
 Like most formal grammars, L-Systems consist of:
 
-- An alphabet of symbols
-- A set of production rules
-- An axiom
+1. An alphabet of symbols
+2. A set of production rules
+3. An axiom
 
 Let's consider the simplest model that can be generated using an L-System: the growth of algae.
 
-For this, we need an alphabet with at least 2 symbols, designated as 'A' and 'B'.
+For this, we need an alphabet with at least 2 symbols, designated as `A` and `B`.
 
 Each symbol represents a stage in the organism's growth:
 
-- 'A' signifies a directional segment of growth, such as a filament, stem, trunk, or branch.
-- 'B' represents a branching node.
+`A` signifies a directional segment of growth, such as a filament, stem, trunk, or branch.
+
+`B` represents a branching node.
 
 Next, we define production rules as follows:
 
-- A → AB
-- B → A
+> `A → AB`
+> 
+> `B → A`
 
-These rules instruct us to replace "A" with "AB" and "B" with "A."
+These rules instruct us to replace `A` with `AB` and `B` with `A`.
 
-The axiom serves as our starting point, initially consisting of a single "A."
+The axiom serves as our starting point, initially consisting of a single `A`.
 
 We initiate the process by applying these production rules to every symbol. The first 5 iterations would appear as follows:
 
-1. A
-2. AB
-3. ABA
-4. ABAAB
-5. ABAABABA
+> 1. `A`
+> 2. `AB`
+> 3. `ABA`
+> 4. `ABAAB`
+> 5. `ABAABABA`
 
 Continuing this iterative process leads to the expansion of the string. With each iteration, new branches (represented by "B") emerge from existing ones, resulting in a natural, self-replicating pattern.
 
@@ -51,7 +54,9 @@ While we understand that 'B' represents branching, it only indicates where branc
 
 This is the frontier.
 
-Objectives
+
+
+## Objectives
 
 The approach taken is not so much focused on discovering a novel solution to the graphical modeling problem as it is on extending the logic of L-Systems into a more adaptable and practical framework that isn’t tied to any particular field of knowledge. A set of modular tools for free visual exploration and creation.
 
@@ -62,6 +67,7 @@ While I’m not insensitive at all to the beauty of this, my approach is more co
 This framework's objective is to harness the power and beauty of L-Systems as a versatile tool adaptable to various creative and design purposes. As such the whole rationale behind it prioritizes considerations such as how, when, where, and to what extent the user can decide how much of the generative process relies on the algorithm, as opposed to how much is left to his deliberation. Practical concerns like these take precedence over theoretical considerations related to formal grammars or fidelity to biological processes.
 
 In summary, this framework aims to offer the capabilities of nature-like procedural generation while remaining pliable to the creative vision and intent of the user, whatever that vision may be.
+
 
 
 ## Approach
@@ -84,9 +90,9 @@ The introduction of new symbols into the alphabet is necessary to introduce draw
 
 As a consequence the resulting string after figuring out where the symbols should be incorporated in the production rules to achieve the expected result will resemble something like this:
 
-ABAABABA
+`ABAABABA`
 
-A[B][+A][-A[B]][+A[B][-A]][+A[B][-A][+A[B]]]
+`A[B][+A][-A[B]][+A[B][-A]][+A[B][-A][+A[B]]]`
 
 Further drawing instructions such as move forward a step are assigned to the ‘A’ symbol directly whereas the ‘B’ symbol remains without any drawing command associated with it.
 
@@ -99,6 +105,7 @@ Some formal grammars make a clear distinction between terminal and non-terminal 
 This is one of the foundational features of this framework: a clear and complete separation of the writing phase from the drawing phase which wouldn’t be complete if the symbols weren’t separated as well and clearly defined in which side of the system they operate.
 
 My solution was to create clear and functional categories of symbols that I’ve called ‘Glyphs’.
+
 
 
 ## Glyphs
