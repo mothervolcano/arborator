@@ -50,40 +50,44 @@ class Test2 extends Model {
 
 		console.log(`INIT MODEL with ${iterationsNum} iterations`)
 
-		const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('[]+-<IOf*') ).compose('O'); 
-		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-<>.Yf*') ).compose('Y'); 
-		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-<>.Bf*x') ).compose('ffff[-B][+B]f'); 
-		const B: IProduction = new IRule( alphabet.rule('B'), alphabet.collect('[]+-=±<>.BKf*x') ).compose('ffx[=fxK][±f]B');
-		const K: IProduction = new IRule( alphabet.rule('K'), alphabet.collect('[]+-=±<>.f*x') ).compose('f[=f][±f]');
+		// const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('[]+-<IOf*') ).compose('O'); 
+		// const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-<>.Yf*') ).compose('Y'); 
+		// const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-<>.Bf*x') ).compose('ffff[-B][+B]f'); 
+		// const B: IProduction = new IRule( alphabet.rule('B'), alphabet.collect('[]+-=±<>.BKf*x') ).compose('ffx[=fxK][±f]B');
+		// const K: IProduction = new IRule( alphabet.rule('K'), alphabet.collect('[]+-=±<>.f*x') ).compose('f[=f][±f]');
 
-		O.addSprite( new Generator( alphabet.rule('I'), new ParameterPrim(iterationsNum) ));
-		I.addSprite( new Propagator( alphabet.rule('Y'), '#' ));
-		Y.addSprite( new Propagator( alphabet.rule('B'), '#' ));
+		// O.addSprite( new Generator( alphabet.rule('I'), new ParameterPrim(iterationsNum) ));
+		// I.addSprite( new Propagator( alphabet.rule('Y'), '#' ));
+		// Y.addSprite( new Propagator( alphabet.rule('B'), '#' ));
 
-		B.addSprite( new Accumulator());
-		B.addSprite( new Propagator( alphabet.rule('K'), '+' ));
-		// B.addSprite( new Operator( new ParameterPrim(), new CounterPrim() ));
-		B.addSprite( new Replicator( alphabet.glyph('f'), new ParameterPrim(), null, 3 ));
-
-
-		K.addSprite( new Replicator( alphabet.glyph('f'), new ParameterPrim(), null, 3 ));
+		// B.addSprite( new Accumulator());
+		// B.addSprite( new Propagator( alphabet.rule('K'), '+' ));
+	
 		
+		// this.addProduction(O);
+		// this.addProduction(I);
+		// this.addProduction(Y);
+		// this.addProduction(B);
+		// this.addProduction(K);
 
-		// O.addSprite( new Escalator(1,1) );
-		// I.addSprite( new Perpetuator( alphabet.rule('Y'), '=' ));
 
-		// Y.addPrim( new ParameterPrim(1) );
-		// Y.addSprite( new Accumulator( '=' ))
-		// I.addSprite( new Perpetuator( alphabet.rule('Y'), '=' ))
-		// I.addSprite( new Generator( alphabet.rule('Y'), new CounterPrim(), new ParameterPrim() ))
+		//-----------
 
-		
-		this.addProduction(O);
-		this.addProduction(I);
-		this.addProduction(Y);
+		const A: IProduction = new IRule( alphabet.rule('A'), alphabet.collect('[]+-±ABIf') ).compose('A[B]');
+		const B: IProduction = new IRule( alphabet.rule('B'), alphabet.collect('[]+-±AIf') ).compose('+A');
+		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-±Af') ).compose('fA');
+
+		this.addProduction(A);
 		this.addProduction(B);
-		this.addProduction(K);
+		this.addProduction(I);
 
+		//--------------
+
+		// const A: IProduction = new IRule( alphabet.rule('A'), alphabet.collect('[]+-±ABf') ).compose('B[+B]B[-B]B');
+		// const B: IProduction = new IRule( alphabet.rule('B'), alphabet.collect('[]+-±Af') ).compose('fA');
+
+		// this.addProduction(A);
+		// this.addProduction(B);
 
 
 		// ---------------------------------------------------------------------

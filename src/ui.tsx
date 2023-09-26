@@ -30,7 +30,7 @@ const defaultParamSchema: Param[] = [
 
 const pineParamSchema: Param[] = [
 
-	{ id: 'ogp1', name: 'iterationsNum', value: 10, range: [1, 10], step: 1, label: "P1", },
+	{ id: 'ogp1', name: 'iterationsNum', value: 6, range: [1, 10], step: 1, label: "P1", },
 	{ id: 'ogp5', name: 'scaleCtrl', value: 1, range: [1, 3], step: 0.01, label: "P3", },
 	{ id: 'ogp2', name: 'angleRotationStepCtrl', value: 30, range: [0, 60], step: 0.1, label: "angle", },
 	{ id: 'mkp3', name: 'lengthCtrl', value: 1, range: [0.25, 5], step: 0.01, label: "length", },
