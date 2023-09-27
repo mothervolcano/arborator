@@ -6,7 +6,7 @@ The elegance and simplicity of the concept inspired me to try a simple and strai
 
 Before I knew it, what started as curiosity evolved into something of a passion that led to two proof-of-concept projects: Arborator and FASS. These projects not only help me expand my understanding of  L-Systems concepts, but also serve as a personal challenge to try and take my coding skills to a new level.
 
-
+![L-Systems Moodboard](/docs/assets/lsystem-examples.png)
 
 ## L-Systems 101
 
