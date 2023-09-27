@@ -72,6 +72,8 @@ In summary, this framework aims to offer the capabilities of nature-like procedu
 
 ## Approach
 
+![Sequence writing process diagram](/docs/assets/sequence-writing-diagram.png)
+
 As we exposed above first challenge we’re faced with when using L-Systems for visual procedural generation is how to bridge and translate a topological representation into a model that can be expressed visually.
 
 How to translate writing into drawing, that is.
