@@ -114,13 +114,14 @@ For the purpose of sequencing it’s only necessary to know the role that each s
 
 ### Syntactic Classification
 
-The symbols in this framework are not considered inert characters that depend on a lookup table to be read. They are lightweight objects that conform to a common interface and hold information about their string character and their type.
+The symbols in this framework are not treated as inert characters. They are lightweight objects that carry its own type information and bind a specific character to a production rule, command or instruction, ensuring that character serves only this purpose.
 
-They are classified according to their role.
+They conform to the same interface so they can be quickly identified without needing to consult an extensive lookup table and used all across the system. They play a role at almost every stage: 
 
-To each symbol corresponds an a unique character and a single operation.
-
-Not only to facilitate the parsing of the sequence but to ensure their correct interpretation and handling across the whole system.
+1. **Sequence Generation**
+2. **Sequence Processing**
+3. **Sequence Manipulation**
+4. **Syntax Integrity**
 
 | Type        | Description | Examples |
 |-------------|-------------|----------|
