@@ -73,21 +73,23 @@ class Test2 extends Model {
 
 		//-----------
 
-		const A: IProduction = new IRule( alphabet.rule('A'), alphabet.collect('[]+-±ABIf') ).compose('A[B]');
-		const B: IProduction = new IRule( alphabet.rule('B'), alphabet.collect('[]+-±AIf') ).compose('+A');
-		const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-±Af') ).compose('fA');
-
-		this.addProduction(A);
-		this.addProduction(B);
-		this.addProduction(I);
-
-		//--------------
-
-		// const A: IProduction = new IRule( alphabet.rule('A'), alphabet.collect('[]+-±ABf') ).compose('B[+B]B[-B]B');
-		// const B: IProduction = new IRule( alphabet.rule('B'), alphabet.collect('[]+-±Af') ).compose('fA');
+		// const A: IProduction = new IRule( alphabet.rule('A'), alphabet.collect('[]+-±ABIf') ).compose('A[B]');
+		// const B: IProduction = new IRule( alphabet.rule('B'), alphabet.collect('[]+-±AIf') ).compose('+A');
+		// const I: IProduction = new IRule( alphabet.rule('I'), alphabet.collect('[]+-±Af') ).compose('fA');
 
 		// this.addProduction(A);
 		// this.addProduction(B);
+		// this.addProduction(I);
+
+		//--------------
+
+		const Y: IProduction = new IRule( alphabet.rule('Y'), alphabet.collect('[]+-±YKBf') ).compose('BYB');
+		const B: IProduction = new IRule( alphabet.rule('B'), alphabet.collect('[]+-±BKf') ).compose('KBf');
+		const K: IProduction = new IRule( alphabet.rule('K'), alphabet.collect('[]+-±f') ).compose('ff');
+
+		this.addProduction(B);
+		this.addProduction(Y);
+		this.addProduction(K);
 
 
 		// ---------------------------------------------------------------------

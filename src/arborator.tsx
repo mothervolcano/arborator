@@ -44,6 +44,7 @@ export function initModel( selectedModel: string, params: any ) {
   alphabet = new Alphabet();
 
   alphabet.registerGlyph( 'Rule', 'A' );
+  alphabet.registerGlyph( 'Rule', 'C' );
   alphabet.registerGlyph( 'Rule', 'I' );
   alphabet.registerGlyph( 'Rule', 'T' );
   alphabet.registerGlyph( 'Rule', 'Y' );
@@ -79,7 +80,7 @@ export function initModel( selectedModel: string, params: any ) {
       break;
 
     case 'PINE':
-      model = new Test2( alphabet, 'A', iterationsNum );
+      model = new Test2( alphabet, 'Y', iterationsNum );
       break;
   }
 
