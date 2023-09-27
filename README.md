@@ -122,3 +122,9 @@ To each symbol corresponds an a unique character and a single operation.
 
 Not only to facilitate the parsing of the sequence but to ensure their correct interpretation and handling across the whole system.
 
+| Type        | Description | Examples |
+|-------------|-------------|----------|
+| Rule        | Represents a production rule         | `Y` `B`     |  
+| Instruction | Represents a drawing command or rendering operation         | `f`      |  
+| Marker      | Provide annotations for flow control and scope during parsing eg. delimiter signs        | `(` `)`       | 
+
