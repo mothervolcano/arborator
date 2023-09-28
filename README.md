@@ -68,7 +68,7 @@ In summary, this framework aims to offer the capabilities of nature-like procedu
 
 ## Architecture Overview
 
-![Sequence writing process diagram](/docs/assets/sequence-writing-diagram.png)
+![Sequence writing process diagram](/docs/assets/sequence-generation-diagram.png)
 
 The first challenge we’re faced with is how to bridge and translate a topological representation into a model that can be expressed visually ie. how to translate writing into drawing.
 
