@@ -72,27 +72,31 @@ In summary, this framework aims to offer the capabilities of nature-like procedu
 
 ![Sequence writing process diagram](/docs/assets/sequence-generation-diagram.png)
 
-The first challenge we’re faced with is how to bridge and translate a topological representation into a model that can be expressed visually ie. how to translate writing into drawing.
+### A Challenge
 
-Algorithmic Beauty of Plants addresses precisely this problem, and this framework does not depart significantly from what has been outlined in the book, not only owing and honing most of the concepts and ideas but also adopting many of the proposed conventions.
+The sequences produced by an L-System, in isolation, offer limited information about the visual attributes of the structures they model. As seen in the previous example, we know that 'A' represents a growth segment, and 'B' indicates a branching point. And that’s all. We are left wondering: What are the specifics of the growth, such as its length and direction? Is the unit of growth constant? How does the structure branch out? How do the branches diverge, and at what angle?
 
-As with all previous graphical interpretations this framework also takes a post-processing approach to the problem.
+ABAABABA
 
-Given a sequence of symbols such as: 
+So what do we make of this? Where do we go from here?
 
-`ABAABABA`
+Algorithmic Beauty of Plants addresses precisely this problem, and this framework does not depart significantly from what is proposed there. As with all previous graphical interpretations this framework also takes a post-processing approach to the problem as well as adopting many of the conventions outlined in the book.
 
-How do we interpret and manifest it visually?
+And a post-processing approach here means that we won’t attempt to reinvent or reengineer the string generation process. We’ll take it as it comes and focus on how to interpret it instead. 
 
-The introduction of new symbols into the alphabet is necessary to have drawing commands weaved in the production rules, to be read during a post-processing rendering stage. Symbols such as ‘+’ or ‘-’  instruct the drawing tool to turn left or right by a defined number of degrees. Other less obvious but equally fundamental are the ‘[’ and ‘]’ symbols that hold the instructions to save and restore the state of drawing without which it wouldn’t be possible to draw branches. 
+### ... and Another
+
+However, the introduction of new symbols into the alphabet seems unavoidable. We need drawing commands that can be woven into the production rules. For example symbols such as ‘+’ or ‘-’ that represent instructions for the drawing tool to turn left or right by a defined number of degrees. Other symbols, less obvious but equally fundamental, are the ‘[’ and ‘]’ which hold instructions to save and restore the state of drawing, making it possible to create branches.
 
 The sequence would now resemble something like this:
 
-`A[B][+A][-A[B]][+A[B][-A]][+A[B][-A][+A[B]]]`
+A[B][+A][-A[B]][+A[B][-A]][+A[B][-A][+A[B]]]
 
-### The Challenge
+As you can see, there's a lot more to be parsed here, and we also seem to have a new skill to learn: how to combine different types of symbols in the production rules to achieve the results we expect. Making sure the drawing commands end up where we want them in the sequence may require a learning curve and considerable mental gymnastics. I want to spare us from this as much as possible.
 
-New symbols for the drawing operations need to be added to the alphabet and work in concert with the Production Rules in order to generate a mixed string of symbols. This increased syntactic and semantic complexity introduces architectural and parsing challenges to the design of a simple and clear architecture—that I believe to be requirements for a versatile and robust framework.
+For this reason, the mixing of writing-related symbols with drawing-related symbols seemed like opening Pandora's box. Given my debutant status in developing frameworks of this ambition, I had nothing but my intuition to tell me that compromising the separation between the writing and drawing phases would be... a bad idea. It's something to be avoided, or at least mitigated as much as possible.
+
+To ensure that writing and drawing symbols could coexist in the sequence without introducing any form of ambiguity, confusion, or errors, is the first guiding principle for this framework.
 
 ### Writing & Drawing: A Dual Phase System
 
