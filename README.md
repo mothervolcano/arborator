@@ -12,13 +12,13 @@ This project, Arborator and FASS (here) are being developed not only to expand m
 
 ## L-Systems 101
 
-L-systems belong to the category of formal grammars. They are based on a set of symbols called an alphabet, which form strings through an iterative and recursive process. As with most formal grammars, the core mechanism is governed by so-called production rules. Production rules determine how symbols are replaced after each iteration to form increasingly longer strings.
+L-Systems, or Lindenmayer Systems, are a specialized subset of formal grammars. They are based on an alphabet-a set of symbols that undergo transformations through recursive and iterative processes. Governed by a specific set of production rules, these symbols are systematically replaced in each iteration, resulting in progressively complex strings.
 
-Like most formal grammars, L-Systems consist of:
+In essence, an L-System consists of:
 
-1. An alphabet of symbols
-2. A set of production rules
-3. An axiom
+1. An Alphabet: A designated set of symbols.
+2. Production Rules: These dictate the manner in which symbols are substituted or expanded during each iteration.
+3. An Axiom: The initial string from which the system initiates iterative processes
 
 Let's consider the simplest model that can be generated using an L-System: the growth of algae.
 
