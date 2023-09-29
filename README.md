@@ -2,9 +2,11 @@
 
 This project emerged from my fascination with the subject of a book I stumbled upon: 'The Algorithmic Beauty of Plants.' The author, Aristid Lindenmayer, a botanist, developed a mathematical theory to describe plant topology, which later evolved into a framework for modeling the development of branching structures in general. L-Systems, as they became known, found applications far beyond the field of biology in diverse fields such as urbanism, computer graphics, and even programming languages.
 
-The elegance and simplicity of the concept inspired me to try a simple and straightforward implementation in JavaScript. Observing the fascinating and often beautiful patterns, structures, and shapes that emerge from a concise set of rules made me understand why the L system is so widely adopted in many different fields.
+I was inspired to attempt a simple and straightforward implementation in JavaScript. The mesmerizing and often beautiful patterns, structures, and shapes that emerged from simple and concise set of rules made me understand why the L system were widely adopted in many different fields.
 
-Before I knew it, what started as curiosity evolved into something of a passion that led to two proof-of-concept projects: Arborator and FASS. These projects not only help me expand my understanding of  L-Systems concepts, but also serve as a personal challenge to try and take my coding skills to a new level.
+Before I knew it, what started as curiosity evolved into something of a passion that led to two exploratory projects. 
+
+This project, Arborator and FASS (here) are being developed not only to expand my knowledge in procedural generation but also as personal challenge to try and take my coding skills to a new level.
 
 ![L-Systems Moodboard](/docs/assets/lsystem-examples.png)
 
