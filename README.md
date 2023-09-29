@@ -100,38 +100,50 @@ To ensure that writing and drawing symbols could coexist in the sequence without
 
 ### Writing & Drawing: A Dual Phase System
 
-The first and key component of the framework is the one responsible for reading and writing the sequence.
+To recap, we have two main phases:
 
-How to abstract away the symbol interpretation logic away from the symbol sequencing logic?
+1. The writing phase, where the sequence of symbols is generated based on defined production rules.
+2. The drawing phase, where this sequence is interpreted and translated into drawing/rendering commands.
 
-Why is it important?
+What we need to do in the writing phase is read the sequence, apply the production rules, generate a new sequence, and repeat. Iteration after iteration.
 
-* Clarity. Clear separation of concerns.
-* Specialization. As the framework grows advanced caching and parsing functionality is expected. The implementation needs to leave room for it.
-* Lightness. Holding the knowledge necessary for the interpretation of symbols would not only mean the burden of a hefty lookup table but also create too many dependencies as other components would need access to the same knowledge.
+These operations must be as independent as possible from anything related to interpretation. The goal is to have a module that operates on a sequence (be it a string or an array of objects) as autonomously as possible. Its sole responsibility and output is the generation that will be passed to another module responsible for interpretation.
 
-This would be the first step towards establishing a clear separation between to two phases:
+However, since the sequence is mixed with at least two different types of symbols, some degree of discernment is needed while reading the sequence in order to retrieve just what is relevant for the rewriting and replacement of symbols.
 
-The writing phase, where the sequence of symbols is generated based on defined production rules.
+To maintain separation, a way to abstract the symbol interpretation logic from the symbol sequencing logic is also necessary.
 
-The drawing phase, where this sequence is interpreted and translated to drawing commands and operations.
+Drawing a parallel with language, the module doesn't necessarily have to 'read' the symbol. To construct syntactically correct sentences, it simply needs to know that 'this' is a verb and 'that' is a noun. In our specific case, what ‘this’ a drawing command and ‘that’ is a production rule.
 
-For the purpose of sequencing it’s only necessary to know the role that each symbol performs. The symbols themselves provide this information. As their own type of object they also share the same base interface so that the Sequencer needs only hold the logic necessary to identify the types it needs to process and handle them appropriately.
+But before diving into the Sequencer module, let's examine how this syntactic awareness is embedded in the system and introduce the building block of this system: the ubiquitous Glyph
 
-### Syntactic Classification
+### The Glyphs
 
-The symbols in this framework are not treated as inert characters. They are lightweight objects that carry its own type information and bind a specific character to a production rule, command or instruction, ensuring that character serves only this purpose.
+Glyphs offer an alternative to a lookup table, which would require frequent access and consultation across multiple modules, creating more dependencies than it would be sensible.
 
-They conform to the same interface so they can be quickly identified without needing to consult an extensive lookup table and used all across the system. They play a role at almost every stage: 
+As lightweight wrapper objects, Glyphs carry their own type information and bind specific characters to production rules, commands, or instructions, for quick and appropriate symbol identification.
 
-1. **Sequence Generation**
-2. **Sequence Processing**
-3. **Sequence Manipulation**
-4. **Syntax Integrity**
+By allowing only a single instance for each symbol and binding each symbol to a single function, they safeguard the system by preventing data overwrites and functional overlaps.
+
+These objects are minimalistic, and their primary utility lies in the syntactic classifications they embody.
+
+The current classification consists of:
 
 | Type        | Description | Examples |
 |-------------|-------------|----------|
 | Rule        | Represents a production rule         | `Y` `B`     |  
 | Instruction | Represents a drawing command or rendering operation         | `f`      |  
-| Marker      | Provide annotations for flow control and scope during parsing eg. delimiter signs        | `(` `)`       | 
+| Marker      | Serve as flow controllers and scope annotators during parsing, e.g., delimiter signs       | `(` `)`       | 
+
+
+We’ll see each more in detail throughout the documentation where each type is the most relevant.
+
+Another role of Glyphs is to act as tokens between components. In a sense they are the system’s currency that one component can exchange with another to obtain required objects. For example, a component needing a Production Rule object may pass a stream of Glyphs to an interfacing component and receive corresponding Production Rules in return, all without having to decode each Glyph to explicitly request the Production Rules. 
+In this manner, Glyphs facilitate the seamless flow of symbols throughout the system.
+
+### The Sequencer
+
+
+
+
 
