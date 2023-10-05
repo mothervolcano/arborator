@@ -67,55 +67,59 @@ As such the whole rationale behind it prioritizes considerations such as how, wh
 In summary, this framework aims to offer the capabilities of nature-like procedural generation while remaining pliable to the creative vision and intent of the user, whatever that vision may be.
 
 
-
-## Architecture Overview
-
-![Sequence writing process diagram](/docs/assets/sequence-generation-diagram.png)
-
-### Approach
+## Approach
 
 The sequences produced by an L-System, in isolation, offer limited information about the visual attributes of the structures they model. As seen in the previous example, we know that 'A' represents a growth segment, and 'B' indicates a branching point. And that’s all. We are left wondering: What are the specifics of the growth, such as its length and direction? Is the unit of growth constant? How does the structure branch out? How do the branches diverge, and at what angle?
 
-ABAABABA
+> `ABAABABA`
 
 So what do we make of this? Where do we go from here?
 
 Algorithmic Beauty of Plants addresses covers this problem, and this framework does not depart significantly from what is proposed there. As with all previous graphical interpretations it also takes a post-processing approach to the problem as well as adopting many of the conventions outlined in the book.
 
-A post-processing approach here means that we won’t attempt to reinvent or reengineer the string generation process. We’ll take it as it comes and focus on how to interpret it instead. 
+The 3 main features that have been identified as fundamental to the proposed goals of this framework can be defined as following:
 
-### The Challenge
+### Syntactic Awareness
 
-However, the introduction of new symbols into the alphabet seems unavoidable. We need symbols such as ‘+’ or ‘-’ for commands that instruct the drawing tool to turn left or right by a defined number of degrees. Other symbols, less obvious but equally fundamental, are the ‘[’ and ‘]’ which hold instructions to save and restore the state of drawing, making it possible to create branches.
+The introduction of new symbols into the alphabet seems unavoidable. We need symbols such as ‘+’ or ‘-’ for commands that instruct the drawing tool to turn left or right by a defined number of degrees. Other symbols, while less apparent but equally fundamental, include ‘[’ and ‘]’. These brackets encapsulate instructions for saving and restoring the drawing state, enabling the creation of branching structures.
 
-The sequence would now resemble something like this:
+The resulting sequence might now resemble something like this:
 
-A[B][+A][-A[B]][+A[B][-A]][+A[B][-A][+A[B]]]
+> `A[B][+A][-A[B]][+A[B][-A]][+A[B][-A][+A[B]]]`
 
-As you can see, there's a lot more to be parsed here. And, apparently also a new skill to master: how to weave in different types of symbols in the production rules to achieve the results we expect. Making sure the drawing commands end up where we want them in the sequence may require a learning curve and considerable mental gymnastics. I want to spare us from this as much as possible.
+As you can see, there's a lot more to be parsed here.
 
-For this reason, the mixing of writing-related symbols with drawing-related symbols seemed like opening Pandora's box. Given my debutant status in developing frameworks of this ambition, I had nothing but my intuition to tell me that compromising the separation between the writing and drawing phases would be... a bad idea. Something to be avoided, or at least mitigated as much as possible.
+The new sequence mixes different types of symbols and some degree of discernment logic needs to be implemented for reading the sequence in order to retrieve just what is relevant at this stage for the rewriting and replacement of symbols.
 
-To ensure that writing and drawing symbols could coexist in the sequence without introducing any form of ambiguity, confusion, or errors, is the first guiding principle for this framework.
+The symbol interpretation logic also needs to be abstracted from the symbol manipulation logic for the sake of efficiency and achieving a clear overall architecture.
 
-### Writing & Drawing: A Dual Phase System
+Drawing a parallel with language, the system doesn't always have to 'read' the symbol. Most of the times, to construct syntactically correct sentences, it simply needs to know that 'this' is a verb and 'that' is a noun. In our specific case, that ‘this’ a drawing command and that ‘that’ is a production rule.
 
-In short, the two phases are:
+This syntactic awareness is embedded in the system through the ubiquitous Glyph.
 
-1. The writing phase, where the sequence of symbols is generated based on defined production rules.
-2. The drawing phase, where this sequence is interpreted and translated into drawing/rendering commands.
+### Information Flow
 
-What we need to do in the writing phase is read the sequence, apply the production rules, generate a new sequence, and repeat. Iteration after iteration.
+Up to this point, we've considered non-parametric L-Systems. For each Production Rule and drawing command there’s  a single, fixed outcome. Regardless of how intricate the generated sequences, we are ‘stamping’ the same shapes. Our realm of possibilities are confined geometric and mechanical structures.
 
-These operations must be as independent as possible from anything related to interpretation. The goal is to have a module that operates on a sequence (be it a string or an array of objects) as autonomously as possible. Its sole responsibility and output is the generation that will be passed to another module responsible for interpretation.
+We’re missing and important property from the system: organicity. 
 
-However, since the new sequence mixes different types of symbols, some degree of discernment logic needs to be implemented for reading the sequence in order to retrieve just what is relevant at this stage for the rewriting and replacement of symbols.
+That’s what we need parameters for. When symbols carry additional information, such as numeric values, conditions, or instructions, we not only introduce a higher level of control but also make the system more intuitive to understand and use. Parameters act as influencing factors, akin to sunlight or nutrients, determining the form of a structure.
 
-A way to abstract the symbol interpretation logic from the symbol sequencing logic is also necessary.
+Parametric L-Systems face a communication barrier. The separation between the writing and drawing stages doesn’t allow for Productions to communicate directly. Theoretically, in a L-System each production is processed in parallel and simultaneously, which, in practice, means that a Production won’t have access to the whole and definitive context it needs until the complete sequence is fully rewritten in each iteration step.
 
-Drawing a parallel with language, the module doesn't necessarily have to 'read' the symbol. To construct syntactically correct sentences, it simply needs to know that 'this' is a verb and 'that' is a noun. In our specific case, that ‘this’ a drawing command and that ‘that’ is a production rule.
+Furthermore, by the time each rewriting is complete, the connection between a parent Production and its offspring is lost. This leads us to a critical question: How can we ensure that a descendant production receives and accurately interprets the parameters passed by its progenitor?
 
-But first let's examine how this syntactic awareness is embedded in the system and introduce the building block of this system: the ubiquitous Glyph.
+### Creative Focus
+
+Production rules are the fundamental building block for creation in a system like this. Designing with L-Systems involves understanding and mastering their inherent logic. So, how can we provide an experience that allows individuals to freely explore, experiment, and ultimately master not only the system itself but also the rules and commands they define?
+
+The goal here is to identify what is relevant for the creative stage of coding and how to best abstract everything else away so that a whole creation could be defined in a single place.
+
+## Architecture Overview
+
+![Sequence writing process diagram](/docs/assets/sequence-generation-diagram.png)
+
+The solutions to the 3 problems/concerns outlined before are also materialized in 3 components: 
 
 ### The Glyphs
 
@@ -140,7 +144,32 @@ We’ll see each more in detail throughout the documentation where each type is 
 
 Glyphs also act as exchange tokens between components. They are the system’s currency in the sense that one component can exchange with another to obtain required data or objects. For example, a component needing a Production Rule object may pass a stream of Glyphs to an interfacing component and receive corresponding Production Rules in return, all without having to decode each Glyph to explicitly request the Production Rules. In this manner, Glyphs facilitate the seamless flow of symbols throughout the system.
 
-### The Sequencer
+### The Prims
+
+Think of them as specialized "message bottles" in the long stream of symbols left from one production to another. Prims are like telegraphic pieces of metadata containing information about the type and intended purpose of a parameter. They answer an existential question: "What are you, and what should I do with you?"
+
+Similarly as it is done with Glyphs, Prims carry this information avoiding once more the need for a cumbersome, ever-growing lookup table. Each Prim comes with a prefix that signifies its role, making them easily distinguishable and actionable.
+
+However, there's more to Prims. 
+
+They depend on a pair of Marker Glyphs represented by the parentheses characters. Anything enclosed within these markers is treated as a candidate for parameter data. These parentheses serve a dual purpose:
+
+1. They act as enclosures, isolating the Prims from the rest of the sequence. This makes it simple to identify, extract, or even skip over parameter data when scanning the sequence.
+2. They delegate the task of parsing and interpreting Prims to the very components that need them—Productions and Sprites. By doing this, the system avoids a monolithic parsing mechanism, allowing each component to decode the Prims according to its logic and requirements.
+
+Introducing a specialized subset of symbols such as these allows for better flow control, making the system not just hierarchical but also modular. It allows, for example, for the framework to be applied in both the contexts of parametric and non-parametric L-Systems alike.
+
+### The Sprites
+
+Sprites function almost like middleware in a web framework. The Sequencer-Production operates as a request and response mechanism, and it's here that Sprites play an important role.
+
+Sprites are modular components designed to execute specific logic on Productions. They encapsulate a range of generic behaviors for manipulating Glyph sequences and processing Prims. These modules enable users to incorporate multiple functionalities into a single Production by mixing and matching.
+
+Instead of creating a multitude of specialized Production classes, Sprites allow for one unified Production class to be highly configurable by allowing them to be chained or composed in various orders through which the sequence runs like a stream.
+
+### To Be Continued...
+
+While this framework already includes a few other components and is generating the first results, it is still in its early stages of development. Many design and architectural decisions have yet to endure serious scrutiny and testing — most of which I still have to learn how to do. However, the three components I've chosen to document here are foundational to the entire idea and unlikely to change much, at least not in terms of their conceptual definitions. I would dare to say.
 
 
 
