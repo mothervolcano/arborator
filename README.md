@@ -2,7 +2,7 @@
 
 This project emerged from my fascination with the subject of a book I stumbled upon: 'The Algorithmic Beauty of Plants.' The author, Aristid Lindenmayer, a botanist, developed a mathematical theory to describe plant topology, which later evolved into a framework for modeling the development of branching structures in general. The Lindenmayer Systems or L-Systems, as they became known, found applications far beyond the field of biology in diverse fields such as urbanism, computer graphics, and even programming languages.
 
-I was inspired to attempt a simple and straightforward implementation in JavaScript. The mesmerizing and often beautiful patterns, structures, and shapes that emerged from simple and concise set of rules made me understand why the L system were widely adopted in many different fields.
+I was inspired to attempt a simple and straightforward implementation in JavaScript.
 
 Before I knew it, what started as curiosity evolved into something of a passion that led to two exploratory projects. 
 
@@ -58,11 +58,9 @@ While we understand that 'B' represents branching, it only indicates where branc
 
 ## Objectives
 
-The approach taken is not so much focused on discovering a novel solution to the graphical modeling problem as it is on extending the logic of L-Systems into a general purpose framework. A versatile generation engine and set of modular tool adaptable to various creative and design purposes.
+This framework has in mind the practical realities of the creative process for whom mathematics and nature are not the goal in itself but rather the tools. It aims to offer a versatile generation engine and set of modular tool adaptable to various creative and design purposes.
 
-This framework has in mind the practical realities of the creative process for whom mathematics and nature are not the goal in itself but rather the tools.
-
-As such the whole rationale behind it prioritizes considerations such as how, when, where, and to what extent the user can decide how much of the generative process relies on the algorithm, as opposed to how much is left to his deliberation. Practical concerns like these take precedence over theoretical considerations related to formal grammars or scientific/academic practice.
+As such the whole rationale behind it prioritizes considerations such as how, when, where, and to what extent the user can decide how much of the generative process relies on the algorithm, as opposed to how much is left to his deliberation.
 
 In summary, this framework aims to offer the capabilities of nature-like procedural generation while remaining pliable to the creative vision and intent of the user, whatever that vision may be.
 
@@ -75,9 +73,9 @@ The sequences produced by an L-System, in isolation, offer limited information a
 
 So what do we make of this? Where do we go from here?
 
-Algorithmic Beauty of Plants addresses covers this problem, and this framework does not depart significantly from what is proposed there. As with all previous graphical interpretations it also takes a post-processing approach to the problem as well as adopting many of the conventions outlined in the book.
+Algorithmic Beauty of Plants addresses covers this problem, and this framework does not depart significantly from what is proposed there. As with all previous graphical interpretations outlined there it also takes a post-processing approach to the problem as well as adopting many of the conventions outlined in the book.
 
-The 3 main features that have been identified as fundamental to the proposed goals of this framework can be defined as following:
+These are the 3 main features/capabilities: 
 
 ### Syntactic Awareness
 
@@ -95,19 +93,19 @@ The symbol interpretation logic also needs to be abstracted from the symbol mani
 
 Drawing a parallel with language, the system doesn't always have to 'read' the symbol. Most of the times, to construct syntactically correct sentences, it simply needs to know that 'this' is a verb and 'that' is a noun. In our specific case, that ‘this’ a drawing command and that ‘that’ is a production rule.
 
-This syntactic awareness is embedded in the system through the ubiquitous Glyph.
+This syntactic awareness is embedded in the system through an ubiquitous concept/object I've called Glyph that is introduced further ahead.
 
 ### Information Flow
 
-Up to this point, we've considered non-parametric L-Systems. For each Production Rule and drawing command there’s  a single, fixed outcome. Regardless of how intricate the generated sequences, we are ‘stamping’ the same shapes. Our realm of possibilities are confined geometric and mechanical structures.
+Up to this point, we've considered non-parametric L-Systems ie. for each Production Rule and drawing command there’s a single, fixed outcome. Regardless of how intricate the generated sequences, we are ‘stamping’ the same shapes. We are confined to geometric and mechanical structures.
 
 We’re missing and important property from the system: organicity. 
 
-That’s what we need parameters for. When symbols carry additional information, such as numeric values, conditions, or instructions, we not only introduce a higher level of control but also make the system more intuitive to understand and use. Parameters act as influencing factors, akin to sunlight or nutrients, determining the form of a structure.
+That’s what why parameters are needed. When symbols carry additional information, such as numeric values, conditions, or instructions, we not only introduce a higher level of control but also make the system more intuitive to understand and use. Parameters act as influencing factors, akin to sunlight or nutrients, determining the structure and shapes.
 
-Parametric L-Systems face a communication barrier. The separation between the writing and drawing stages doesn’t allow for Productions to communicate directly. Theoretically, in a L-System each production is processed in parallel and simultaneously, which, in practice, means that a Production won’t have access to the whole and definitive context it needs until the complete sequence is fully rewritten in each iteration step.
+The main problem we face is that the separation between the writing and drawing stages doesn’t allow for Productions to communicate directly. Theoretically, in a L-System each production is processed in parallel and simultaneously, which, in practice, means that a Production won’t have access to the whole and definitive context it needs until the complete sequence is fully rewritten in each iteration step. Furthermore, by the time each rewriting is complete, the connection between a parent Production and its offspring is lost.
 
-Furthermore, by the time each rewriting is complete, the connection between a parent Production and its offspring is lost. This leads us to a critical question: How can we ensure that a descendant production receives and accurately interprets the parameters passed by its progenitor?
+This leads us to a critical question: How can we ensure that a descendant production receives and accurately interprets the parameters passed by its progenitor?
 
 ### Creative Focus
 
@@ -119,7 +117,7 @@ The goal here is to identify what is relevant for the creative stage of coding a
 
 ![Sequence writing process diagram](/docs/assets/sequence-generation-diagram.png)
 
-The solutions to the 3 problems/concerns outlined before are also materialized in 3 components: 
+The solutions to the 3 problems/concerns outlined before also corresponds to 3 components: 
 
 ### The Glyphs
 
