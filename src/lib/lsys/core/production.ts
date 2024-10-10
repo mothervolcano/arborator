@@ -1,66 +1,66 @@
-import { IProduction, Glyph, MetaGlyph, Rule, Prim, Imperative, Parameter, ISprite } from '../lsys';
-import ImperativePrim from '../prims/imperativePrim';
-import ParameterPrim from '../prims/parameterPrim';
-
+import {
+	IProduction,
+	Glyph,
+	MetaGlyph,
+	Rule,
+	Prim,
+	Imperative,
+	Parameter,
+	ISprite,
+} from "../lsys";
+import ImperativePrim from "../prims/imperativePrim";
+import ParameterPrim from "../prims/parameterPrim";
 
 abstract class Production implements IProduction {
-
 	protected static primDropbox: Map<Prim, Glyph[]> = new Map();
-	
+
 	private _head: Rule;
 	private _rule: Glyph[];
 	private _output: string;
 
-	protected dialect: Glyph[]; 
+	protected dialect: Glyph[];
 	protected directory: Map<number, MetaGlyph>;
 	protected sequence: MetaGlyph[];
 	protected sprites: Array<ISprite> = [];
 	protected prims: Map<Prim, any> = new Map();
 
-	
 	constructor(glyph: Rule, dialect?: Glyph[]) {
-
 		this._head = glyph;
-		
+
 		this.dialect = dialect || [];
 		this.directory = new Map();
 
 		this._rule = dialect ? [] : [glyph];
-		this.sequence = dialect ? [] : [ { glyph: glyph, id: 1, data: {} }  ]
-		this._output = dialect ? '' : this.encodeSequence([glyph]);
+		this.sequence = dialect ? [] : [{ glyph: glyph, id: 1, data: {} }];
+		this._output = dialect ? "" : this.encodeSequence([glyph]);
 
 		return this;
-	};
-
+	}
 
 	get rule() {
-
 		return this._rule;
 	}
 
 	get head() {
-
 		return this._head;
 	}
 
 	get output() {
-
 		return this._output;
 	}
 
-
 	protected cast(sequence: Array<Glyph>) {
-
-
 		sequence.forEach((glyph, i) => {
-
 			this._rule[i] = glyph;
-			const dirIndex = i+1; // the directory index starts at 1 to reserve 0 for the head glyph
-			this.directory.set( dirIndex, { glyph: glyph, id: dirIndex, data: {} } ); 
-			this.sequence.push( this.directory.get( dirIndex )! );
+			const dirIndex = i + 1; // the directory index starts at 1 to reserve 0 for the head glyph
+			this.directory.set(dirIndex, {
+				glyph: glyph,
+				id: dirIndex,
+				data: {},
+			});
+			this.sequence.push(this.directory.get(dirIndex)!);
 
 			this.directory.set(0, { glyph: this._head, id: 0, data: {} });
-
 		});
 
 		// this._rule = sequence.map((glyph, i) => {
@@ -75,292 +75,247 @@ abstract class Production implements IProduction {
 		// 	}
 
 		// });
-	};
+	}
 
 	public plant(): void {
+		console.log("");
+		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`);
+		console.log(`ON THE WAITING LIST FOR PRIMS:`);
 
-		console.log('')
-		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
-		console.log(`ON THE WAITING LIST FOR PRIMS:`)
+		console.log(
+			`!!!!!! ${this.head.symbol}  -->  ${Production.primDropbox.size}`,
+		);
 
-		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primDropbox.size}`)
+		let log = "GUESTS: ";
 
+		for (const guest of Production.primDropbox) {
+			if (guest[1].includes(this.head)) {
+				console.log(
+					`${guest[0].prefix} --> this one is for me ( ${this.head.symbol} )`,
+				);
 
-		let log = 'GUESTS: ';
+				this.addPrim(guest[0]);
 
-		for ( const guest of Production.primDropbox ) {
-
-			if ( guest[1].includes(this.head) ) {
-
-				console.log(`${guest[0].prefix} --> this one is for me ( ${this.head.symbol} )`)
-
-				this.addPrim( guest[0] );
-
-				if ( guest[1].length <= 1 ) {
-
+				if (guest[1].length <= 1) {
 					Production.primDropbox.delete(guest[0]);
-
 				} else {
-
-					Production.primDropbox.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
+					Production.primDropbox.set(
+						guest[0],
+						guest[1].filter(
+							(glyph) => glyph.symbol !== this.head.symbol,
+						),
+					);
 				}
-
 			}
 
 			// guest[1] = updatedGuests;
 
-
-			log += `${guest[1].map((g)=>g.symbol)}( ${guest[0].prefix} ), `
+			log += `${guest[1].map((g) => g.symbol)}( ${guest[0].prefix} ), `;
 		}
 
 		console.log(log);
 	}
 
-
 	protected decode(str: string): Glyph[] {
-
-		const sequence = str.split('').map((char) => { 
-
+		const sequence = str.split("").map((char) => {
 			const glyph = this.dialect.find((g) => g.symbol === char);
 
 			if (glyph) {
-
-				return glyph
-
+				return glyph;
 			} else {
-
-				throw new Error(`${char} it's not part of this ${this._head.symbol} production dialect`);
+				throw new Error(
+					`${char} it's not part of this ${this._head.symbol} production dialect`,
+				);
 			}
 		});
 
 		return sequence;
-	};
+	}
 
-
-	protected encodeGlyph( glyph: Glyph ): string {
-
-		if ( glyph.type === 'Rule' && glyph.prims.length ) {
-
+	protected encodeGlyph(glyph: Glyph): string {
+		if (glyph.type === "Rule" && glyph.prims.length) {
 			const paramSeries = glyph.prims.map((p) => {
-
 				return p.write();
 			});
 
-			return `${glyph.symbol}(${paramSeries.join(',')})`;
-
+			return `${glyph.symbol}(${paramSeries.join(",")})`;
 		} else {
-
 			return glyph.symbol;
 		}
-	};
-
+	}
 
 	protected encodeSequence(sequence: Array<Glyph>): string {
+		const series = sequence
+			.map((g) => {
+				if (g.type === "Rule" && g.prims?.length) {
+					const paramSeries = g.prims.map((p) => {
+						return p.write();
+					});
 
-		const series = sequence.map((g) => {
-
-			if (g.type === 'Rule' && g.prims?.length) {
-
-				const paramSeries = g.prims.map((p) => {
-
-					return p.write();
-
-				});
-
-				return `${g.symbol}(${paramSeries.join(',')})`;
-
-			} else {
-				
-				return g.symbol;
-			}	
-
-		}).join('');
+					return `${g.symbol}(${paramSeries.join(",")})`;
+				} else {
+					return g.symbol;
+				}
+			})
+			.join("");
 
 		// console.log(`ENCODED ${this._glyph.symbol} with: ${_str}`);
 
 		return series;
-	};
+	}
 
-	
-	protected printSequence( sequence: string[] ) {
-
-		this._output = sequence.join('');
-	};
-
+	protected printSequence(sequence: string[]) {
+		this._output = sequence.join("");
+	}
 
 	abstract compose(...str: string[]): void;
 	abstract process(params?: string, context?: any): void;
 
-
-	public addPrim(input: Prim | string, symbols?: string | string[], save: boolean = true): Prim {
-
+	public addPrim(
+		input: Prim | string,
+		symbols?: string | string[],
+		save: boolean = true,
+	): Prim {
 		let prim: Prim;
 
 		// TODO: we could have a Sprite for this
 
-		if (typeof input === 'string') {
-
+		if (typeof input === "string") {
 			switch (input) {
-
-				case '!': 
+				case "!":
 					prim = new ImperativePrim() as Imperative;
 					break;
 
-				case '=':
+				case "=":
 					prim = new ParameterPrim() as Parameter;
 					break;
 				// case '+':
 				// 	// do nothing. We need to forego this logic here.
 				// 	break
 
-				default: throw new Error(`Failed to add Prim to Production. ${input} doesn't match the prefix of any valid Prim`);
+				default:
+					throw new Error(
+						`Failed to add Prim to Production. ${input} doesn't match the prefix of any valid Prim`,
+					);
 			}
-
 		} else {
-
 			prim = input;
-
 		}
 
 		if (symbols) {
-
-			prim.places = this._rule.map((g, i) => {
-
-				if (Array.isArray(symbols)) {
-
-					for (const s of symbols) {
-
-						if (g.symbol === s) {
-
+			prim.places = this._rule
+				.map((g, i) => {
+					if (Array.isArray(symbols)) {
+						for (const s of symbols) {
+							if (g.symbol === s) {
+								return i;
+							}
+						}
+					} else {
+						if (g.symbol === symbols) {
 							return i;
 						}
 					}
-
-				} else {
-
-					if (g.symbol === symbols) {
-
-						return i;
-					}
-				}
-
-			}).filter(n => n !== undefined) as number[];
+				})
+				.filter((n) => n !== undefined) as number[];
 		}
 
-
-		if (save) { 
-
-			if ( !this.prims.has(prim) ) {
-
+		if (save) {
+			if (!this.prims.has(prim)) {
 				this.prims.set(prim, prim.prefix);
 
-				this.head.prims.push(prim); 
-
+				this.head.prims.push(prim);
 			} else {
-
-				throw new Error(`ERROR: Trying to re-add ${prim.type} Prim to ${this.head.symbol}`);
+				throw new Error(
+					`ERROR: Trying to re-add ${prim.type} Prim to ${this.head.symbol}`,
+				);
 			}
 		}
 
-		return prim;	
-	};
+		return prim;
+	}
 
-	
-
-
-	public addSprite( sprite: ISprite ) {
-
-		
+	public addSprite(sprite: ISprite) {
 		/**
-		* 
-	 	* STEP 1: Implant the Sprite onto the Production
-	 	* The Sprite receives the Production's directory and dialect (i.e., allowed Glyphs)
-	 	* and checks whether the required Prims are present.
-	 	* If required Prims are present, the Sprite stores these details for future reference.
-	 	* Any Prim(s) needed for the Sprite to operate on this Production are returned.
-	 	* 
-	 	*/ 
+		 *
+		 * STEP 1: Implant the Sprite onto the Production
+		 * The Sprite receives the Production's directory and dialect (i.e., allowed Glyphs)
+		 * and checks whether the required Prims are present.
+		 * If required Prims are present, the Sprite stores these details for future reference.
+		 * Any Prim(s) needed for the Sprite to operate on this Production are returned.
+		 *
+		 */
 
-		const prims = sprite.implant( this.directory, this.dialect );
+		const prims = sprite.implant(this.directory, this.dialect);
 
-		
 		// Add the necessary Prims to this Production
 
-		if ( prims ) {
-
-			for ( const prim of prims ) {
-
-				this.addPrim( prim );
+		if (prims) {
+			for (const prim of prims) {
+				this.addPrim(prim);
 			}
-		};
-		
+		}
+
 		// The Sprite is then added to this Production's list of Sprites.
 
-		this.sprites.push( sprite );
-
+		this.sprites.push(sprite);
 
 		/**
-		 * 
+		 *
 		 * STEP 2: Prepare Prims for Other Productions
 		 * The sow() method of the Sprite identifies Prims that are intended for other Productions.
 		 * These Prims are stored in a static 'dropbox' to be picked up by their respective Productions.
-		 * 
-		 */ 
+		 *
+		 */
 
+		const primSeeds = sprite.sow();
 
-		const primSeeds = sprite.sow();	
-
-		if ( primSeeds ) {
-
-			for ( const seed of primSeeds ) {
-		
+		if (primSeeds) {
+			for (const seed of primSeeds) {
 				// for ( const glyph of seed.targets ) {
 
-				// 	if ( glyph.type==='Rule') { glyph.prims.push(seed.prim) } 
+				// 	if ( glyph.type==='Rule') { glyph.prims.push(seed.prim) }
 				// }
-				
-				Production.primDropbox.set( seed.prim, seed.targets );
+
+				Production.primDropbox.set(seed.prim, seed.targets);
 			}
 		}
-		
+	}
 
-	};
+	protected processPrims(stream: Glyph[], params?: string): Glyph[] {
+		console.log("");
+		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`);
+		console.log(`ON THE WAITING LIST FOR PRIMS:`);
 
+		console.log(
+			`!!!!!! ${this.head.symbol}  -->  ${Production.primDropbox.size}`,
+		);
 
-	protected processPrims( stream: Glyph[], params?: string ): Glyph[] {
+		let log = "GUESTS: ";
 
-		console.log('')
-		console.log(`,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,`)
-		console.log(`ON THE WAITING LIST FOR PRIMS:`)
+		for (const guest of Production.primDropbox) {
+			if (guest[1].includes(this.head)) {
+				console.log(
+					`${guest[0].prefix} --> this one is for me ( ${this.head.symbol} )`,
+				);
 
-		console.log(`!!!!!! ${this.head.symbol}  -->  ${Production.primDropbox.size}`)
+				this.addPrim(guest[0]);
 
-
-		let log = 'GUESTS: ';
-
-		for ( const guest of Production.primDropbox ) {
-
-			if ( guest[1].includes(this.head) ) {
-
-				console.log(`${guest[0].prefix} --> this one is for me ( ${this.head.symbol} )`)
-
-				this.addPrim( guest[0] );
-
-				if ( guest[1].length <= 1 ) {
-
+				if (guest[1].length <= 1) {
 					Production.primDropbox.delete(guest[0]);
-
 				} else {
-
-					Production.primDropbox.set(guest[0], guest[1].filter( (glyph) => glyph.symbol!==this.head.symbol ) );
+					Production.primDropbox.set(
+						guest[0],
+						guest[1].filter(
+							(glyph) => glyph.symbol !== this.head.symbol,
+						),
+					);
 				}
-
 			}
 
 			// guest[1] = updatedGuests;
 
-
-			log += `${guest[1].map((g)=>g.symbol)}( ${guest[0].prefix} ), `
+			log += `${guest[1].map((g) => g.symbol)}( ${guest[0].prefix} ), `;
 		}
 
 		console.log(log);
@@ -368,81 +323,57 @@ abstract class Production implements IProduction {
 		// ----------------------------------------------------------------
 
 		const workingSequence: Glyph[] = stream.map((glyph) => {
-
-
-			
-
 			return glyph;
-
 		});
 
 		// -----------------------------------------------------------------
 
-		console.log('')
+		console.log("");
 
-		if ( params ) {
-
-			const parsedParams = params.split(',').map((s, i) => { 
-
+		if (params) {
+			const parsedParams = params.split(",").map((s, i) => {
 				return s.charAt(0);
 			});
 
+			console.log("");
+			console.log(`....................................`);
+			console.log(`${this.head.symbol} PRIM SIGNATURE:`);
 
-			console.log('')
-			console.log(`....................................`)
-			console.log(`${this.head.symbol} PRIM SIGNATURE:`)
+			let log: string = "";
 
-			let log: string = '';
-
-			for ( const prim of this.prims ) {
-
-				log += `${prim[1]} / `
+			for (const prim of this.prims) {
+				log += `${prim[1]} / `;
 			}
 
 			console.log(`___ADDED:  ${log}`);
-			console.log(`RECEIVED:  ${parsedParams.join(' / ')} /`)
-
+			console.log(`RECEIVED:  ${parsedParams.join(" / ")} /`);
 		} else {
-
 		}
 
-
-		if ( workingSequence ) {
-
+		if (workingSequence) {
 			return workingSequence;
-
 		} else {
-
 			return stream;
-		} 
-
-	};
-
+		}
+	}
 
 	public read(params?: string, context?: any) {
-
-		if (params && context === 'parameter?') {
-
-			if (params === '(') { return true }
-			else { return false }
-
+		if (params && context === "parameter?") {
+			if (params === "(") {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
-
 			this.process(params);
 		}
-		
-	};
-
+	}
 
 	public write(context?: any): string {
-
 		// console.log(`WRITING ${this._glyph.symbol} with: ${this._output}`);
 
 		return this._output;
-	};
-
+	}
 }
 
 export default Production;
-
-

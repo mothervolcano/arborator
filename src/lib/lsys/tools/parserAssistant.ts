@@ -1,50 +1,41 @@
+export function getParametersLength(str: string): number {
+  const paramStr = getParameterString(str);
 
-
-
-export function getParametersLength( str: string ): number {
-
-	const paramStr = getParameterString( str );
-
-	if ( paramStr !== null ) {
-
-		return paramStr.length + 2;
-
-	} else {
-
-		return -1;
-	}
-
-};
-
+  if (paramStr !== null) {
+    return paramStr.length + 2;
+  } else {
+    return -1;
+  }
+}
 
 class GenericStringException extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'GenericStringException';
+    this.name = "GenericStringException";
   }
 }
 
 class EmptyStringException extends GenericStringException {
   constructor(message: string) {
     super(message);
-    this.name = 'EmptyStringException';
+    this.name = "EmptyStringException";
   }
 }
 
 class DelimiterException extends GenericStringException {
   constructor(message: string) {
     super(message);
-    this.name = 'DelimiterException';
+    this.name = "DelimiterException";
   }
 }
 
 export function getParameterString(
   str: string,
-  openingChar: string = '(',
-  closingChar: string = ')'
+  openingChar: string = "(",
+  closingChar: string = ")",
 ): string | null {
-  if (typeof str === 'undefined' || str === '') {
-    throw new EmptyStringException('Empty or undefined string');
+  if (typeof str === "undefined" || str === "") {
+    throw new EmptyStringException("Empty or undefined string");
   }
 
   const openingIndex = str.indexOf(openingChar);
@@ -52,26 +43,20 @@ export function getParameterString(
 
   if (openingIndex >= 0 && closingIndex > 0) {
     if (closingIndex - openingIndex === 1) {
-      throw new DelimiterException('No parameters in between delimiters');
+      throw new DelimiterException("No parameters in between delimiters");
     }
     return str.substring(openingIndex + 1, closingIndex);
   } else if (closingIndex === -1 && openingIndex >= 0) {
-    throw new DelimiterException('Incomplete parameter string; closing delimiter missing');
+    throw new DelimiterException(
+      "Incomplete parameter string; closing delimiter missing",
+    );
   } else {
     throw new DelimiterException(`No opening or closing delimiters found`);
   }
 }
 
+export function renderSequence(sequence: string) {}
 
-
-export function renderSequence( sequence: string ) {
-
-	
-}
-
-
-
-export function parseParameters( str: string ) {
-
-	return []
+export function parseParameters(str: string) {
+  return [];
 }
