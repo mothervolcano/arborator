@@ -204,7 +204,7 @@ function App() {
     height: isLandscape ? `${100 - frameMargin * 2}vh` : `45vh`,
     borderLeft: isLandscape ? `1px solid ${dark}` : "none",
     borderBottom: isLandscape ? "none" : `1px solid ${dark}`,
-    backgroundColor: "#000028",
+    backgroundColor: "#ffffff",
     borderRadius: (isDesktop ? `0 9px 9px 0` : "none"),
   };
 

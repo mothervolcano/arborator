@@ -37,10 +37,23 @@ export default class Stage extends React.Component<StageProps, StageState> {
 		console.log("... MOUNT STAGE");
 		
 		const canvas = this.canvasRef.current;
-		if (canvas) {
-			this.stageManager = new StageManager(canvas, this.props.model);
+		const canvasCtx = canvas?.getContext("2d");
+
+		if (canvas && canvasCtx) {
+			const dpr = window.devicePixelRatio;
+			const rect = canvas.getBoundingClientRect();
+
+			canvas.width = rect.width * dpr;
+			canvas.height = rect.height * dpr;
+
+			canvasCtx.scale(dpr, dpr);
+
+			canvas.style.width = `${rect.width}px`;
+			canvas.style.height = `${rect.height}px`;
+
+			this.stageManager = new StageManager(canvasCtx, this.props.model);
 			this.stageManager.configure(this.props.params);
-			this.stageManager.update(this.props.params);
+			this.stageManager.update(canvasCtx, this.props.params);
 			this.props.setStageManager(this.stageManager);
 
 			window.addEventListener("keydown", this.handleKeyDown);
@@ -59,9 +72,9 @@ export default class Stage extends React.Component<StageProps, StageState> {
 	): void {
 		console.log("... UPDATE STAGE!");
 		
-		if (this.stageManager) {
+		if (this.stageManager && this.canvasRef.current && this.canvasRef.current.getContext("2d")) {
 			if (prevProps.model === this.props.model) {
-				this.stageManager.update(this.props.params);
+				this.stageManager.update(this.canvasRef.current.getContext("2d")!, this.props.params);
 				// if (this.stageManager.updatedParams) {
 				// 	const updatedParams = this.props.params.map( (p: any) => {
 				// 		if (this.stageManager!.updatedParams[p.id]) {
@@ -73,11 +86,11 @@ export default class Stage extends React.Component<StageProps, StageState> {
 				// 	// console.log("UPDATED PARAMS: ", this.props.params, updatedParams);
 				// }
 
-			} else  if (this.canvasRef.current) {
+			} else {
 				this.stageManager.reset();
-				this.stageManager = new StageManager(this.canvasRef.current, this.props.model);
+				this.stageManager = new StageManager(this.canvasRef.current.getContext("2d")!, this.props.model);
 				this.stageManager.configure(this.props.params);
-				this.stageManager.update(this.props.params);
+				this.stageManager.update(this.canvasRef.current.getContext("2d")!, this.props.params);
 				this.props.setStageManager(this.stageManager);
 
 			}
@@ -137,7 +150,7 @@ export default class Stage extends React.Component<StageProps, StageState> {
 	handleResize() {
 		const canvas = this.canvasRef.current;
 
-		if (canvas && this.stageManager) {
+		if (canvas && canvas.getContext("2d") && this.stageManager) {
 			canvas.style.width = "100%";
 			canvas.style.height = "100%";
 
@@ -145,7 +158,7 @@ export default class Stage extends React.Component<StageProps, StageState> {
 			canvas.height = canvas.offsetHeight;
 
 			this.stageManager.onResize(canvas);
-			this.stageManager.update(this.props.params);
+			this.stageManager.update(canvas.getContext("2d")!, this.props.params);
 
 		}
 	}

@@ -2,10 +2,24 @@ class Turtle {
   private _position: any | null;
   private _angle: number = 0;
   private penDown: boolean = false;
-  private _path: any | null;
-  private _style: any;
+  private _style: any = { strokeColor: "#0000000", strokeThickness: 1 };
+  private _ctx: any;
 
-  constructor(style?: any) {
+  constructor(ctx: any, style?: any) {
+     this._ctx = ctx
+
+    if (this._ctx) {
+      this._ctx.strokeStyle = this._style.strokeColor;
+      this._ctx.lineWidth = this._style.strokeThickness;
+
+      this._position = { x: 0, y: 0 };
+      this._angle = 0;
+      this.penDown = true;
+
+      this._ctx.beginPath();
+      this._ctx.moveTo(0, 0);
+    }
+
     // this._position = new Point(0, 0);
     // this._angle = 0;
     // this.penDown = true;
@@ -16,16 +30,6 @@ class Turtle {
     // };
   }
 
-  private createPath() {
-    // const _path = new Path({
-    //   strokeColor: this._style.strokeColor,
-    //   strokeWidth: this._style.strokeWidth,
-    //   opacity: 1,
-    // });
-
-    // return _path;
-  }
-
   set style(input: any) {
     // this._style = input;
   }
@@ -34,17 +38,15 @@ class Turtle {
     return this._style;
   }
 
-  public init(x: number, y: number, angle: number) {
-    // this._position = new Point(x, y);
-    // this._angle = angle;
-    // this._path = this.createPath();
-    // this._path.add(this._position);
-
-    // return this;
+  get context(): void {
+    return this._ctx;
   }
 
-  public path(): any {
-    return this._path;
+  public init(x: number, y: number, angle: number) {
+    this._ctx.moveTo(x, y);
+    this._position = { x, y };
+    this._angle = angle;
+
   }
 
   public position(): any {
@@ -55,22 +57,23 @@ class Turtle {
     return this._angle;
   }
 
-  public forward(distance: number): void {
-    // const angleInRadians = (this._angle * Math.PI) / 180;
-    // const dx = distance * Math.cos(angleInRadians);
-    // const dy = distance * Math.sin(angleInRadians);
-    // const newPosition = this._position.add([dx, dy]);
+  public forward(distance: any): void {
+    const angleInRadians = (this._angle * Math.PI) / 180;
+    const dx = distance * Math.cos(angleInRadians);
+    const dy = distance * Math.sin(angleInRadians);
+    const newPos = { x: this._position.x + dx, y: this._position.y + dy };
+    
 
-    // if (this.penDown) {
-    //   if (!this._path) {
-    //     this._path = this.createPath();
-    //     this._path.add(this._position);
-    //   }
+    if (this.penDown) {
+      this._ctx.strokeStyle = this._style.strokeColor;
+      this._ctx.lineWidth = this._style.strokeThickness;
+      this._ctx.beginPath();
+      this._ctx.moveTo(this._position.x, this._position.y);
+      this._ctx.lineTo(newPos.x, newPos.y);
+      this._ctx.stroke();
+    }
 
-    //   this._path.add(newPosition);
-    // }
-
-    // this._position = newPosition;
+    this._position = newPos;
   }
 
   public backward(distance: number): void {
@@ -81,11 +84,11 @@ class Turtle {
     this._angle = angle;
   }
 
-  public left(angle: number): number {
+  public left(angle: number = 0): number {
     return (this._angle -= angle);
   }
 
-  public right(angle: number): number {
+  public right(angle: number = 0): number {
     return (this._angle += angle);
   }
 
@@ -95,22 +98,23 @@ class Turtle {
 
   public up(): void {
     this.penDown = false;
-    this._path = null;
   }
 
   public goto(x: number, y: number): void {
-    // const newPosition = new Point(x, y);
+    const newPos = { x, y };
 
-    // if (this.penDown) {
-    //   if (!this._path) {
-    //     this._path = this.createPath();
-    //     this._path.add(this._position);
-    //   }
+    this._ctx.beginPath();
 
-    //   this._path.add(newPosition);
-    // }
+    if (this.penDown) {
+      this._ctx.strokeStyle = this._style.strokeColor;
+      this._ctx.lineWidth = this._style.strokeThickness;
+      this._ctx.lineTo(newPos.x, newPos.y);
+      this._ctx.stroke();
+    } else {
+      this._ctx.moveTo(newPos.x, newPos.y);
+    }
 
-    // this._position = newPosition;
+    this._position = newPos;
   }
 
   public reset(): void {

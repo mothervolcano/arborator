@@ -32,7 +32,7 @@ class Test extends Model {
 	private turnDirection: string | undefined;
 	private radius: number;
 
-	constructor(alphabet: IAlphabet, axiom: string, iterationsNum: number) {
+	constructor(alphabet: IAlphabet, axiom: string, iterationsNum?: number) {
 		super(alphabet, axiom);
 
 		// const O: IProduction = new IRule( alphabet.rule('O'), alphabet.collect('O*') ).compose('O');
@@ -44,46 +44,39 @@ class Test extends Model {
 		const Y: IProduction = new IRule(
 			alphabet.rule("Y"),
 			alphabet.collect("[]+-IBKf*"),
-		).compose("ff[*B][*B]f");
+		).compose("f[*B][*B]");
 
-		const B: IProduction = new BRule(
+		const B: IProduction = new IRule(
 			alphabet.rule("B"),
 			alphabet.collect("[]+-=±BKfx*"),
 		).compose("K");
-		// const K: IProduction = new BRule( alphabet.rule('K'), alphabet.collect('[]+-BKf*') ).compose('ff[*B]f')
 
-		const K: IProduction = new BRule(
+		const K: IProduction = new IRule(
 			alphabet.rule("K"),
 			alphabet.collect("[]+-=±Kfx.*"),
 		).compose("f[=f][±f]");
-		// const K: IProduction = new BRule( alphabet.rule('K'), alphabet.collect('[]+-=±RKfx.*') ).compose('f[=Rx]')
-		const R: IProduction = new BRule(
-			alphabet.rule("R"),
-			alphabet.collect("[]+-=±RKfx.*"),
-		).compose("f[±R]");
 
-		// I.addSprite( new Accumulator(1,1) );
-		// I.addSprite( new Replicator( alphabet.glyph('Y'), new CounterPrim(), new ParameterPrim() ));
+		// const R: IProduction = new BRule(
+		// 	alphabet.rule("R"),
+		// 	alphabet.collect("[]+-=±RKfx.*"),
+		// ).compose("f[±R]");
 
 		Y.addPrim(new ParameterPrim(1));
-		Y.addSprite(new Indexer(alphabet.rule("B"), 1));
-		// Y.addSprite( new Escalator(1,1) );
+		// Y.addSprite(new Indexer(alphabet.rule("B"), 1));
 		Y.addSprite(
 			new Replicator(alphabet.glyph("f"), new ParameterPrim(), null),
 		);
 		Y.addSprite(
 			new GlyphSwapper(alphabet.glyph("*"), alphabet.collect("-+")),
 		);
-		Y.addSprite(
-			new IncognitoPerpetuator(alphabet.glyph("*"), alphabet.rule("B")),
-		);
+		// Y.addSprite(
+		// 	new IncognitoPerpetuator(alphabet.glyph("*"), alphabet.rule("B")),
+		// );
 
-		// B.addSprite( new Doppelganger() );
 		B.addSprite(
 			new IncognitoDiscloser(alphabet.glyph("*"), new ImperativePrim()),
 		);
 		B.addSprite(new Escalator(1, 1));
-		// B.addSprite( new Accumulator(2,2) );
 		B.addSprite(
 			new Replicator(
 				alphabet.glyph("K"),
@@ -91,45 +84,17 @@ class Test extends Model {
 				new ParameterPrim(),
 			),
 		);
-		// B.addSprite( new Replicator( alphabet.glyph('f'), new CounterPrim() ));
-		// B.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('K') ));
-		// B.addSprite( new GlyphAccumulator( alphabet.glyph('f') ));
-		// B.addSprite( new Replicator('f') );
 
 		K.addPrim(new ParameterPrim(1));
-		// K.addSprite( new Replicator( alphabet.glyph('.'), new ParameterPrim(), null ));
 		K.addSprite(
 			new Replicator(alphabet.glyph("f"), new ParameterPrim(), null, 2),
 		);
-		// K.addSprite( new Replicator( alphabet.glyph('f'), new ParameterPrim(), null, 3 ));
-		// K.addSprite( new Replicator( alphabet.glyph('f'), new ParameterPrim(), null, 3 ));
-
-		// K.addSprite( new Doppelganger() );
-		// K.addSprite( new IncognitoDiscloser( alphabet.glyph('*'), new ImperativePrim() ));
-
-		// K.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('K').symbol ));
-
-		// const Y: IProduction = new YRule( alphabet.rule('Y'), alphabet.collect('[]+-BR*!_') ).compose('[]','-+','*R');
-		// // const K: IProduction = new YRule( alphabet.rule('K'), alphabet.collect('[]+-T*!_') ).compose('[]','-+','*!T');
-		// // const B: IProduction = new BRule( alphabet.rule('B'), alphabet.collect('[]+-BRKf*') ).compose('RKB');
-		// const R: IProduction = new RRule( alphabet.rule('R'), alphabet.collect('[]+-f*') ).compose('*ff**ff');
-		// // const T: IProduction = new TRule( alphabet.rule('T'), alphabet.collect('[]+-RKYf!*') ).compose('RKY');
-
-		// // I.addPrim(  new AccumulatorPrim(1) );
-
-		// Y.addSprite( new GlyphSwapper(alphabet.glyph('*'), alphabet.glyph('+') ) );
-		// Y.addSprite( new IncognitoPerpetuator( alphabet.glyph('*'), alphabet.rule('R') ) );
-
-		// Y.addPrim( new ImperativePrim(), 'R' );
-		// Y.addPrim( new ParameterPrim(1) );
-		// Y.addPrim( new ImperativePrim() );
-		// K.addPrim( new ParameterPrim(2) );
 
 		// this.addProduction(O);
 		this.addProduction(I);
 		this.addProduction(Y);
 		this.addProduction(B);
-		this.addProduction(R);
+		// this.addProduction(R);
 		this.addProduction(K);
 		// this.addProduction(T);
 
@@ -138,7 +103,7 @@ class Test extends Model {
 		this.states = [];
 
 		this.scale = 1;
-		this.length = 10;
+		this.length = 20;
 		this.lengthReduction = 1;
 		this.lengthReductionUnit = 4 / 5;
 		this.lengthReductionFactor = 1;
@@ -150,8 +115,6 @@ class Test extends Model {
 
 		// ---------------------------------------------------------------------
 		// DEBUG
-
-		const positions = new Map();
 
 		const showInfo = (tool: any, context?: any) => {
 			// if (!positions.has(tool.position())) {
@@ -174,8 +137,19 @@ class Test extends Model {
 
 		const addMark = (tool: any, context?: any) => {
 			// console.log(`ADD MARK: ${context.params}`)
-
-			this.addMark(tool.position());
+			const pos = tool.position();
+			tool.context.fillStyle = "green";
+			tool.context.strokeStyle = "green";
+			// tool.context.lineWidth = 0;
+			tool.context.moveTo(pos.x, pos.y);
+			tool.context.beginPath();
+			tool.context.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
+			tool.context.fill();
+			tool.context.stroke();
+			// tool.context.closePath();
+			tool.context.moveTo(pos.x, pos.y);
+			tool.context.strokeStyle = "black";
+			// tool.context.fillStyle = "none";
 		};
 
 		this.addCommand(new Command("i", showInfo));
@@ -185,7 +159,7 @@ class Test extends Model {
 		// COMMANDS
 
 		const moveForward = (tool: any, context?: any) => {
-			// console.log(`MOVE FORWARD: f --> ${this.length} / ${tool.position()}`);
+			// console.log(`MOVE FORWARD: f --> ${this.length}`, context);
 
 			tool.forward(this.length * this.lengthReduction * context.length);
 
@@ -195,7 +169,7 @@ class Test extends Model {
 		const inchForward = (tool: any, context?: any) => {
 			this.lengthReduction *= this.lengthReductionUnit;
 
-			console.log(`LENGTH REDUCTION: ${this.lengthReduction}`);
+			// console.log(`LENGTH REDUCTION: ${this.lengthReduction}`);
 		};
 
 		const turnLeft = (tool: any, context?: any) => {
@@ -243,7 +217,7 @@ class Test extends Model {
 				? context.angle
 				: this.angleRotationStep;
 
-			console.log(`TURN THE OPPOSITE WAY to: ${this.turnDirection}`);
+			// console.log(`TURN THE OPPOSITE WAY to: ${this.turnDirection}`);
 
 			if (this.turnDirection === "LEFT") {
 				tool.right(this.angleRotationStep);
@@ -275,7 +249,7 @@ class Test extends Model {
 			// this.radius = state.radius
 			tool.up();
 			tool.rotate(state.angle);
-			// tool.goto(state.position.x, state.position.y);
+			tool.goto(state.position.x, state.position.y);
 			tool.down();
 		};
 
@@ -288,10 +262,6 @@ class Test extends Model {
 		this.addCommand(new Command("[", saveState));
 		this.addCommand(new Command("]", restoreState));
 		// this.addCommand( new Command('B', addMark ));
-	}
-
-	private addMark(position: any) {
-		// const mark = new Path.Circle({center: position, radius: this.radius * this.scale, fillColor: 'green', opacity: 0.25})
 	}
 
 	public reset() {}

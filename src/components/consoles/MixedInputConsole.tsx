@@ -116,9 +116,7 @@ const MixedInputConsole = (props: ConsoleProps) => {
 	}
 
 	const paramGroups: any[][] = groupParams(params);
-
-	console.log("!! ", paramGroups)
-
+	
 	const rowLayout: Style = {
 		width: "100%",
 		display: "flex",

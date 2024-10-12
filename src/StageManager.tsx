@@ -39,11 +39,12 @@ export default class StageManager {
   zoomRatio: number = 1;
   realWidth: number = 0;
   realHeight: number = 0;
-  origin: { x: number; y: number } = { x: 0, y: 0 };
+  origin: { x: number; y: number } = { x: 500, y: 500 };
   params: any;
   updatedParams: any;
+  sequence: any;
 
-  constructor(canvas: HTMLCanvasElement, Model: any) {
+  constructor(ctx: CanvasRenderingContext2D, Model: any) {
     const alphabet = new Alphabet();
 
     alphabet.registerGlyph("Rule", "A");
@@ -75,14 +76,21 @@ export default class StageManager {
     alphabet.registerGlyph("Marker", "*");
     alphabet.registerGlyph("Marker", "?");
 
-    this.model = new Model(alphabet, "I", 5);
+    this.model = new Model(alphabet, "I");
     this.composer = new Composer(this.model);
-    this.pen = new Turtle();
+
+    const canvasRect = ctx.canvas.getBoundingClientRect();
+    this.origin = { x: canvasRect.width / 2, y: canvasRect.height - 50 };
+    
+    this.pen = new Turtle(ctx);
   }
 
   configure(params: any) {
     this.params = params;
     // this.model.configure(parseParams(this.params));
+
+    this.composer.compose(6);
+    this.sequence = this.composer.plot();
 
     this.pen.style = {
       strokeColor: "black",
@@ -92,10 +100,10 @@ export default class StageManager {
     this.pen.init(this.origin.x, this.origin.y, -90);
   }
 
-  update(params: any) {
+  update(ctx: CanvasRenderingContext2D, params: any) {
     this.params = params;
     const { lengthCtrl, angleRotationStepCtrl, angleStepCtrl, iterationsNum } =
-      params;
+      parseParams(params);
 
     // intercept the width and depth values from the params to ensure the model will fit within the current view
     if (
@@ -106,14 +114,24 @@ export default class StageManager {
       // this.layer.position = this.view.center;
     }
 
-    this.composer.compose(5);
-    const sequence = this.composer.plot();
+    // ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    const dpr = window.devicePixelRatio;
+    const canvasRect = ctx.canvas.getBoundingClientRect();
+
+    ctx.canvas.width = ctx.canvas.width;
+    ctx.canvas.height = ctx.canvas.height;
+
+    ctx.scale(dpr, dpr);
+
+    ctx.canvas.style.width = `${canvasRect.width}px`;
+    ctx.canvas.style.height = `${canvasRect.height}px`;
 
     this.model.reset();
     this.pen.init(this.origin.x, this.origin.y, -90);
 
-    for (let i = 0; i < sequence.length; i++) {
-      const command = sequence[i];
+    for (let i = 0; i < this.sequence.length; i++) {
+      const command = this.sequence[i];
       command[0].run(this.pen, {
         length: lengthCtrl,
         angle: angleRotationStepCtrl,
